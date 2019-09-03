@@ -1,0 +1,21 @@
+{
+  "name": "ucdb",
+  "version": "0.0.2",
+  "description": "UCDB, a UniCodeDataBase",
+  "main": "index.js",
+  "dependencies": {
+    "cnd": "^4.6.0",
+    "glob": "^7.1.4",
+    "icql": "^5.1.2",
+    "intertype": "^2.5.0",
+    "mingkwai-ncr": "^0.4.2",
+    "pipedreams": "^12.1.0",
+    "yargs": "^14.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
