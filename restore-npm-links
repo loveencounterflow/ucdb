@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+home="$(realpath "$(realpath "${BASH_SOURCE[0]}" | xargs dirname)"/.)"
+cd "$home"
+
+# npm link ~/jzr/steampipes
+npm link ~/jzr/svgttf
+# npm link ~/io/mingkwai-rack/mingkwai-typesetter
+
+
