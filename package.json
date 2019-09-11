@@ -2,7 +2,7 @@
   "name": "ucdb",
   "version": "0.0.2",
   "description": "UCDB, a UniCodeDataBase",
-  "main": "index.js",
+  "main": "lib/main.js",
   "dependencies": {
     "cnd": "^4.6.0",
     "glob": "^7.1.4",
