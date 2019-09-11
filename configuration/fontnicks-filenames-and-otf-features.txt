@@ -1,0 +1,213 @@
+# fontnick 												filename 												OTF features
+aleobold                          Aleo-Bold.otf
+aleobolditalic                    Aleo-BoldItalic.otf
+aleoitalic                        Aleo-Italic.otf
+aleolight                         Aleo-Light.otf
+aleolightitalic                   Aleo-LightItalic.otf
+aleoregular                       Aleo-Regular.otf
+asanamath                         Asana-Math.otf
+babelstonehan                     BabelStoneHan.ttf
+biaukai                           BiauKai.ttf
+bitterbold                        Bitter-Bold.otf
+bitterbolditalic                  Bitter-BoldItalic.otf
+bitteritalic                      Bitter-Italic.otf
+bitterregular                     Bitter-Regular.otf
+cwtexqfangsongmedium              cwTeXQFangsong-Medium.ttf
+cwtexqheibold                     cwTeXQHei-Bold.ttf
+cwtexqkaimedium                   cwTeXQKai-Medium.ttf
+cwtexqmingmedium                  cwTeXQMing-Medium.ttf
+cwtexqyuanmedium                  cwTeXQYuan-Medium.ttf
+dejavusans                        DejaVuSans.ttf
+dejavusansbold                    DejaVuSans-Bold.ttf
+dejavusansboldoblique             DejaVuSans-BoldOblique.ttf
+dejavusanscondensed               DejaVuSansCondensed.ttf
+dejavusanscondensedbold           DejaVuSansCondensed-Bold.ttf
+dejavusanscondensedboldoblique    DejaVuSansCondensed-BoldOblique.ttf
+dejavusanscondensedoblique        DejaVuSansCondensed-Oblique.ttf
+dejavusansmono                    DejaVuSansMono.ttf
+dejavusansmonobold                DejaVuSansMono-Bold.ttf
+dejavusansmonoboldoblique         DejaVuSansMono-BoldOblique.ttf
+dejavusansmonooblique             DejaVuSansMono-Oblique.ttf
+dejavusansoblique                 DejaVuSans-Oblique.ttf
+dejavuserif                       DejaVuSerif.ttf
+dejavuserifbold                   DejaVuSerif-Bold.ttf
+dejavuserifbolditalic             DejaVuSerif-BoldItalic.ttf
+dejavuserifcondensed              DejaVuSerifCondensed.ttf
+dejavuserifcondensedbold          DejaVuSerifCondensed-Bold.ttf
+dejavuserifcondensedbolditalic    DejaVuSerifCondensed-BoldItalic.ttf
+dejavuserifcondenseditalic        DejaVuSerifCondensed-Italic.ttf
+dejavuserifitalic                 DejaVuSerif-Italic.ttf
+droidsansfallbackfull             DroidSansFallbackFull.ttf
+droidsansjapanese                 DroidSansJapanese.ttf
+ebgaramondeightitalic             EBGaramond08-Italic.otf            	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondeightregular            EBGaramond08-Regular.otf           	Numbers={Monospaced,Lining}
+ebgaramondeightsc                 EBGaramondSC08-Regular.otf         	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondinitials                EBGaramond-Initials.otf            	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondinitialsfone            EBGaramond-InitialsF1.otf          	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondinitialsftwo            EBGaramond-InitialsF2.otf          	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondtwelveallsc             EBGaramond12-AllSC.otf             	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondtwelveitalic            EBGaramond12-Italic.otf            	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondtwelveitalicscall       EBGaramond12-Italic.otf            	Letters={SmallCaps,UppercaseSmallCaps},Numbers={Monospaced,Lining}
+ebgaramondtwelveitalicsclower     EBGaramond12-Italic.otf            	Letters={SmallCaps},Numbers={Monospaced,Lining}
+ebgaramondtwelveitalicscupper     EBGaramond12-Italic.otf            	Letters={UppercaseSmallCaps},Numbers={Monospaced,Lining}
+ebgaramondtwelveregular           EBGaramond12-Regular.otf           	Numbers={Monospaced,Lining}
+ebgaramondtwelveregularscall      EBGaramond12-Regular.otf           	Letters={SmallCaps,UppercaseSmallCaps},Numbers={Monospaced,Lining}
+ebgaramondtwelveregularsclower    EBGaramond12-Regular.otf           	Letters={SmallCaps},Numbers={Monospaced,Lining}
+ebgaramondtwelveregularscupper    EBGaramond12-Regular.otf           	Letters={UppercaseSmallCaps},Numbers={Monospaced,Lining}
+ebgaramondtwelvesc                EBGaramondSC12-Regular.otf         	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+epgyobld                          EPGYOBLD.TTF
+epgyosho                          EPGYOSHO.TTF
+epkaisho                          EPKAISHO.TTF
+epkgobld                          EPKGOBLD.TTF
+epkyouka                          EPKYOUKA.TTF
+epmarugo                          EPMARUGO.TTF
+epmgobld                          EPMGOBLD.TTF
+epminbld                          EPMINBLD.TTF
+fandolfangregular                 FandolFang-Regular.otf
+fandolheibold                     FandolHei-Bold.otf
+fandolheiregular                  FandolHei-Regular.otf
+fandolkairegular                  FandolKai-Regular.otf
+fandolsongbold                    FandolSong-Bold.otf
+fandolsongregular                 FandolSong-Regular.otf
+firacodebold                      FiraCode-Bold.otf
+firacodelight                     FiraCode-Light.otf
+firacodemedium                    FiraCode-Medium.otf
+firacoderegular                   FiraCode-Regular.otf
+firacoderetina                    FiraCode-Retina.otf
+fjallaoneregular                  FjallaOne-Regular.ttf
+flowdejavusansmono                FlowDejaVuSansMono.ttf
+fontsjapanesegothic               fonts-japanese-gothic.ttf
+fontsjapanesemincho               fonts-japanese-mincho.ttf
+gltsukijifivego                   GL-Tsukiji-5go.ttf
+hanamina                          HanaMinA.ttf
+hanaminb                          HanaMinB.ttf
+hminglanb                         H-MingLan-B.ttf
+hminglanr                         H-MingLan-R.ttf
+iosevkatermslabbold               iosevka-term-slab-bold.ttf         	CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
+iosevkatermslabbolditalic         iosevka-term-slab-bolditalic.ttf   	CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
+iosevkatermslabmedium             iosevka-term-slab-medium.ttf       	CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
+iosevkatermslabmediumitalic       iosevka-term-slab-mediumitalic.ttf 	CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
+ipaexg                            ipaexg.ttf
+ipaexm                            ipaexm.ttf
+ipag                              ipag.ttf
+ipagp                             ipagp.ttf
+ipam                              ipam.ttf
+ipamp                             ipamp.ttf
+jizurathreeb                      jizura3b.ttf
+kai                               Kai.ttf
+lmromantenitalic                  lmroman10-italic.otf
+lmromantenregular                 lmroman10-regular.otf
+merriweatherblack                 Merriweather-Black.ttf
+merriweatherblackitalic           Merriweather-BlackItalic.ttf
+merriweatherbold                  Merriweather-Bold.ttf
+merriweatherbolditalic            Merriweather-BoldItalic.ttf
+merriweatheritalic                Merriweather-Italic.ttf
+merriweatherlight                 Merriweather-Light.ttf
+merriweatherlightitalic           Merriweather-LightItalic.ttf
+merriweatherregular               Merriweather-Regular.ttf
+monoidbold                        Monoid-Bold.ttf
+monoiditalic                      Monoid-Italic.ttf
+monoidregular                     Monoid-Regular.ttf
+monoidretina                      Monoid-Retina.ttf
+nanumgothic                       NanumGothic.ttc
+nanummyeongjo                     NanumMyeongjo.ttc
+notoserifjpblack                  NotoSerifJP-Black.otf
+notoserifjpbold                   NotoSerifJP-Bold.otf
+notoserifjpextralight             NotoSerifJP-ExtraLight.otf
+notoserifjplight                  NotoSerifJP-Light.otf
+notoserifjpmedium                 NotoSerifJP-Medium.otf
+notoserifjpregular                NotoSerifJP-Regular.otf
+notoserifjpsemibold               NotoSerifJP-SemiBold.otf
+optima                            Optima.ttc
+oswaldbold                        Oswald-Bold.ttf
+oswaldlight                       Oswald-Light.ttf
+oswaldregular                     Oswald-Regular.ttf
+permianslabseriftypeface          PermianSlabSerifTypeface.otf
+permianslabseriftypefacebold      PermianSlabSerifTypeface-Bold.otf
+permianslabseriftypefaceitalic    PermianSlabSerifTypeface-Italic.otf
+ptsans                            PTSans.ttc
+rkaisubold                        R-Kai-SUBold.ttf
+rkantingliuwnine                  R-KanTingLiu-W9.ttf
+robotoblack                       Roboto-Black.ttf
+robotoblackitalic                 Roboto-BlackItalic.ttf
+robotobold                        Roboto-Bold.ttf
+robotobolditalic                  Roboto-BoldItalic.ttf
+robotocondensedbold               RobotoCondensed-Bold.ttf
+robotocondensedbolditalic         RobotoCondensed-BoldItalic.ttf
+robotocondenseditalic             RobotoCondensed-Italic.ttf
+robotocondensedlight              RobotoCondensed-Light.ttf
+robotocondensedlightitalic        RobotoCondensed-LightItalic.ttf
+robotocondensedregular            RobotoCondensed-Regular.ttf
+robotoitalic                      Roboto-Italic.ttf
+robotolight                       Roboto-Light.ttf
+robotolightitalic                 Roboto-LightItalic.ttf
+robotomedium                      Roboto-Medium.ttf
+robotomediumitalic                Roboto-MediumItalic.ttf
+robotoregular                     Roboto-Regular.ttf
+robotoslabbold                    RobotoSlab-Bold.ttf
+robotoslablight                   RobotoSlab-Light.ttf
+robotoslabregular                 RobotoSlab-Regular.ttf
+robotoslabthin                    RobotoSlab-Thin.ttf
+robotothin                        Roboto-Thin.ttf
+robotothinitalic                  Roboto-ThinItalic.ttf
+sarasabold                        sarasa-bold.ttc
+sarasabolditalic                  sarasa-bolditalic.ttc
+sarasaitalic                      sarasa-italic.ttc
+sarasaregular                     sarasa-regular.ttc
+simsun                            simsun.ttc
+sourcecodeproblack                SourceCodePro-Black.otf
+sourcecodeprobold                 SourceCodePro-Bold.otf
+sourcecodeproextralight           SourceCodePro-ExtraLight.otf
+sourcecodeprolight                SourceCodePro-Light.otf
+sourcecodepromedium               SourceCodePro-Medium.otf
+sourcecodeproregular              SourceCodePro-Regular.otf
+sourcecodeprosemibold             SourceCodePro-Semibold.otf
+sourcehansansbold                 SourceHanSans-Bold.ttc
+sourcehansansextralight           SourceHanSans-ExtraLight.ttc
+sourcehansansheavy                SourceHanSans-Heavy.ttc
+sourcehansanslight                SourceHanSans-Light.ttc
+sourcehansansmedium               SourceHanSans-Medium.ttc
+sourcehansansnormal               SourceHanSans-Normal.ttc
+sourcehansansregular              SourceHanSans-Regular.ttc
+sourcesansproblack                SourceSansPro-Black.ttf
+sourcesansproblackitalic          SourceSansPro-BlackItalic.ttf
+sourcesansprobold                 SourceSansPro-Bold.ttf
+sourcesansprobolditalic           SourceSansPro-BoldItalic.ttf
+sourcesansproextralight           SourceSansPro-ExtraLight.ttf
+sourcesansproextralightitalic     SourceSansPro-ExtraLightItalic.ttf
+sourcesansproitalic               SourceSansPro-Italic.ttf
+sourcesansprolight                SourceSansPro-Light.ttf
+sourcesansprolightitalic          SourceSansPro-LightItalic.ttf
+sourcesansproregular              SourceSansPro-Regular.ttf
+sourcesansprosemibold             SourceSansPro-Semibold.ttf
+sourcesansprosemibolditalic       SourceSansPro-SemiboldItalic.ttf
+stintultracondensedregular        StintUltraCondensed-Regular.ttf
+sunexta                           sun-exta.ttf
+sunextb                           Sun-ExtB.ttf
+sunflowerucjkxb                   sunflower-u-cjk-xb.ttf
+takaopgothic                      TakaoPGothic.ttf
+thkhaaitptwo                      TH-Khaai-TP2.ttf
+thkhaaitpzero                     TH-Khaai-TP0.ttf
+thtshynpone                       TH-Tshyn-P1.ttf
+thtshynptwo                       TH-Tshyn-P2.ttf
+thtshynpzero                      TH-Tshyn-P0.ttf
+ubuntub                           Ubuntu-B.ttf
+ubuntubi                          Ubuntu-BI.ttf
+ubuntuc                           Ubuntu-C.ttf
+ubuntul                           Ubuntu-L.ttf
+ubuntuli                          Ubuntu-LI.ttf
+ubuntumonob                       UbuntuMono-B.ttf
+ubuntumonobi                      UbuntuMono-BI.ttf
+ubuntumonor                       UbuntuMono-R.ttf
+ubuntumonori                      UbuntuMono-RI.ttf
+ubuntur                           Ubuntu-R.ttf
+ubunturi                          Ubuntu-RI.ttf
+ukai                              ukai.ttc
+uming                             uming.ttc
+unifrakturcook                    UnifrakturCook.ttf
+unifrakturcooklight               UnifrakturCook-Light.ttf
+unifrakturmaguntia                UnifrakturMaguntia.ttf
+yanonekaffeesatzbold              YanoneKaffeesatz-Bold.ttf
+yanonekaffeesatzextralight        YanoneKaffeesatz-ExtraLight.ttf
+yanonekaffeesatzlight             YanoneKaffeesatz-Light.ttf
+yanonekaffeesatzregular           YanoneKaffeesatz-Regular.ttf

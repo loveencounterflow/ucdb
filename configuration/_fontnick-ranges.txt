@@ -1,0 +1,123 @@
+###
+
+NOTE This file is derived from data in the UCDB and is purely informative
+
+###
+
+asanamath                 02102..02102  # A:u-----:002102:ℂ
+asanamath                 0210d..0210d  # A:u-----:00210d:ℍ
+asanamath                 02115..02115  # A:u-----:002115:ℕ
+asanamath                 02119..0211a  # A:u-----:002119:ℙ
+asanamath                 0211d..0211d  # A:u-----:00211d:ℝ
+asanamath                 02124..02124  # A:u-----:002124:ℤ
+asanamath                 0213c..02140  # A:u-----:00213c:ℼ
+asanamath                 02145..02149  # A:u-----:002145:ⅅ
+asanamath                 1d538..1d539  # A:u-----:01d538:𝔸
+asanamath                 1d53b..1d53e  # A:u-----:01d53b:𝔻
+asanamath                 1d540..1d544  # A:u-----:01d540:𝕀
+asanamath                 1d546..1d546  # A:u-----:01d546:𝕆
+asanamath                 1d54a..1d550  # A:u-----:01d54a:𝕊
+asanamath                 1d552..1d59f  # A:u-----:01d552:𝕒
+babelstonehan             02e86..02e86  # A:ucrad2:002e86:⺆
+babelstonehan             02ebc..02ebc  # A:ucrad2:002ebc:⺼
+babelstonehan             03007..03007  # A:ucsym-:003007:〇
+babelstonehan             03013..03013  # A:ucsym-:003013:〓
+babelstonehan             03027..03028  # A:ucsym-:003027:〧
+babelstonehan             031c1..031c1  # A:ucstrk:0031c1:㇁
+babelstonehan             031c3..031c5  # A:ucstrk:0031c3:㇃
+babelstonehan             031c8..031c8  # A:ucstrk:0031c8:㇈
+babelstonehan             031cb..031cb  # A:ucstrk:0031cb:㇋
+babelstonehan             03403..03403  # A:ucxa--:003403:㐃
+babelstonehan             034c1..034c1  # A:ucxa--:0034c1:㓁
+babelstonehan             07676..07676  # A:uc0---:007676:癶
+babelstonehan             09f52..09f52  # A:uc0---:009f52:齒
+babelstonehan             09fb0..09fb0  # A:uc0---:009fb0:龰
+babelstonehan             09fb5..09fb5  # A:uc0---:009fb5:龵
+babelstonehan             09fba..09fcc  # A:uc0---:009fba:龺
+babelstonehan             0f900..0faff  # A:uccmp1:00f900:豈
+babelstonehan             0fe4b..0fe4b  # A:uccmpf:00fe4b:﹋
+babelstonehan             24d14..24d14  # A:ucxb--:024d14:𤴔
+babelstonehan             2b740..2b81f  # A:ucxd--:02b740:𫝀
+cwtexqheibold             025b7..025b7  # A:u-----:0025b7:▷
+dejavuserif               0293e..0293e  # A:u-----:00293e:⤾
+ebgaramondtwelveregular   000b7..000b7  # A:u-----:0000b7:·
+hanamina                  02e80..02e80  # A:ucrad2:002e80:⺀
+hanamina                  02e84..02e84  # A:ucrad2:002e84:⺄
+hanamina                  02e8c..02e8d  # A:ucrad2:002e8c:⺌
+hanamina                  02e97..02e97  # A:ucrad2:002e97:⺗
+hanamina                  02e9d..02e9d  # A:ucrad2:002e9d:⺝
+hanamina                  02ea5..02ea5  # A:ucrad2:002ea5:⺥
+hanamina                  02eb3..02eb3  # A:ucrad2:002eb3:⺳
+hanamina                  02ebb..02ebb  # A:ucrad2:002ebb:⺻
+hanamina                  03000..03000  # A:ucsym-:003000:　
+hanamina                  03003..03006  # A:ucsym-:003003:〃
+hanamina                  03008..03009  # A:ucsym-:003008:〈
+hanamina                  0300c..0300f  # A:ucsym-:00300c:「
+hanamina                  03012..03012  # A:ucsym-:003012:〒
+hanamina                  03014..03021  # A:ucsym-:003014:〔
+hanamina                  03024..03024  # A:ucsym-:003024:〤
+hanamina                  03026..03026  # A:ucsym-:003026:〦
+hanamina                  03029..0303c  # A:ucsym-:003029:〩
+hanamina                  0303e..0303f  # A:ucsym-:00303e:〾
+hanamina                  031c2..031c2  # A:ucstrk:0031c2:㇂
+hanamina                  031c9..031c9  # A:ucstrk:0031c9:㇉
+hanamina                  031cc..031cc  # A:ucstrk:0031cc:㇌
+hanamina                  031e2..031e2  # A:ucstrk:0031e2:㇢
+hanamina                  045cd..045cd  # A:ucxa--:0045cd:䗍
+hanamina                  05196..05196  # A:uc0---:005196:冖
+hanamina                  05202..05202  # A:uc0---:005202:刂
+hanamina                  05e2f..05e2f  # A:uc0---:005e2f:帯
+hanamina                  06c35..06c35  # A:uc0---:006c35:氵
+hanamina                  07f52..07f52  # A:uc0---:007f52:罒
+hanamina                  09fb4..09fb4  # A:uc0---:009fb4:龴
+hanamina                  20089..20089  # A:ucxb--:020089:𠂉
+hanamina                  215d7..215d7  # A:ucxb--:0215d7:𡗗
+hanaminb                  2069c..2069c  # A:ucxb--:02069c:𠚜
+hanaminb                  206a1..206a1  # A:ucxb--:0206a1:𠚡
+hanaminb                  20967..20967  # A:ucxb--:020967:𠥧
+hanaminb                  20969..2096c  # A:ucxb--:020969:𠥩
+hanaminb                  2700d..2700d  # A:ucxb--:02700d:𧀍
+hanaminb                  2a700..2b73f  # A:ucxc--:02a700:𪜀
+iosevkatermslabmedium     02500..02500  # A:u-----:002500:─
+iosevkatermslabmedium     02502..02502  # A:u-----:002502:│
+iosevkatermslabmedium     02514..02514  # A:u-----:002514:└
+iosevkatermslabmedium     0251c..0251c  # A:u-----:00251c:├
+iosevkatermslabmedium     02550..02551  # A:u-----:002550:═
+iosevkatermslabmedium     02554..02554  # A:u-----:002554:╔
+iosevkatermslabmedium     02557..02557  # A:u-----:002557:╗
+iosevkatermslabmedium     0255a..0255a  # A:u-----:00255a:╚
+iosevkatermslabmedium     0255d..0255d  # A:u-----:00255d:╝
+iosevkatermslabmedium     02560..02560  # A:u-----:002560:╠
+iosevkatermslabmedium     02563..02564  # A:u-----:002563:╣
+iosevkatermslabmedium     02567..02567  # A:u-----:002567:╧
+iosevkatermslabmedium     0256a..0256a  # A:u-----:00256a:╪
+ipamp                     03040..030ff  # A:uchira:003040:぀
+jizurathreeb              02194..02195  # A:u-----:002194:↔
+jizurathreeb              021bb..021bb  # A:u-----:0021bb:↻
+jizurathreeb              02248..02248  # A:u-----:002248:≈
+jizurathreeb              025cf..025cf  # A:u-----:0025cf:●
+jizurathreeb              025f0..025f0  # A:u-----:0025f0:◰
+jizurathreeb              02ed7..02ed7  # A:ucrad2:002ed7:⻗
+jizurathreeb              04e3f..04e3f  # A:uc0---:004e3f:丿
+jizurathreeb              056d7..056d7  # A:uc0---:0056d7:囗
+jizurathreeb              08980..08980  # A:uc0---:008980:覀
+jizurathreeb              09fb6..09fb7  # A:uc0---:009fb6:龶
+jizurathreeb              0e000..0f8ff  # I:jzr---:00e000:
+jizurathreeb              20953..20953  # A:ucxb--:020953:𠥓
+lmromantenregular         000b8..0024f  # A:u-----:0000b8:¸
+lmromantenregular         02000..0206f  # A:u-----:002000: 
+nanummyeongjo             0300a..0300b  # A:ucsym-:00300a:《
+nanummyeongjo             03010..03011  # A:ucsym-:003010:【
+nanummyeongjo             0ac00..0d7af  # A:uchgsy:00ac00:가
+romantenregular           00300..0052f  # A:ucdm--:000300:̀
+sunflowerucjkxb           20000..20088  # A:ucxb--:020000:𠀀
+sunflowerucjkxb           2008a..2069b  # A:ucxb--:02008a:𠂊
+sunflowerucjkxb           2069d..206a0  # A:ucxb--:02069d:𠚝
+sunflowerucjkxb           206a2..20952  # A:ucxb--:0206a2:𠚢
+sunflowerucjkxb           20954..20966  # A:ucxb--:020954:𠥔
+sunflowerucjkxb           20968..20968  # A:ucxb--:020968:𠥨
+sunflowerucjkxb           2096d..215d6  # A:ucxb--:02096d:𠥭
+sunflowerucjkxb           215d8..24d13  # A:ucxb--:0215d8:𡗘
+sunflowerucjkxb           24d15..2700c  # A:ucxb--:024d15:𤴕
+sunflowerucjkxb           2700e..2a6df  # A:ucxb--:02700e:𧀎
+uming                     02eb6..02eb6  # A:ucrad2:002eb6:⺶
