@@ -34,6 +34,6 @@ db/ucdb.db
 
 art/Screen*
 materials/*
-db/
+restore-npm-links
 
 
