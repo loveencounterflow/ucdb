@@ -20,7 +20,8 @@ FSP                       = FS.promises
 PATH                      = require 'path'
 { assign
   jr }                    = CND
-{ cwd_abspath
+{ walk_cids_in_cid_range
+  cwd_abspath
   cwd_relpath
   here_abspath
   _drop_extension
@@ -30,6 +31,7 @@ PATH                      = require 'path'
 { isa
   validate
   declare
+  cast
   size_of
   last_of
   type_of }               = @types
@@ -47,10 +49,11 @@ mkts_options              = require './_TEMPORARY_options'
 mkts_glyph_styles         = mkts_options.tex[ 'glyph-styles' ]
 mkts_fontfiles            = mkts_options.fonts.files
 MKNCR                     = require 'mingkwai-ncr'
+SVGTTF                    = require 'svgttf'
 #...........................................................................................................
-runmode                   = 'debug_small'
 runmode                   = 'production'
 runmode                   = 'debug'
+runmode                   = 'debug_small'
 
 #-----------------------------------------------------------------------------------------------------------
 cid_ranges_by_runmode  =
@@ -59,17 +62,15 @@ cid_ranges_by_runmode  =
     [ 0x03002, 0x03002, ]
     [ 0x021bb, 0x021bb, ]
     [ 0x03010, 0x03010, ]
-    [ 0x056d5, 0x056d9, ]
-    [ 0x04df0, 0x04e02, ]
+    [ 0x04df0, 0x09fff, ]
     # [ 0x09fba, 0x09fba, ] # babelstonehan
     [ 0x0e100, 0x0e10d, ]
     [ 0x0e10f, 0x0e111, ]
     [ 0x20000, 0x20006, ]
-    '扌亻釒钅冫牜飠'
     ]
   debug_small: [
-    [ 0x03002, 0x03002, ]
-    [ 0x04df0, 0x04e02, ]
+    [ 0x04e00, 0x06fff, ]
+    # '扌亻釒钅冫牜飠'
     ]
   production: [
     [ 0x00001, 0x000ff, ]
@@ -78,7 +79,7 @@ cid_ranges_by_runmode  =
     [ 0x20000, 0x2ebef, ] # CJK Ext. B thru F
     ]
 unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
-  throw new Error "^ucdbw#887^ unknown runmode #{rpr runmode}"
+  throw new Error "^ucdb@1000^ unknown runmode #{rpr runmode}"
 
 #-----------------------------------------------------------------------------------------------------------
 @_readable_stream_from_text = ( text ) ->
@@ -99,7 +100,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
       return null if ( isa.blank_text line )
       return null if ( line.match /^\s*#/ )?
       unless ( match = line.match /^(?<new_rsg>\S+)\s+(?<old_rsg>\S+)\s+(?<block_name>.+)$/ )?
-        throw new Error "^ucdbw#88732^ unexpected line format in line #{lnr}"
+        throw new Error "^ucdb@1001^ unexpected line format in line #{lnr}"
       send PD.new_datom '^entry', { match.groups..., lnr, }
   #.........................................................................................................
   $collect = ( collector ) ->
@@ -131,7 +132,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 #-----------------------------------------------------------------------------------------------------------
 @_get_iclabel = ( me, cid, glyph, csg, old_rsg ) ->
   unless ( new_rsg = me.rsgs.new_by_old[ old_rsg ] )?
-    throw new Error "^ucdbw#36662^ unknown RSG #{rpr old_rsg}"
+    throw new Error "^ucdb@1002^ unknown RSG #{rpr old_rsg}"
   # A:uc0---:005750:坐
   switch csg
     when 'u'    then  realm = 'A'; swatch = glyph
@@ -141,6 +142,9 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   cid_hex = ( cid.toString 16 ).padStart 6, '0'
   return "#{realm}:#{new_rsg}:#{cid_hex}:#{swatch}"
 
+
+#===========================================================================================================
+# FONTNICKS
 #-----------------------------------------------------------------------------------------------------------
 @read_fontnicks = ( me ) ->
   R = {}
@@ -167,10 +171,10 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   pattern     = fonts_home + '/**/*'
   settings    = { matchBase: true, follow: true, stat:true, }
   R           = {}
-  info "^ucdbw#77382^ building font cache..."
+  info "^ucdb@1003^ building font cache..."
   globber     = new _glob.Glob pattern, settings, ( error, filepaths ) =>
     return reject error if error?
-    info "^ucdbw#77383^ found #{filepaths.length} files"
+    info "^ucdb@1004^ found #{filepaths.length} files"
     for filepath in filepaths
       unless ( stat = globber.statCache[ filepath ] )?
         ### TAINT stat missing file instead of throwing error ###
@@ -188,7 +192,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   return { filepath, filesize, }
 
 #-----------------------------------------------------------------------------------------------------------
-@populate_fontnick_table = ( me ) -> new Promise ( resolve, reject ) =>
+@populate_table_fontnicks = ( me ) -> new Promise ( resolve, reject ) =>
   me.fontnicks    = @read_fontnicks me
   font_cache      = await @_build_fontcache me
   preamble        = []
@@ -221,13 +225,13 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 @_fontnick_from_tex_block = ( me, tex_block ) ->
   return null unless tex_block?
   # unless tex_block?
-  #   throw new Error "^ucdbw#33422 tex_block must not be null"
+  #   throw new Error "^ucdb@1005^ tex_block must not be null"
   unless ( match = tex_block.match /^\\(?<texstyle>[a-zA-Z]+)\{\}$/ )?
-    throw new Error "^ucdbw#33423 unexpected tex_block format #{rpr tex_block}"
+    throw new Error "^ucdb@1006^ unexpected tex_block format #{rpr tex_block}"
   texstyle  = style?.cmd ? match.groups.texstyle
   # texstyle  = @_fontnick_from_texname texstyle
   unless ( fontnick = @fontnick_by_texstyles[ texstyle ] )?
-    throw new Error "^ucdbw#33423 unknown texstyle #{rpr texstyle}"
+    throw new Error "^ucdb@1007^ unknown texstyle #{rpr texstyle}"
   return fontnick
 
 #-----------------------------------------------------------------------------------------------------------
@@ -236,7 +240,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   return null unless ( command = style.cmd  )?
   validate.nonempty_text command
   unless ( fontnick = @fontnick_by_texstyles[ command ] )?
-    throw new Error "^ucdbw#33424 unknown texstyle #{rpr texstyle}"
+    throw new Error "^ucdb@1008^ unknown texstyle #{rpr texstyle}"
   return fontnick
 
 #-----------------------------------------------------------------------------------------------------------
@@ -257,8 +261,11 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   delete style.cmd  if style.cmd?
   return if ( Object.keys style ).length is 0 then null else style
 
+
+#===========================================================================================================
+# MAIN TABLE
 #-----------------------------------------------------------------------------------------------------------
-@populate_main_table = ( me ) -> new Promise ( resolve, reject ) =>
+@populate_table_main = ( me ) -> new Promise ( resolve, reject ) =>
   preamble          = []
   data              = []
   line_count        = 0
@@ -280,7 +287,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
           yield cid
     #.......................................................................................................
     for cid from cids()
-      whisper '^77763^', ( CND.format_number line_count ) if ( ++line_count % 10000 ) is 0
+      whisper '^ucdb@1009^', ( CND.format_number line_count ) if ( ++line_count % 10000 ) is 0
       description = MKNCR.describe cid
       glyph       = String.fromCodePoint cid
       style       = mkts_glyph_styles[ glyph ] ? null
@@ -299,7 +306,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
       tex_block   = description?.tex?.block     ? null
       fontnick    = @_fontnick_from_style_or_tex_block me, style, tex_block
       unless fontnick?
-        warn "^ucdbw#5775^ missing fontnick for #{fncr} #{glyph}"
+        warn "^ucdb@1010^ missing fontnick for #{fncr} #{glyph}"
         continue
       style       = jr @_cleanup_style me, style
       #.....................................................................................................
@@ -328,6 +335,111 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   resolve { line_count, }
   return null
 
+
+#===========================================================================================================
+# OUTLINES
+#-----------------------------------------------------------------------------------------------------------
+@create_table_outlines = ( me ) ->
+  me.db.create_table_outlines()
+  return null
+
+############################################################################################################
+############################################################################################################
+############################################################################################################
+### TAINT these methods or part of them will probably go into SvgTtf ###
+@_get_pathdata = ( SVGTTF_font, cid, tag = 'use-quickscale' ) ->
+  ### TAINT need at least glyph.advanceWidth as well ###
+  R = SVGTTF.glyph_and_pathdata_from_cid SVGTTF_font.metrics, SVGTTF_font.otjsfont, cid, tag
+  return if R? then R else null
+
+############################################################################################################
+############################################################################################################
+############################################################################################################
+
+
+#-----------------------------------------------------------------------------------------------------------
+@filepath_from_fontnick = ( me, fontnick ) -> me.db.$.single_value me.db.filepath_from_fontnick { fontnick, }
+
+#-----------------------------------------------------------------------------------------------------------
+@populate_table_outlines = ( me ) ->
+  @create_table_outlines me
+  XXX_includes      = 'jizurafourbmp'.split /\s+/
+  XXX_includes      = 'sunexta kai babelstonehan'.split /\s+/
+  XXX_sql           = """select * from main where cid between 0x4e00 and 0xffff order by iclabel;"""
+  glyphrows         = ( row           for row from me.db.$.query XXX_sql        )
+  fontnicks         = ( row.fontnick  for row from me.db.walk_fontnick_table()  )
+  me._outline_count = 0
+  for fontnick in fontnicks
+    # continue unless fontnick in XXX_includes
+    info "^ucdb@1011^ adding outlines for #{fontnick}"
+    @_insert_into_table_outlines me, fontnick, glyphrows
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@_insert_into_table_outlines = ( me, fontnick, glyphrows ) ->
+  ### NOTE to be called once for each font with all or some cid_ranges ###
+  preamble          = []
+  data              = []
+  line_count        = 0
+  batch_size        = 5000
+  # fragment insert_into_outlines_first(): insert into outlines ( iclabel, fontnick, pathdata ) values
+  #.........................................................................................................
+  ### TAINT refactor ###
+  SVGTTF_font                 = {}
+  SVGTTF_font.nick            = fontnick
+  SVGTTF_font.path            = @filepath_from_fontnick me, fontnick
+  SVGTTF_font.metrics         = SVGTTF.new_metrics()
+  try
+    SVGTTF_font.otjsfont        = SVGTTF.otjsfont_from_path SVGTTF_font.path
+  catch error
+    warn "^ucdb@1012^ when trying to open font #{rpr fontnick}, an error occurred: #{error.message}"
+    return null
+  # return null
+  SVGTTF_font.advance_factor  = SVGTTF_font.metrics.em_size / SVGTTF_font.otjsfont.unitsPerEm
+  XXX_advance_scale_factor    = SVGTTF_font.advance_factor * ( SVGTTF_font.metrics.global_glyph_scale ? 1 )
+  # tag                         = 'use-dumb-svg-parser'
+  # tag                         = 'use-svgpath'
+  tag                         = 'use-quickscale'
+  #.........................................................................................................
+  for { iclabel, cid, glyph, } from cast.iterator glyphrows
+    continue unless ( d = @_get_pathdata SVGTTF_font, cid, tag )?
+    ### TAINT refactor ###
+    { glyph
+      pathdata }      = d
+    whisper '^ucdb@1013^', me._outline_count - 1 if ( me._outline_count++ % 1000 ) is 0
+    ### TAINT refactor ###
+    advance           = glyph.advanceWidth * XXX_advance_scale_factor
+    advance           = 1 if advance is 0 ### !!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
+    data.push ( me.db.insert_into_outlines_middle { iclabel, fontnick, advance, pathdata, } ) + ','
+    if data.length >= batch_size
+      line_count += @_flush_outlines me, data
+  #.........................................................................................................
+  line_count += @_flush_outlines me, data
+  #.........................................................................................................
+  return line_count
+
+#-----------------------------------------------------------------------------------------------------------
+@_flush_outlines = ( me, data ) ->
+  return 0 if data.length is 0
+  ### TAINT code duplication, use ICQL method (TBW) ###
+  line_count        = data.length
+  last_idx          = line_count - 1
+  data[ last_idx ]  = data[ last_idx ].replace /,\s*$/g, ''
+  sql               = me.db.insert_into_outlines_first() + '\n' + ( data.join '\n' ) + ';'
+  me.db.$.execute sql
+  me.line_count    += line_count
+  data.length       = 0
+  return line_count
+
+#-----------------------------------------------------------------------------------------------------------
+@create_outlines_indexes = ( me ) ->
+  ### NOTE to be called once when all outlines for all fonts have been inserted ###
+  me.db.create_outlines_indexes()
+  return null
+
+
+#===========================================================================================================
+# DB CREATION
 #-----------------------------------------------------------------------------------------------------------
 @new_ucdb = ( settings = null ) ->
   defaults =
@@ -347,9 +459,10 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 #-----------------------------------------------------------------------------------------------------------
 @create = ( settings = null ) -> new Promise ( resolve, reject ) =>
   me = @new_ucdb settings
-  await @populate_fontnick_table  me
-  await @populate_main_table      me
-  me.db.create_view_main_with_deltas_etc()
+  await @populate_table_fontnicks   me
+  await @populate_table_main        me
+  await @populate_table_outlines    me
+  # me.db.create_view_main_with_deltas_etc()
   resolve me
 
 #-----------------------------------------------------------------------------------------------------------
@@ -361,14 +474,17 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
     warn error.message
     process.exit 1
   t1      = Date.now()
-  dts     = ( ( t1 - t0 ) / 1000 ).toFixed 3
-  help 'µ77787', "wrote #{ucdb.line_count} lines in #{dts} s"
-  count = 0
-  for row from ucdb.db.read_lines()
-    count++
-    break if count > 5
-    info 'µ33211', jr row
-  help 'ok'
+  dt      = t1 - t0
+  dts     = ( dt / 1000 ).toFixed 3
+  f       = ( ucdb.line_count / dt * 1000 ).toFixed 3
+  help "^ucdb@1014^ wrote #{ucdb.line_count} records in #{dts} s (#{f} Hz)"
+  return null
+  # count = 0
+  # for row from ucdb.db.read_lines()
+  #   count++
+  #   break if count > 5
+  #   info 'µ33211', jr row
+  # help 'ok'
 
 #-----------------------------------------------------------------------------------------------------------
 ### TAINT must go to configuration file ###
@@ -452,33 +568,32 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 #   info key unless @fontnick_by_texstyles[ key ]?
 
 
-#-----------------------------------------------------------------------------------------------------------
-@_find_fontnick_ranges = ( me = null ) ->
-  me ?= @new_ucdb()
-  me.db.create_view_main_with_deltas_etc()
-  # for row from me.db.main_with_deltas()
-  #   info '^77763^', row.iclabel, row.fontnick, row.rear_delta_cid, row.fore_delta_cid
-  for row from me.db.fontnick_boundaries()
-    # help '^77456^', row
-    help '^77763^', \
-      ( CND.yellow row.fontnick.padEnd 30 ),            \
-      ( CND.blue row.first_iclabel        ),            \
-      ( CND.blue row.last_iclabel         ),            \
-      ( CND.grey row.first_cid            ),            \
-      ( CND.grey row.last_cid             )
-      # ( CND.yellow row.cid.toString 16 ), \
-      # ( CND.orange if row.last_cid? then row.next_cid.toString 16 else '' )
+# #-----------------------------------------------------------------------------------------------------------
+# @_find_fontnick_ranges = ( me = null ) ->
+#   me ?= @new_ucdb()
+#   me.db.create_view_main_with_deltas_etc()
+#   # for row from me.db.main_with_deltas()
+#   #   info '^77763^', row.iclabel, row.fontnick, row.rear_delta_cid, row.fore_delta_cid
+#   for row from me.db.fontnick_boundaries()
+#     # help '^77456^', row
+#     help '^77763^', \
+#       ( CND.yellow row.fontnick.padEnd 30 ),            \
+#       ( CND.blue row.first_iclabel        ),            \
+#       ( CND.blue row.last_iclabel         ),            \
+#       ( CND.grey row.first_cid            ),            \
+#       ( CND.grey row.last_cid             )
+#       # ( CND.yellow row.cid.toString 16 ), \
+#       # ( CND.orange if row.last_cid? then row.next_cid.toString 16 else '' )
 
 ############################################################################################################
-unless module.parent?
-  do =>
-    # info await @_build_fontcache null
-    await @write_ucdb()
-    # # await @read_rsgs null
-    # @_find_fontnick_ranges()
-    # help await @_describe_filename null, 'DejaVuSansMono-Bold.ttf'
-    # help await @_describe_filename null, 'TH-Khaai-TP2.ttf'
-    # help await @_locate_fontfile 'TH-Khaai-*.ttf'
+if require.main is module then do =>
+  # info await @_build_fontcache null
+  await @write_ucdb()
+  # # await @read_rsgs null
+  # @_find_fontnick_ranges()
+  # help await @_describe_filename null, 'DejaVuSansMono-Bold.ttf'
+  # help await @_describe_filename null, 'TH-Khaai-TP2.ttf'
+  # help await @_locate_fontfile 'TH-Khaai-*.ttf'
 
 # all_tags = """ascii-whitespace assigned bopomofo cjk geta hangeul hexagram hiragana ideograph idl jamo
 #   japanese kana kanbun katakana korean kxr punctuation stroke syllable symbol trigram unassigned vertical
