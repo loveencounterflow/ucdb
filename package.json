@@ -10,6 +10,7 @@
     "intertype": "^2.5.0",
     "mingkwai-ncr": "^0.4.2",
     "pipedreams": "^12.1.0",
+    "svgttf": "0.0.14",
     "yargs": "^14.0.0"
   },
   "devDependencies": {},
