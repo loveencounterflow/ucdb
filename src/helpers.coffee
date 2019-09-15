@@ -71,3 +71,10 @@ FS                        = require 'fs'
 # info @here_abspath  __dirname, 'baz/coo', 'x.js'
 
 
+#-----------------------------------------------------------------------------------------------------------
+@walk_cids_in_cid_range = ( range ) =>
+  ### TAINT this method should conceivably be in a type casting module ###
+  return ( -> yield chr.codePointAt 0 for chr in [ range... ]                 )() if isa.text range
+  ### TAINT do some type checking (must be list of two CIDs) ###
+  return ( -> yield cid               for cid in [ range[ 0 ] .. range[ 1 ] ] )()
+
