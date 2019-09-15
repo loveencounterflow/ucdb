@@ -1,9 +1,13 @@
 
 
+
+-- =========================================================================================================
+--
 -- ---------------------------------------------------------------------------------------------------------
 fragment create_table_main_first():
   drop table  if exists cpfrs;
   drop table  if exists variables;
+  drop table  if exists outlines;
   drop view   if exists main;
   drop table  if exists _main_fallback;
   drop table  if exists _main;
@@ -84,6 +88,9 @@ fragment create_table_main_middle( iclabel, glyph, cid, is_u9cjkidg, tags, csg, 
 procedure insert_fallback( fontnick, style ):
   insert into _main_fallback ( fontnick, style ) values ( $fontnick, $style );
 
+
+-- =========================================================================================================
+--
 -- ---------------------------------------------------------------------------------------------------------
 procedure create_main_indexes():
   -- create index main_iclabel_index on _main ( iclabel );
@@ -91,9 +98,13 @@ procedure create_main_indexes():
   create index main_csg_index   on _main ( csg );
   create index main_rsg_index   on _main ( rsg );
 
+
+-- =========================================================================================================
+-- FONTNICKS
 -- ---------------------------------------------------------------------------------------------------------
 fragment create_table_fontnicks_first():
-  drop table if exists fontnicks;
+  drop table  if exists outlines;
+  drop table  if exists fontnicks;
   -- .......................................................................................................
   create table fontnicks (
     fontnick    text    not null,
@@ -107,6 +118,17 @@ fragment create_table_fontnicks_middle( fontnick, filename, filepath, filesize, 
   ( $fontnick, $filename, $filepath, $filesize, $otf )
 
 -- ---------------------------------------------------------------------------------------------------------
+query walk_fontnick_table():
+  select * from fontnicks order by fontnick;
+
+-- ---------------------------------------------------------------------------------------------------------
+query filepath_from_fontnick( fontnick ):
+  select filepath from fontnicks where fontnick = $fontnick;
+
+
+-- =========================================================================================================
+--
+-- ---------------------------------------------------------------------------------------------------------
 query count_lines():
   select count(*) from main;
 
@@ -118,6 +140,34 @@ query read_lines():
     -- order by vnr_blob
     ;
 
+
+-- =========================================================================================================
+-- OUTLINES
+-- ---------------------------------------------------------------------------------------------------------
+procedure create_table_outlines():
+  drop table if exists outlines;
+  create table outlines (
+    /*  NOTE: we use `iclabel`, not `glyph` or `cid` as primary key because in theory neither of the latter
+        two is capable of expressing codepoints outside of Unicode. */
+    iclabel     text    not null references _main ( iclabel ),
+    fontnick    text    not null references fontnicks ( fontnick ),
+    advance     float   not null,
+    pathdata    text    not null,
+    primary key ( iclabel, fontnick ) );
+
+-- ---------------------------------------------------------------------------------------------------------
+-- ### TAINT as in main etc, above, the insertion parts can be derived mechanically from the table
+-- definition; as its stands, they're mere noise / code duplication:
+fragment insert_into_outlines_first(): insert into outlines ( iclabel, fontnick, advance, pathdata ) values
+fragment insert_into_outlines_middle( iclabel, fontnick, advance, pathdata ): ( $iclabel, $fontnick, $advance, $pathdata )
+
+-- ---------------------------------------------------------------------------------------------------------
+procedure create_outlines_indexes():
+  create index outlines_fontnick_index on _main ( fontnick );
+
+
+-- =========================================================================================================
+--
 -- ---------------------------------------------------------------------------------------------------------
 query read_lines( limit ):
   select
@@ -126,110 +176,109 @@ query read_lines( limit ):
     -- order by vnr_blob
     limit $limit;
 
--- ---------------------------------------------------------------------------------------------------------
-procedure create_view_main_with_deltas_etc():
-  drop view   if exists stages;
-  drop view   if exists _fontnick_priorities;
-  drop view   if exists _fontnick_boundaries_1;
-  drop view   if exists fontnick_boundaries;
-  drop view   if exists _main_with_deltas;
-  -- .......................................................................................................
-  create view _main_with_deltas as select
-      *,
-      -- iclabel                                           as iclabel,
-      -- csg                                               as csg,
-      -- cid                                               as cid,
-      -- lag(  cid, 1, 0x000000 )        over w1           as rear_cid,
-      -- lead( cid, 1, 0x10ffff )        over w1           as fore_cid,
-      cid - lag(  cid, 1, 0x000000 )  over w1           as rear_delta_cid,
-            lead( cid, 1, 0x10ffff )  over w1 - cid     as fore_delta_cid
-    from main
-    window w1 as ( partition by fontnick order by cid )
-    order by cid;
-  -- .......................................................................................................
-  create view _fontnick_boundaries_1 as with v1 as ( select
-        *
-      from _main_with_deltas
-      where ( rear_delta_cid != 1 ) or ( fore_delta_cid != 1 ) )
-    select
-        *,
-        case
-          when ( rear_delta_cid != 1 and fore_delta_cid != 1 )  then  'single'
-          when ( rear_delta_cid != 1 )                          then  'start'
-          else                                                        'stop' end      as boundary_type
-      from v1
-      order by cid;
-  -- .......................................................................................................
-  create view fontnick_boundaries as with v1 as ( select
-      *,
-      case
-        when boundary_type = 'start'  then  lead( cid, 1, null ) over ( order by cid )
-        when boundary_type = 'single' then  cid
-        else                                null end                                    as last_cid
-    from _fontnick_boundaries_1 )
-    select
-        v1.fontnick         as fontnick,
-        v1.cid              as first_cid,
-        v1.iclabel          as first_iclabel,
-        r2.cid              as last_cid,
-        r2.iclabel          as last_iclabel
-      from
-        v1
-        left join main as r2 on ( v1.last_cid = r2.cid )
-        where v1.boundary_type != 'stop'
-        order by v1.fontnick, v1.cid;
-  -- .......................................................................................................
-  -- create table _fontnick_priorities_1 as
-  --   select null as fontnick, null as priority where false union all
-  --   select * from ( values
-  --     ( 'sunexta',      100 ),
-  --     ( 'jizurathreeb', 900 )
-  --     );
-  create view _fontnick_priorities as select
-      fontnick                                as fontnick,
-      case fontnick
-        when 'sunexta'        then  100
-        when 'jizurathreeb'   then  900
-        else                        500 end   as priority
-    from fontnicks;
-  -- .......................................................................................................
-  create view stages as select
-      r1.fontnick                             as fontnick,
-      r4.cpfr                                 as cpfr,
-      dense_rank() over w                     as stagenr,
-      printf( 's%03d', dense_rank() over w )  as stagenick,
-      r3.priority                             as priority,
-      r1.first_cid                            as first_cid,
-      r1.last_cid                             as last_cid,
-      r1.first_iclabel                        as first_iclabel,
-      r1.last_iclabel                         as last_iclabel,
-      r2.filesize                             as filesize,
-      r2.filename                             as filename,
-      r2.filepath                             as filepath,
-      r2.otf                                  as otf
-    from      fontnick_boundaries   as r1
-    left join fontnicks             as r2 using ( fontnick )
-    left join _fontnick_priorities  as r3 using ( fontnick )
-    left join cpfrs                 as r4 on ( r1.first_cid >= r4.first_cid and r1.last_cid <= r4.last_cid )
-    window w as ( order by priority, filesize desc, fontnick )
-    order by r3.priority, filesize desc, fontnick
-    ;
+-- -- ---------------------------------------------------------------------------------------------------------
+-- procedure create_view_main_with_deltas_etc():
+--   drop view   if exists stages;
+--   drop view   if exists _fontnick_priorities;
+--   drop view   if exists _fontnick_boundaries_1;
+--   drop view   if exists fontnick_boundaries;
+--   drop view   if exists _main_with_deltas;
+--   -- .......................................................................................................
+--   create view _main_with_deltas as select
+--       *,
+--       -- iclabel                                           as iclabel,
+--       -- csg                                               as csg,
+--       -- cid                                               as cid,
+--       -- lag(  cid, 1, 0x000000 )        over w1           as rear_cid,
+--       -- lead( cid, 1, 0x10ffff )        over w1           as fore_cid,
+--       cid - lag(  cid, 1, 0x000000 )  over w1           as rear_delta_cid,
+--             lead( cid, 1, 0x10ffff )  over w1 - cid     as fore_delta_cid
+--     from main
+--     window w1 as ( partition by fontnick order by cid )
+--     order by cid;
+--   -- .......................................................................................................
+--   create view _fontnick_boundaries_1 as with v1 as ( select
+--         *
+--       from _main_with_deltas
+--       where ( rear_delta_cid != 1 ) or ( fore_delta_cid != 1 ) )
+--     select
+--         *,
+--         case
+--           when ( rear_delta_cid != 1 and fore_delta_cid != 1 )  then  'single'
+--           when ( rear_delta_cid != 1 )                          then  'start'
+--           else                                                        'stop' end      as boundary_type
+--       from v1
+--       order by cid;
+--   -- .......................................................................................................
+--   create view fontnick_boundaries as with v1 as ( select
+--       *,
+--       case
+--         when boundary_type = 'start'  then  lead( cid, 1, null ) over ( order by cid )
+--         when boundary_type = 'single' then  cid
+--         else                                null end                                    as last_cid
+--     from _fontnick_boundaries_1 )
+--     select
+--         v1.fontnick         as fontnick,
+--         v1.cid              as first_cid,
+--         v1.iclabel          as first_iclabel,
+--         r2.cid              as last_cid,
+--         r2.iclabel          as last_iclabel
+--       from
+--         v1
+--         left join main as r2 on ( v1.last_cid = r2.cid )
+--         where v1.boundary_type != 'stop'
+--         order by v1.fontnick, v1.cid;
+--   -- .......................................................................................................
+--   create view _fontnick_priorities as select
+--       fontnick                                as fontnick,
+--       case fontnick
+--         when 'sunexta'        then  100
+--         when 'jizurathreeb'   then  900
+--         else                        500 end   as priority
+--     from fontnicks;
+--   -- .......................................................................................................
+--   create view stages as select
+--       r1.fontnick                             as fontnick,
+--       r4.cpfr                                 as cpfr,
+--       dense_rank() over w                     as stagenr,
+--       printf( 's%03d', dense_rank() over w )  as stagenick,
+--       r3.priority                             as priority,
+--       r1.first_cid                            as first_cid,
+--       r1.last_cid                             as last_cid,
+--       r1.first_iclabel                        as first_iclabel,
+--       r1.last_iclabel                         as last_iclabel,
+--       r2.filesize                             as filesize,
+--       r2.filename                             as filename,
+--       r2.filepath                             as filepath,
+--       r2.otf                                  as otf
+--     from      fontnick_boundaries   as r1
+--     left join fontnicks             as r2 using ( fontnick )
+--     left join _fontnick_priorities  as r3 using ( fontnick )
+--     left join cpfrs                 as r4 on ( r1.first_cid >= r4.first_cid and r1.last_cid <= r4.last_cid )
+--     window w as ( order by priority, filesize desc, fontnick )
+--     order by r3.priority, filesize desc, fontnick
+--     ;
 
 
--- ---------------------------------------------------------------------------------------------------------
-query _main_with_deltas():    select * from _main_with_deltas;
-query fontnick_boundaries():  select * from fontnick_boundaries;
+-- -- ---------------------------------------------------------------------------------------------------------
+-- query _main_with_deltas():    select * from _main_with_deltas;
+-- query fontnick_boundaries():  select * from fontnick_boundaries;
 
--- ---------------------------------------------------------------------------------------------------------
-query all_ranges_in_previous_stages( stagenr ):
-  select
-      r1.first_cid                            as first_cid,
-      r1.last_cid                             as last_cid,
-      r1.first_iclabel                        as first_iclabel,
-      r1.last_iclabel                         as last_iclabel,
-    from stages as r1
-    where true
-      and ( stagenr < $stagenr );
+-- -- ---------------------------------------------------------------------------------------------------------
+-- query all_ranges_in_previous_stages( stagenr ):
+--   select
+--       r1.first_cid                            as first_cid,
+--       r1.last_cid                             as last_cid,
+--       r1.first_iclabel                        as first_iclabel,
+--       r1.last_iclabel                         as last_iclabel,
+--     from stages as r1
+--     where true
+--       and ( stagenr < $stagenr );
+
+
+
+
+
 
 -- def _count_fontnicks_by_rsg():
 --   query = """
