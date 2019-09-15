@@ -34,6 +34,16 @@ intertype                 = new ( require 'intertype' ).Intertype module.exports
     "x.db_path is a nonempty_text":           ( x ) -> @isa.nonempty_text       x.db_path
     "x.icql_path is a nonempty_text":         ( x ) -> @isa.nonempty_text       x.icql_path
 
+#-----------------------------------------------------------------------------------------------------------
+### TAINT experimental ###
+L = @
+@cast =
+  iterator: ( x ) ->
+    switch ( type = L.type_of x )
+      when 'generator'          then return x
+      when 'generatorfunction'  then return x()
+      when 'list'               then return ( -> y for y in x )()
+    throw new Error "^ucdb/types@3422 unable to cast a #{type} as iterator"
 
 #     "x.file_path is a ?nonempty text":        ( x ) -> ( not x.file_path?   ) or @isa.nonempty_text x.file_path
 #     "x.text is a ?text":                      ( x ) -> ( not x.text?        ) or @isa.text          x.text
