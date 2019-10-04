@@ -26,4 +26,7 @@ node_modules
 font-sources
 font-target
 db/ucdb.db
+db/ucdb.db-shm
+db/ucdb.db-wal
+
 
