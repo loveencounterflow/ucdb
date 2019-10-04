@@ -69,8 +69,11 @@ cid_ranges_by_runmode  =
     [ 0x20000, 0x20006, ]
     ]
   debug_small: [
+    # [ 0x00001, 0x000ff, ]
+    # [ 0x04dff, 0x04eff, ]
     [ 0x04e00, 0x06fff, ]
     # '扌亻釒钅冫牜飠'
+    'ab'
     ]
   production: [
     [ 0x00001, 0x000ff, ]
@@ -80,15 +83,6 @@ cid_ranges_by_runmode  =
     ]
 unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   throw new Error "^ucdb@1000^ unknown runmode #{rpr runmode}"
-
-#-----------------------------------------------------------------------------------------------------------
-@_readable_stream_from_text = ( text ) ->
-  ### thx to https://stackoverflow.com/a/22085851/7568091 ###
-  R = new ( require 'stream' ).Readable()
-  R._read = () => {} # redundant?
-  R.push text
-  R.push null
-  return R
 
 #-----------------------------------------------------------------------------------------------------------
 @read_rsgs = ( me ) -> return new Promise ( resolve ) ->
@@ -343,20 +337,6 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   me.db.create_table_outlines()
   return null
 
-############################################################################################################
-############################################################################################################
-############################################################################################################
-### TAINT these methods or part of them will probably go into SvgTtf ###
-@_get_pathdata = ( SVGTTF_font, cid, tag = 'use-quickscale' ) ->
-  ### TAINT need at least glyph.advanceWidth as well ###
-  R = SVGTTF.glyph_and_pathdata_from_cid SVGTTF_font.metrics, SVGTTF_font.otjsfont, cid, tag
-  return if R? then R else null
-
-############################################################################################################
-############################################################################################################
-############################################################################################################
-
-
 #-----------------------------------------------------------------------------------------------------------
 @filepath_from_fontnick = ( me, fontnick ) -> me.db.$.single_value me.db.filepath_from_fontnick { fontnick, }
 
@@ -365,7 +345,13 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   @create_table_outlines me
   XXX_includes      = 'jizurafourbmp'.split /\s+/
   XXX_includes      = 'sunexta kai babelstonehan'.split /\s+/
-  XXX_sql           = """select * from main where cid between 0x4e00 and 0xffff order by iclabel;"""
+  XXX_sql           = """
+    select
+        *
+      from main
+      where true
+        and ( cid between 0x0020 and 0x00ff ) or ( cid between 0x4e00 and 0xffff )
+        order by iclabel;"""
   glyphrows         = ( row           for row from me.db.$.query XXX_sql        )
   fontnicks         = ( row.fontnick  for row from me.db.walk_fontnick_table()  )
   me._outline_count = 0
@@ -402,14 +388,19 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   tag                         = 'use-quickscale'
   #.........................................................................................................
   for { iclabel, cid, glyph, } from cast.iterator glyphrows
-    continue unless ( d = @_get_pathdata SVGTTF_font, cid, tag )?
-    ### TAINT refactor ###
+    d = SVGTTF.glyph_and_pathdata_from_cid SVGTTF_font.metrics, SVGTTF_font.otjsfont, cid, tag
+    continue unless d?
     { glyph
       pathdata }      = d
     whisper '^ucdb@1013^', me._outline_count - 1 if ( me._outline_count++ % 1000 ) is 0
-    ### TAINT refactor ###
     advance           = glyph.advanceWidth * XXX_advance_scale_factor
-    advance           = 1 if advance is 0 ### !!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
+    ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
+    if ( isa.nan advance ) or ( advance is 0 )
+      ### TAINT code repetition ###
+      cid_hex = '0x' + ( cid.toString 16 ).padStart 4, '0'
+      warn "^ucdb@3332^ illegal advance for #{SVGTTF_font.nick} #{cid_hex}: #{rpr advance}; setting to 1"
+      advance           = 1
+    ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
     data.push ( me.db.insert_into_outlines_middle { iclabel, fontnick, advance, pathdata, } ) + ','
     if data.length >= batch_size
       line_count += @_flush_outlines me, data
