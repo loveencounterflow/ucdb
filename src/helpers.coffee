@@ -78,3 +78,16 @@ FS                        = require 'fs'
   ### TAINT do some type checking (must be list of two CIDs) ###
   return ( -> yield cid               for cid in [ range[ 0 ] .. range[ 1 ] ] )()
 
+
+# #-----------------------------------------------------------------------------------------------------------
+# @readable_stream_from_text = ( text ) ->
+#   ### thx to https://stackoverflow.com/a/22085851/7568091 ###
+#   R = new ( require 'stream' ).Readable()
+#   R._read = () => {} # redundant?
+#   R.push text
+#   R.push null
+#   return R
+
+
+
+
