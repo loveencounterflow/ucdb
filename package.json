@@ -5,18 +5,21 @@
   "main": "lib/main.js",
   "dependencies": {
     "cnd": "^4.6.0",
+    "coffeenode-teacup": "^0.2.0",
     "glob": "^7.1.4",
     "icql": "^5.1.2",
     "intertype": "^2.5.0",
     "koa": "^2.8.2",
     "koa-router": "^7.4.0",
+    "koa-static": "^5.0.0",
     "mingkwai-ncr": "^0.4.2",
     "pipedreams": "^12.1.0",
-    "svgttf": "0.0.15",
+    "svgttf": "0.0.16",
     "yargs": "^14.0.0"
   },
   "devDependencies": {},
   "scripts": {
+    "serve": "node lib/web/server.js $@",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
