@@ -35,6 +35,12 @@ intertype                 = new ( require 'intertype' ).Intertype module.exports
     "x.icql_path is a nonempty_text":         ( x ) -> @isa.nonempty_text       x.icql_path
 
 #-----------------------------------------------------------------------------------------------------------
+@declare 'ucdb_cid',
+  tests:
+    "x is an integer":                        ( x ) -> @isa.integer x
+    "x is between 0x20 and 0x10ffff":         ( x ) -> 0x20 < x < 0x10ffff
+
+#-----------------------------------------------------------------------------------------------------------
 ### TAINT experimental ###
 L = @
 @cast =
