@@ -165,6 +165,17 @@ fragment insert_into_outlines_middle( iclabel, fontnick, advance, pathdata ): ( 
 procedure create_outlines_indexes():
   create index outlines_fontnick_index on _main ( fontnick );
 
+-- ---------------------------------------------------------------------------------------------------------
+query default_pathdata_from_cid( cid ):
+  select
+      pathdata
+    from outlines as OL
+    join _main    as MN using ( iclabel )
+    where true
+      and MN.cid      = $cid
+      -- ### TAINT should not hardcode fontnick, use priority table ###
+      and OL.fontnick = 'sunexta'
+    limit 1;
 
 -- =========================================================================================================
 --
