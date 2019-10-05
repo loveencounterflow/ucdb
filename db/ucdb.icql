@@ -174,7 +174,21 @@ query default_pathdata_from_cid( cid ):
     where true
       and MN.cid      = $cid
       -- ### TAINT should not hardcode fontnick, use priority table ###
-      and OL.fontnick = 'sunexta'
+      -- and OL.fontnick = 'sunexta'
+      and OL.fontnick = 'fandolkairegular'
+    limit 1;
+
+-- ---------------------------------------------------------------------------------------------------------
+query default_pathdata_from_glyph( glyph ):
+  select
+      pathdata
+    from outlines as OL
+    join _main    as MN using ( iclabel )
+    where true
+      and MN.glyph      = $glyph
+      -- ### TAINT should not hardcode fontnick, use priority table ###
+      -- and OL.fontnick = 'sunexta'
+      and OL.fontnick = 'cwtexqheibold'
     limit 1;
 
 -- =========================================================================================================
