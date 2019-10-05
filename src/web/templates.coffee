@@ -48,6 +48,10 @@ Object.assign @, TEACUP
 @CSS                  = @new_tag ( route ) -> @LINK   rel:  'stylesheet',      href: route
 # @STYLUS               = ( source ) -> @STYLE {}, _STYLUS.render source
 
+#-----------------------------------------------------------------------------------------------------------
+### TAINT use proper tags ###
+@get_glyph = ( fontnick, glyph ) -> @RAW "<svg class=glyph><use xlink:href='/fonts/ucdb.svg#g#{glyph}'/></svg>"
+
 
 #===========================================================================================================
 #
@@ -219,15 +223,39 @@ Object.assign @, TEACUP
   return @render =>
     @DOCTYPE 5
     @META charset: 'utf-8'
+    @LINK rel: 'shortcut icon', href: '/favicon.ico?x=276187623'
     # @META 'http-equiv': "Content-Security-Policy", content: "default-src 'self'"
     # @META 'http-equiv': "Content-Security-Policy", content: "script-src 'unsafe-inline'"
-    @JS     './jquery-3.3.1.js'
-    @CSS    './reset.css'
-    @CSS    './styles-01.css'
-    @CSS    './styles-99.css'
+    @JS     '/jquery-3.3.1.js'
+    @CSS    '/reset.css'
+    @CSS    '/styles-01.css'
     @TITLE 'UCDB'
     @DIV => "UCDB"
-    @JS     './ops.js'
+    @DIV '.ucdb', => "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    @DIV '.ucdb', => "abcdefghijklmnopqrstuvwxyz"
+    # @IMG src: '/fonts/ucdb.svg', style: "width:10mm;height:10mm;"
+        # <use transform='translate( 0 10 ) scale( 0.1 0.1 )' fill='#c00' xlink:href='/fonts/ucdb.svg#g國'/>
+    # @RAW """<svg style='transform: scale( 0.1, 0.1);' width=800 height=800><use x='0' y='-100' transform='translate( 0 724 ) scale( 1 -1 )' xlink:href='/fonts/ucdb.svg#g國'/></svg>"""
+    # @RAW """<svg style='transform: scale( 0.1, 0.1);' width=800 height=800><use x='0' y='-100' transform='translate( 0 724 ) scale( 1 -1 )' xlink:href='/fonts/ucdb.svg#亥'/></svg>"""
+    @get_glyph 'any', 'A'
+    @get_glyph 'any', 'B'
+    @get_glyph 'any', 'C'
+    @get_glyph 'any', 'D'
+    @get_glyph 'any', '亥'
+    @get_glyph 'any', '國'
+    # @RAW """<svg id=triangle><use xlink:href='/fonts/ucdb.svg#triangle'/></svg>"""
+    # @RAW """<svg class=glyph><use xlink:href='/fonts/ucdb.svg#g亥'/></svg>"""
+    # @RAW """<svg width=4096 height=4096><use xlink:href='/fonts/ucdb.svg#g亥'/></svg>"""
+    # @IMG src: '/fonts/ucdb.svg', width: 1024, height: 1024
+    # @RAW """
+    #   <svg width=1024 height=1024>
+    #     <use  x='50' y='-300' transform='translate( 0 100 ) scale( 0.1 -0.1 )' xlink:href='/fonts/ucdb.svg#g國'/>
+    #     <use x='850' y='-300' transform='translate( 0 100 ) scale( 0.1 -0.1 )' xlink:href='/fonts/ucdb.svg#g亥'/>
+    #     <use x='850' y='-300' transform='translate( 0 100 ) scale( 0.1 -0.1 )' xlink:href='/fonts/ucdb.svg#gA'/>
+    #     <path transform='scale( 1 2 )' d='M 50 50 L0 0 100 100 0 100 Z'/>
+    #     </svg>"""
+    # @RAW "<some>TAG</some>"
+    @JS     '/ops.js'
     return null
 
 
