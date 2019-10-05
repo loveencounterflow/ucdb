@@ -55,10 +55,14 @@ log                       = console.log
   # log '^ucdb/ops@6672^ body', ( k for k of rsp.body )
   # log '^ucdb/ops@6672^ read()', await rsp.body.getReader().read()
   # rsp       = await fetch '/svg/cid/NNNNNNNN'
-  rsp       = await fetch '/svg/cid/0x4e00'
-  unless rsp.ok
-    log '^ucdb/ops@6672^ error', rsp.status
-    return null
-  pathdata  = await rsp.text()
-  log '^ucdb/ops@6672^ pathdata', pathdata
+  # rsp       = await fetch '/svg/cid/0x4e00'
+  # rsp       = await fetch '/svg/cid/0x4e07'
+  pathdata_from_glyph = ( glyph ) ->
+    rsp = await fetch '/svg/glyph/' + glyph
+    unless rsp.ok
+      log '^ucdb/ops@6672^ error', rsp.status
+      return null
+    return await rsp.text()
+  log '^ucdb/ops@6672^ pathdata', ( await pathdata_from_glyph '國' )[ ... 100 ] + '...'
+  log '^ucdb/ops@6672^ pathdata', ( await pathdata_from_glyph '鼎' )[ ... 100 ] + '...'
 
