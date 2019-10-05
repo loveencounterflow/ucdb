@@ -41,6 +41,12 @@ intertype                 = new ( require 'intertype' ).Intertype module.exports
     "x is between 0x20 and 0x10ffff":         ( x ) -> 0x20 < x < 0x10ffff
 
 #-----------------------------------------------------------------------------------------------------------
+@declare 'ucdb_glyph',
+  tests:
+    "x is a text":                            ( x ) -> @isa.text x
+    "x contains single codepoint":            ( x ) -> ( x.match ///^.$///u )?
+
+#-----------------------------------------------------------------------------------------------------------
 ### TAINT experimental ###
 L = @
 @cast =
