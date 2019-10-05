@@ -72,6 +72,7 @@ do =>
   # root_router.get 'svg_bare',     '/svg',               @$svg_bare()
   # root_router.get 'svg_glyph',    '/svg/glyph/:glyph',  @$svg_glyph()
   root_router.get 'svg_cid',      '/svg/cid/:cid',      @$svg_cid()
+  root_router.get 'svg_glyph',    '/svg/glyph/:glyph',  @$svg_glyph()
   app
     .use $time_request()
     .use $echo()
@@ -119,6 +120,8 @@ $echo = -> ( ctx, next ) =>
 
 #-----------------------------------------------------------------------------------------------------------
 @$svg_cid = => ( ctx ) =>
+  ### TAINT code duplication ###
+  ### TAINT use wrappers or similar to abstract away error handling ###
   try
     cid = cid_from_cid_txt ctx.params.cid
   catch error
@@ -134,6 +137,25 @@ $echo = -> ( ctx, next ) =>
   return null
 
 #-----------------------------------------------------------------------------------------------------------
+@$svg_glyph = => ( ctx ) =>
+  ### TAINT code duplication ###
+  ### TAINT use wrappers or similar to abstract away error handling ###
+  debug '^676734^ parameters:', jr ctx.params
+  try
+    glyph     = ctx.params.glyph
+    ctx.txpe  = '.svg'
+    ctx.body  = svg_from_glyph glyph
+  catch error
+    ### TAINT use API to emit HTTP error ###
+    href      = ctx.request.URL.href
+    ctx.type  = '.txt'
+    ctx.body  = "not a valid request: #{href}"
+    warn '^ucdb/server@449879^', "when trying to respond to #{href}, an error occurred: #{error.message}"
+    return null
+  # ctx.body = ctx.request.URL.href + ' ' + ( glyph ? 'UNKNOWN' )
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
 cid_from_cid_txt = ( cid_txt ) ->
   validate.nonempty_text cid_txt
   if cid_txt.startsWith '0x' then R = parseInt cid_txt[ 2 .. ], 16
@@ -145,7 +167,16 @@ cid_from_cid_txt = ( cid_txt ) ->
 #-----------------------------------------------------------------------------------------------------------
 svg_from_cid = ( cid ) ->
   validate.ucdb_cid cid
+  ### TAINT missing outlines casue error, should return null instead or HTTP error ###
   pathdata = O.ucdb.db.$.single_value O.ucdb.db.default_pathdata_from_cid { cid, }
+  debug '^778^', pathdata
+  return pathdata
+
+#-----------------------------------------------------------------------------------------------------------
+svg_from_glyph = ( glyph ) ->
+  validate.ucdb_glyph glyph
+  ### TAINT missing outlines casue error, should return null instead or HTTP error ###
+  pathdata = O.ucdb.db.$.single_value O.ucdb.db.default_pathdata_from_glyph { glyph, }
   debug '^778^', pathdata
   return pathdata
 
@@ -153,6 +184,9 @@ svg_from_cid = ( cid ) ->
 ############################################################################################################
 if module is require.main then do =>
   @serve()
+
+
+
 
 
 
