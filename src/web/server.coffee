@@ -171,8 +171,10 @@ sample_glyphs = Array.from ( """
   catch error
     ### TAINT use API to emit HTTP error ###
     href      = ctx.request.URL.href
-    ctx.type  = '.txt'
-    ctx.body  = "not a valid request: #{href}"
+    ctx.status  = 302
+    ctx.type    = '.txt'
+    ctx.set 'location', '/fallback-glyph.svg'
+    # ctx.body  = "not a valid request: #{href}"
     warn '^ucdb/server@449879^', "when trying to respond to #{href}, an error occurred: #{error.message}"
     return null
   #.........................................................................................................
