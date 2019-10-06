@@ -14,11 +14,13 @@
 
 .ucdb { font-family: 'ucdb', 'fallback'; }
 
-svg { border: 1px solid red; }
-img { border: 1px solid green; }
 
 #triangle { width: 10mm; height: 10mm; }
-svg.glyph { width: 10mm; height: 10mm; }
+#ucdbsvg { background-color: grey; }
+.symbol { width: 10mm; height: 10mm; }
+.glyph  { width: 10mm; height: 10mm; margin-left: -1mm; margin-right: -1mm; }
+/*.symbol { border: 1px dotted green; }*/
+/*.glyph  { border: 1px dotted red;   background-color: rgba( 100, 100, 0, 0.5 ); }*/
 
 /*@font-face { font-family: 'flow';  src: url( './fonts/Font Awesome 5 Free-Regular-400.otf'  ); unicode-range: U+0f11c-0f11c; }
 @font-face { font-family: 'flow';  src: url( './fonts/Font Awesome 5 Free-Regular-400.otf'  ); unicode-range: U+0f005-0f005; }
