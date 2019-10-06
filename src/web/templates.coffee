@@ -20,6 +20,7 @@ urge                      = CND.get_logger 'urge',      badge
 #...........................................................................................................
 # MKTS                      = require './main'
 TEACUP                    = require 'coffeenode-teacup'
+COMMON                    = require './common'
 # CHR                       = require 'coffeenode-chr'
 #...........................................................................................................
 # _STYLUS                   = require 'stylus'
@@ -43,6 +44,7 @@ Object.assign @, TEACUP
 @SCROLLER             = @new_tag ( P... ) -> @TAG 'scroller',            P...
 @BOTTOMBAR            = @new_tag ( P... ) -> @TAG 'bottombar',           P...
 @FOCUSFRAME           = @new_tag ( P... ) -> @TAG 'focusframe',          P...
+@SVG                  = @new_tag ( P... ) -> @TAG 'svg',                 P...
 #...........................................................................................................
 @JS                   = @new_tag ( route ) -> @SCRIPT type: 'text/javascript',  src: route
 @CSS                  = @new_tag ( route ) -> @LINK   rel:  'stylesheet',      href: route
@@ -50,173 +52,25 @@ Object.assign @, TEACUP
 
 #-----------------------------------------------------------------------------------------------------------
 ### TAINT use proper tags ###
-@get_glyph = ( fontnick, glyph ) -> @RAW "<svg class=glyph><use xlink:href='/fonts/ucdb.svg#g#{glyph}'/></svg>"
+@get_symbol = ( id, clasz = 'symbol' ) ->
+  return @RAW "<svg class=#{clasz}><use href='/fonts/ucdb.svg##{id}'/></svg>"
 
+#-----------------------------------------------------------------------------------------------------------
+@get_glyph = ( fontnick, glyph, clasz = 'glyph' ) ->
+  return @RAW "<svg class=#{clasz}><use href='/fonts/ucdb.svg##{fontnick}-#{glyph}'/></svg>"
+
+#-----------------------------------------------------------------------------------------------------------
+@GLYPHIMG = ( fontnick, glyph, clasz = 'glyph' ) ->
+  ### TAINT use API to construct route ###
+  url = COMMON.get_url '/v2/glyphimg', { fontnick, glyph, }
+  return @IMG { class: 'glyph', alt: glyph, src: url, }
+
+#-----------------------------------------------------------------------------------------------------------
+@render_glyph_img = ( fontnick, glyph, clasz = 'glyph' ) ->
+  return @render => @GLYPHIMG fontnick, glyph, clasz
 
 #===========================================================================================================
 #
-#-----------------------------------------------------------------------------------------------------------
-@get_flexgrid_html = ( cdtsel_nr, term ) ->
-  selector = if cdtsel_nr is 1 then '.cdtsel' else ''
-  ### TAINT use API to derive cdtsel_id ###
-  return @render => @DIV "#candidate-#{cdtsel_nr}.glyph#{selector}", term
-
-#-----------------------------------------------------------------------------------------------------------
-@main_2 = ->
-  #.........................................................................................................
-  return @render =>
-    @DOCTYPE 5
-    @META charset: 'utf-8'
-    # @META 'http-equiv': "Content-Security-Policy", content: "default-src 'self'"
-    # @META 'http-equiv': "Content-Security-Policy", content: "script-src 'unsafe-inline'"
-    @TITLE '明快打字机'
-    # @LINK rel: 'shortcut icon', href: './favicon.icon'
-    ### ------------------------------------------------------------------------------------------------ ###
-    ### The Tomkel-Harders device to make sure jQuery and other libraries are correctly                  ###
-    ### loaded and made available even in Electron; see                                                  ###
-    ###   https://github.com/electron/electron/issues/254#issuecomment-183483641                         ###
-    ###   https://stackoverflow.com/a/37480521/7568091                                                   ###
-    ### -------------------------- THIS LINE MUST COME BEFORE ANY IMPORTS ------------------------------ ###
-    @SCRIPT "if (typeof module === 'object') {window.module = module; module = undefined;}"
-    ### ------------------------------------------------------------------------------------------------ ###
-    @JS     './jquery-3.3.1.js'
-    @CSS    './reset.css'
-    @CSS    './styles-01.css'
-    ### ------------------------------------------------------------------------------------------------ ###
-    ### CodeMirror                                                                                       ###
-    @CSS    './codemirror/lib/codemirror.css'
-    @CSS    './codemirror/addon/fold/foldgutter.css'
-    @CSS    './codemirror/addon/dialog/dialog.css'
-    #.......................................................................................................
-    # @CSS    './codemirror/theme/3024-day.css'
-    # @CSS    './codemirror/theme/3024-night.css'
-    # @CSS    './codemirror/theme/abcdef.css'
-    # @CSS    './codemirror/theme/ambiance-mobile.css'
-    # @CSS    './codemirror/theme/ambiance.css'
-    # @CSS    './codemirror/theme/base16-dark.css'
-    # @CSS    './codemirror/theme/base16-light.css'
-    # @CSS    './codemirror/theme/bespin.css'
-    # @CSS    './codemirror/theme/blackboard.css'
-    # @CSS    './codemirror/theme/cobalt.css'
-    # @CSS    './codemirror/theme/colorforth.css'
-    # @CSS    './codemirror/theme/darcula.css'
-    # @CSS    './codemirror/theme/dracula.css'
-    # @CSS    './codemirror/theme/duotone-dark.css'
-    # @CSS    './codemirror/theme/duotone-light.css'
-    # @CSS    './codemirror/theme/eclipse.css'
-    # @CSS    './codemirror/theme/elegant.css'
-    # @CSS    './codemirror/theme/erlang-dark.css'
-    # @CSS    './codemirror/theme/gruvbox-dark.css'
-    # @CSS    './codemirror/theme/hopscotch.css'
-    # @CSS    './codemirror/theme/icecoder.css'
-    # @CSS    './codemirror/theme/idea.css'
-    # @CSS    './codemirror/theme/isotope.css'
-    # @CSS    './codemirror/theme/lesser-dark.css'
-    # @CSS    './codemirror/theme/liquibyte.css'
-    # @CSS    './codemirror/theme/lucario.css'
-    # @CSS    './codemirror/theme/material.css'
-    # @CSS    './codemirror/theme/mbo.css'
-    # @CSS    './codemirror/theme/mdn-like.css'
-    # @CSS    './codemirror/theme/midnight.css'
-    @CSS    './codemirror/theme/monokai.css'
-    # @CSS    './codemirror/theme/neat.css'
-    # @CSS    './codemirror/theme/neo.css'
-    # @CSS    './codemirror/theme/night.css'
-    # @CSS    './codemirror/theme/nord.css'
-    # @CSS    './codemirror/theme/oceanic-next.css'
-    # @CSS    './codemirror/theme/panda-syntax.css'
-    # @CSS    './codemirror/theme/paraiso-dark.css'
-    # @CSS    './codemirror/theme/paraiso-light.css'
-    # @CSS    './codemirror/theme/pastel-on-dark.css'
-    # @CSS    './codemirror/theme/railscasts.css'
-    # @CSS    './codemirror/theme/rubyblue.css'
-    # @CSS    './codemirror/theme/seti.css'
-    # @CSS    './codemirror/theme/shadowfox.css'
-    # @CSS    './codemirror/theme/solarized.css'
-    # @CSS    './codemirror/theme/ssms.css'
-    # @CSS    './codemirror/theme/the-matrix.css'
-    # @CSS    './codemirror/theme/tomorrow-night-bright.css'
-    # @CSS    './codemirror/theme/tomorrow-night-eighties.css'
-    # @CSS    './codemirror/theme/ttcn.css'
-    # @CSS    './codemirror/theme/twilight.css'
-    # @CSS    './codemirror/theme/vibrant-ink.css'
-    # @CSS    './codemirror/theme/xq-dark.css'
-    # @CSS    './codemirror/theme/xq-light.css'
-    # @CSS    './codemirror/theme/yeti.css'
-    # @CSS    './codemirror/theme/yonce.css'
-    # @CSS    './codemirror/theme/zenburn.css'
-    #.......................................................................................................
-    @JS     './codemirror/lib/codemirror.js'
-    @JS     './codemirror/mode/javascript/javascript.js'
-    @JS     './codemirror/mode/coffeescript/coffeescript.js'
-    @JS     './codemirror/mode/markdown/markdown.js'
-    @JS     './codemirror/addon/search/searchcursor.js'
-    @JS     './codemirror/addon/search/matchesonscrollbar.js'
-    @CSS    './codemirror/addon/search/matchesonscrollbar.css'
-    @JS     './codemirror/addon/search/search.js'
-    @JS     './codemirror/addon/dialog/dialog.js'
-    @JS     './codemirror/addon/edit/matchbrackets.js'
-    @JS     './codemirror/addon/edit/closebrackets.js'
-    @JS     './codemirror/addon/comment/comment.js'
-    @JS     './codemirror/addon/wrap/hardwrap.js'
-    @JS     './codemirror/addon/fold/foldcode.js'
-    @JS     './codemirror/addon/fold/brace-fold.js'
-    @JS     './codemirror/keymap/sublime.js'
-    ### -------------------------- THIS LINE MUST COME AFTER ANY IMPORTS ------------------------------- ###
-    @CSS    './styles-99.css'
-    @SCRIPT "if (window.module) module = window.module;"
-    ### ------------------------------------------------------------------------------------------------ ###
-    #=======================================================================================================
-    @FULLHEIGHTFULLWIDTH =>
-      @OUTERGRID =>
-        @LEFTBAR =>
-          ### TAINT multiple wrapping needed? ###
-          @CONTENT =>
-            @TEXTAREA '#codemirror'
-        @RIGHTBAR =>
-          @DIV '#candidates-flexgrid', =>
-            # @DIV '.glyph', '明'
-            # @DIV '.glyph', '快'
-            # @DIV '.glyph', '打'
-            # @DIV '.glyph', '字'
-            # @DIV '.glyph', '机'
-            # @DIV '.glyph', '明'
-            # @DIV '.glyph', '快'
-            # @DIV '.glyph', '打'
-            # @DIV '.glyph', '字'
-            # @DIV '.glyph', '机'
-            # @DIV '.glyph', '明'
-            # @DIV '.glyph', '快'
-            # @DIV '.glyph', '打'
-            # @DIV '.glyph', '字'
-            # @DIV '.glyph', '机'
-            # @DIV '.glyph', '明'
-            # @DIV '.glyph', '快'
-            # @DIV '.glyph', '打'
-            # @DIV '.glyph', '字'
-            # @DIV '.glyph', '机'
-            # @DIV '.glyph', '明'
-            # @DIV '.glyph', '快'
-            # @DIV '.glyph', '打'
-            # @DIV '.glyph', '字'
-            # @DIV '.glyph', '机'
-        # @RIGHTBAR =>
-        #   @SHADE '.background'
-        #   @SCROLLER =>
-        #     @TABLE '#candidates', =>
-        #       @TBODY =>
-        #         @TR =>
-        #           @TD '.value', "MingKwai"
-        #           @TD '.glyph', "明快打字机"
-        #           @TD '.value', "TypeWriter"
-        #   @SHADE '.foreground'
-        @BOTTOMBAR =>
-          @DIV '#logger', { contenteditable: 'true', }
-      @FOCUSFRAME()
-    #=======================================================================================================
-    @JS     './ops.js'
-    return null
-
 #-----------------------------------------------------------------------------------------------------------
 @minimal = ->
   #.........................................................................................................
@@ -227,23 +81,58 @@ Object.assign @, TEACUP
     # @META 'http-equiv': "Content-Security-Policy", content: "default-src 'self'"
     # @META 'http-equiv': "Content-Security-Policy", content: "script-src 'unsafe-inline'"
     @JS     '/jquery-3.3.1.js'
+    @JS     '/common.js'
     @CSS    '/reset.css'
     @CSS    '/styles-01.css'
     @TITLE 'UCDB'
     @DIV => "UCDB"
-    @DIV '.ucdb', => "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    @DIV '.ucdb', => "abcdefghijklmnopqrstuvwxyz"
-    # @IMG src: '/fonts/ucdb.svg', style: "width:10mm;height:10mm;"
-        # <use transform='translate( 0 10 ) scale( 0.1 0.1 )' fill='#c00' xlink:href='/fonts/ucdb.svg#g國'/>
-    # @RAW """<svg style='transform: scale( 0.1, 0.1);' width=800 height=800><use x='0' y='-100' transform='translate( 0 724 ) scale( 1 -1 )' xlink:href='/fonts/ucdb.svg#g國'/></svg>"""
-    # @RAW """<svg style='transform: scale( 0.1, 0.1);' width=800 height=800><use x='0' y='-100' transform='translate( 0 724 ) scale( 1 -1 )' xlink:href='/fonts/ucdb.svg#亥'/></svg>"""
-    @get_glyph 'any', 'A'
-    @get_glyph 'any', 'B'
-    @get_glyph 'any', 'C'
-    @get_glyph 'any', 'D'
-    @get_glyph 'any', '亥'
-    @get_glyph 'any', '國'
-    # @RAW """<svg id=triangle><use xlink:href='/fonts/ucdb.svg#triangle'/></svg>"""
+    @H3 => "Embedding Text As SVG Images"
+    @H4 => "Pre-Fabs"
+    @DIV =>
+      @IMG class: 'glyph', alt: '國', src: '/fonts/sample-glyph-fontnick-國.svg'
+      @IMG class: 'glyph', alt: '國', src: '/fonts/sample-glyph-fontnick-國.svg'
+      @IMG class: 'glyph', alt: '國', src: '/fonts/sample-glyph-fontnick-國.svg'
+      @IMG class: 'glyph', alt: '亥', src: '/fonts/sample-glyph-fontnick-亥.svg'
+      @IMG class: 'glyph', alt: '亥', src: '/fonts/sample-glyph-fontnick-亥.svg'
+      @IMG class: 'glyph', alt: '亥', src: '/fonts/sample-glyph-fontnick-亥.svg'
+    @H4 => "Dynamically produced SVG"
+    @DIV =>
+      @GLYPHIMG 'sunexta', '國'
+      @GLYPHIMG 'sunexta', '國'
+      @GLYPHIMG 'sunexta', '國'
+      @GLYPHIMG 'sunexta', '亥'
+      @GLYPHIMG 'sunexta', '亥'
+      @GLYPHIMG 'sunexta', '亥'
+    @DIV => "Copying text should (somehow) work."
+    @HR()
+    # @SVG id: 'internalsvg', =>
+    #   @RAW """<symbol id='triangle' viewBox='0 0 100 100'>
+    #     <path fill='purple' stroke='black' stroke-width='5' d='M 0 100 L 80 80 50 50 50 20 Z'/>
+    #     </symbol>"""
+    # @IMG id: 'ucdbsvg', alt: "X", src: '/fonts/ucdb.svg', style: "width:10mm;height:10mm;"
+    # @IMG id: 'ucdbsvg', alt: "Y", src: '/fonts/ucdb.svg', style: "width:10mm;height:10mm;"
+    # @IMG id: 'ucdbsvg', alt: "Z", src: '/fonts/ucdb.svg', style: "width:10mm;height:10mm;"
+    #     # <use transform='translate( 0 10 ) scale( 0.1 0.1 )' fill='#c00' xlink:href='/fonts/ucdb.svg#g國'/>
+    # # @RAW """<svg style='transform: scale( 0.1, 0.1);' width=800 height=800><use x='0' y='-100' transform='translate( 0 724 ) scale( 1 -1 )' xlink:href='/fonts/ucdb.svg#g國'/></svg>"""
+    # # @RAW """<svg style='transform: scale( 0.1, 0.1);' width=800 height=800><use x='0' y='-100' transform='translate( 0 724 ) scale( 1 -1 )' xlink:href='/fonts/ucdb.svg#亥'/></svg>"""
+    # @get_symbol 'paperclip'
+    # @get_symbol 'house'
+    # @get_symbol 'soupbowl'
+    # @get_symbol 'lightbulb'
+    # @DIV =>
+    #   @get_glyph 'g', '國'
+    #   @get_glyph 'g', '國'
+    #   @get_glyph 'g', '國'
+    # @DIV =>
+    #   @get_glyph 'g', '亥'
+    #   @get_glyph 'g', '亥'
+    #   @get_glyph 'g', '亥'
+    #   @RAW """<svg class=glyph><use href='#triangle'/></svg>"""
+    #   @RAW """<svg class=glyph><use href='#triangle2'/></svg>"""
+    # @DIV '.ucdb', => "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    # @RAW "<svg class=glyph><use href='/fonts/ucdb.svg#g-國'/><use href='/fonts/ucdb.svg#g-亥'/></svg>"
+    # @DIV '.ucdb', => "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
     # @RAW """<svg class=glyph><use xlink:href='/fonts/ucdb.svg#g亥'/></svg>"""
     # @RAW """<svg width=4096 height=4096><use xlink:href='/fonts/ucdb.svg#g亥'/></svg>"""
     # @IMG src: '/fonts/ucdb.svg', width: 1024, height: 1024
