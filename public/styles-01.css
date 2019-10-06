@@ -5,12 +5,6 @@
 /*@font-face { font-family: 'ucdb';     src: url( '/fonts/ucdb-original.svg#ucdb' ) format( 'svg' ); }*/
 /*@font-face { font-family: 'ucdb';  src: url( './fonts/ucdb.svg'                   ); unicode-range: U+00000-10fff; }*/
 
-@media screen and (-webkit-min-device-pixel-ratio:0) {
-  @font-face {
-    font-family: 'ucdb';
-    src: url('/fonts/ucdb-original.svg#ucdb') format('svg');
-    }
-  }
 
 .ucdb { font-family: 'ucdb', 'fallback'; }
 
@@ -27,15 +21,10 @@
 */
 html, body {
   background-color:       #9eaeb5;
-  /*height:                 100vh;*/
-  /*width:                  100vw;*/
-  padding:                0mm;
-  margin:                 0mm;
-  /*position:               absolute;*/
-  /*overflow:               hidden;*/
-  /*font-size:              6mm;*/
   font-family:            'flow';
 }
+
+/*td { min-width: fit-content; }*/
 
 /* thx to https://developer.mozilla.org/en-US/docs/Web/CSS/line-height-step */
 :root {
