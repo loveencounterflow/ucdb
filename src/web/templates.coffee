@@ -72,6 +72,39 @@ Object.assign @, TEACUP
 #===========================================================================================================
 #
 #-----------------------------------------------------------------------------------------------------------
+sample =
+  glyphs:     Array.from '一丁丂七丄丅丆万丈三上下丌不与丏丐丑丒专且丕世丗丘丙业丛东丝丞丟丠両丢丣两严並丧丨丩个丫丬中丮丯丰丱串丳临丵丶丷丸丹为主丼丽举丿乀乁乂乃乄久乆乇么义乊之乌乍乎乏乐國果山白過'
+  fontnicks:  [
+    'thkhaaitpzero'
+    'thtshynpzero'
+    # 'sunexta'
+    # 'babelstonehan'
+    # 'biaukai'
+    # 'cwtexqfangsongmedium'
+    # 'cwtexqheibold'
+    # 'cwtexqkaimedium'
+    # 'cwtexqmingmedium'
+    # 'cwtexqyuanmedium'
+    # 'epgyobld'
+    # 'epgyosho'
+    # 'epkaisho'
+    # 'epkgobld'
+    # 'epkyouka'
+    # 'epmarugo'
+    # 'epmgobld'
+    # 'epminbld'
+    # 'fandolfangregular'
+    # 'fandolheibold'
+    # 'fandolheiregular'
+    # 'fandolkairegular'
+    # 'fandolsongbold'
+    # 'uming'
+    # 'dejavusans'
+    'dejavusansbold' ]
+
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
 @minimal = ->
   #.........................................................................................................
   return @render =>
@@ -87,57 +120,17 @@ Object.assign @, TEACUP
     @TITLE 'UCDB'
     @DIV => "UCDB"
     @H3 => "Embedding Text As SVG Images"
-    @DIV =>
-      @GLYPHIMG 'sunexta', '國'
-      @GLYPHIMG 'sunexta', '國'
-      @GLYPHIMG 'sunexta', '國'
-      @GLYPHIMG 'sunexta', '亥'
-      @GLYPHIMG 'sunexta', '亥'
-      @GLYPHIMG 'sunexta', '亥'
-      @GLYPHIMG 'thkhaaitpzero', '亥'
-      @GLYPHIMG 'thtshynpzero', '亥'
-      @GLYPHIMG 'uming', '亥'
-    @DIV => "Copying text should (somehow) work."
-    @HR()
-    # @SVG id: 'internalsvg', =>
-    #   @RAW """<symbol id='triangle' viewBox='0 0 100 100'>
-    #     <path fill='purple' stroke='black' stroke-width='5' d='M 0 100 L 80 80 50 50 50 20 Z'/>
-    #     </symbol>"""
-    # @IMG id: 'ucdbsvg', alt: "X", src: '/fonts/ucdb.svg', style: "width:10mm;height:10mm;"
-    # @IMG id: 'ucdbsvg', alt: "Y", src: '/fonts/ucdb.svg', style: "width:10mm;height:10mm;"
-    # @IMG id: 'ucdbsvg', alt: "Z", src: '/fonts/ucdb.svg', style: "width:10mm;height:10mm;"
-    #     # <use transform='translate( 0 10 ) scale( 0.1 0.1 )' fill='#c00' xlink:href='/fonts/ucdb.svg#g國'/>
-    # # @RAW """<svg style='transform: scale( 0.1, 0.1);' width=800 height=800><use x='0' y='-100' transform='translate( 0 724 ) scale( 1 -1 )' xlink:href='/fonts/ucdb.svg#g國'/></svg>"""
-    # # @RAW """<svg style='transform: scale( 0.1, 0.1);' width=800 height=800><use x='0' y='-100' transform='translate( 0 724 ) scale( 1 -1 )' xlink:href='/fonts/ucdb.svg#亥'/></svg>"""
-    # @get_symbol 'paperclip'
-    # @get_symbol 'house'
-    # @get_symbol 'soupbowl'
-    # @get_symbol 'lightbulb'
-    # @DIV =>
-    #   @get_glyph 'g', '國'
-    #   @get_glyph 'g', '國'
-    #   @get_glyph 'g', '國'
-    # @DIV =>
-    #   @get_glyph 'g', '亥'
-    #   @get_glyph 'g', '亥'
-    #   @get_glyph 'g', '亥'
-    #   @RAW """<svg class=glyph><use href='#triangle'/></svg>"""
-    #   @RAW """<svg class=glyph><use href='#triangle2'/></svg>"""
-    # @DIV '.ucdb', => "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    # @RAW "<svg class=glyph><use href='/fonts/ucdb.svg#g-國'/><use href='/fonts/ucdb.svg#g-亥'/></svg>"
-    # @DIV '.ucdb', => "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-    # @RAW """<svg class=glyph><use xlink:href='/fonts/ucdb.svg#g亥'/></svg>"""
-    # @RAW """<svg width=4096 height=4096><use xlink:href='/fonts/ucdb.svg#g亥'/></svg>"""
-    # @IMG src: '/fonts/ucdb.svg', width: 1024, height: 1024
-    # @RAW """
-    #   <svg width=1024 height=1024>
-    #     <use  x='50' y='-300' transform='translate( 0 100 ) scale( 0.1 -0.1 )' xlink:href='/fonts/ucdb.svg#g國'/>
-    #     <use x='850' y='-300' transform='translate( 0 100 ) scale( 0.1 -0.1 )' xlink:href='/fonts/ucdb.svg#g亥'/>
-    #     <use x='850' y='-300' transform='translate( 0 100 ) scale( 0.1 -0.1 )' xlink:href='/fonts/ucdb.svg#gA'/>
-    #     <path transform='scale( 1 2 )' d='M 50 50 L0 0 100 100 0 100 Z'/>
-    #     </svg>"""
-    # @RAW "<some>TAG</some>"
+    #.......................................................................................................
+    # @DIV { style: 'overflow:scroll;' }, =>
+    @TABLE { style: 'overflow:scroll;' }, =>
+      for fontnick in sample.fontnicks
+        @TR =>
+          @TD =>
+            @TEXT fontnick
+          for glyph in sample.glyphs
+            @TD =>
+              @GLYPHIMG fontnick, glyph
+    #.......................................................................................................
     @JS     '/ops.js'
     return null
 
