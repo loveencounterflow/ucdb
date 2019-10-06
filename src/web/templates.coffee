@@ -87,15 +87,6 @@ Object.assign @, TEACUP
     @TITLE 'UCDB'
     @DIV => "UCDB"
     @H3 => "Embedding Text As SVG Images"
-    @H4 => "Pre-Fabs"
-    @DIV =>
-      @IMG class: 'glyph', alt: '國', src: '/fonts/sample-glyph-fontnick-國.svg'
-      @IMG class: 'glyph', alt: '國', src: '/fonts/sample-glyph-fontnick-國.svg'
-      @IMG class: 'glyph', alt: '國', src: '/fonts/sample-glyph-fontnick-國.svg'
-      @IMG class: 'glyph', alt: '亥', src: '/fonts/sample-glyph-fontnick-亥.svg'
-      @IMG class: 'glyph', alt: '亥', src: '/fonts/sample-glyph-fontnick-亥.svg'
-      @IMG class: 'glyph', alt: '亥', src: '/fonts/sample-glyph-fontnick-亥.svg'
-    @H4 => "Dynamically produced SVG"
     @DIV =>
       @GLYPHIMG 'sunexta', '國'
       @GLYPHIMG 'sunexta', '國'
@@ -103,6 +94,9 @@ Object.assign @, TEACUP
       @GLYPHIMG 'sunexta', '亥'
       @GLYPHIMG 'sunexta', '亥'
       @GLYPHIMG 'sunexta', '亥'
+      @GLYPHIMG 'thkhaaitpzero', '亥'
+      @GLYPHIMG 'thtshynpzero', '亥'
+      @GLYPHIMG 'uming', '亥'
     @DIV => "Copying text should (somehow) work."
     @HR()
     # @SVG id: 'internalsvg', =>
