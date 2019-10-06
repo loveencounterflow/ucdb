@@ -166,30 +166,33 @@ procedure create_outlines_indexes():
   create index outlines_fontnick_index on _main ( fontnick );
 
 -- ---------------------------------------------------------------------------------------------------------
-query default_pathdata_from_cid( cid ):
+query pathdata_from_cid( fontnick, cid ):
   select
       pathdata
     from outlines as OL
     join _main    as MN using ( iclabel )
     where true
       and MN.cid      = $cid
-      -- ### TAINT should not hardcode fontnick, use priority table ###
-      -- and OL.fontnick = 'sunexta'
-      and OL.fontnick = 'fandolkairegular'
+      and OL.fontnick = $fontnick
     limit 1;
 
 -- ---------------------------------------------------------------------------------------------------------
-query default_pathdata_from_glyph( glyph ):
+query pathdata_from_glyph( fontnick, glyph ):
   select
       pathdata
     from outlines as OL
     join _main    as MN using ( iclabel )
     where true
-      and MN.glyph      = $glyph
-      -- ### TAINT should not hardcode fontnick, use priority table ###
-      -- and OL.fontnick = 'sunexta'
-      and OL.fontnick = 'cwtexqheibold'
+      and MN.glyph    = $glyph
+      and OL.fontnick = $fontnick
     limit 1;
+
+-- ---------------------------------------------------------------------------------------------------------
+query fontnicks():
+  select
+      fontnick
+    from fontnicks
+    order by fontnick;
 
 -- =========================================================================================================
 --
