@@ -58,7 +58,7 @@ monitor.on 'warn',   ( data ) -> whisper 'warn',   "child process has emitted an
 
 #.........................................................................................................
 on_change = ( path ) =>
-  return null if path.endsWith '.map'
+  return null unless path.endsWith '.js'
   info '^272^', "changed: #{path}"
   monitor.stop()
   await sleep 0.5
