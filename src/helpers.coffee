@@ -25,6 +25,12 @@ echo                      = CND.echo.bind CND
 @project_abspath          = ( ( P... ) -> @here_abspath __dirname, '..', P... ).bind @
 PATH                      = require 'path'
 FS                        = require 'fs'
+types                     = require './types'
+{ isa
+  validate
+  type_of
+  defaults
+  Failure }               = types
 
 #-----------------------------------------------------------------------------------------------------------
 @load_configuration = ->
@@ -87,6 +93,42 @@ FS                        = require 'fs'
 #   R.push text
 #   R.push null
 #   return R
+
+
+
+
+############################################################################################################
+### TAINT the following methods that are prefixed with `SQL_` should become part of an updated ICQL APLI ###
+############################################################################################################
+
+#-----------------------------------------------------------------------------------------------------------
+@SQL_text_as_literal = ( x ) ->
+  ### NOTE: lifted from ICQL ###
+  validate.text x
+  "'" + ( x.replace /'/g, "''" ) + "'"
+
+# #-----------------------------------------------------------------------------------------------------------
+# @SQL_list_as_json_literal = ( x ) ->
+#   ### NOTE: lifted from ICQL ###
+#   validate.list x
+#   return @SQL_text_as_literal JSON.stringify x
+
+#-----------------------------------------------------------------------------------------------------------
+@SQL_escape_value = ( x ) ->
+  ### NOTE: lifted from ICQL ###
+  switch type = type_of x
+    when 'text'     then return @SQL_text_as_literal      x
+    # when 'list'     then return @SQL_list_as_json_literal x
+    when 'number'   then return x.toString()
+    when 'boolean'  then return ( if x then '1' else '0' )
+    when 'null'     then return 'null'
+  throw new Failure '^sfm/sql@error_no_literal^', "unable to express a #{type} as SQL literal, got #{rpr x}"
+
+#-----------------------------------------------------------------------------------------------------------
+@SQL_generate_values_tuple = ( values ) ->
+  validate.list values
+  return '( ' + ( ( @SQL_escape_value x for x in values ).join ', ' ) + ' )'
+
 
 
 
