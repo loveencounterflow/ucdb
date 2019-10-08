@@ -206,6 +206,20 @@ query fontnicks():
     from fontnicks
     order by fontnick;
 
+-- ---------------------------------------------------------------------------------------------------------
+-- ### TAINT this will have to be promoted to a query and the `?glyphs?` ad-hoc placeholder to be
+-- replaced by sth like `$tuple:glyphs` as soon as ICQL has been updated
+fragment pathdata_from_glyphs( fontnick, glyphs, n ):
+  select
+      glyph,
+      pathdata
+    from outlines as OL
+    join _main    as MN using ( iclabel )
+    where true
+      and MN.glyph    in ?glyphs?
+      and OL.fontnick = $fontnick
+    limit $n;
+
 -- =========================================================================================================
 --
 -- ---------------------------------------------------------------------------------------------------------
