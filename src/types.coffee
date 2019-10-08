@@ -35,6 +35,12 @@ intertype                 = new ( require 'intertype' ).Intertype module.exports
     "x.icql_path is a nonempty_text":         ( x ) -> @isa.nonempty_text       x.icql_path
 
 #-----------------------------------------------------------------------------------------------------------
+@declare 'ucdb_web_layout_SLUG_settings',
+  tests:
+    "x is a object":                          ( x ) -> @isa.object              x
+    "x.missing is 'drop'":                    ( x ) -> x.missing is 'drop'
+
+#-----------------------------------------------------------------------------------------------------------
 @declare 'ucdb_cid',
   tests:
     "x is an integer":                        ( x ) -> @isa.integer x
