@@ -267,7 +267,7 @@ SVG.slug_from_pathdatamap = ( glyphs, pathdatamap ) ->
     if ( pathdata = pathdatamap[ glyph ] )?
       R += "<path transform='scale( 1 -1 ) translate( #{x} -3296 )' d='#{pathdata}'/>"
     else
-      R += "<path transform='scale( 1 -1 ) translate( #{x} -3296 )' d='M 50 -550 L 4046 -550 4046 3546 50 3546 Z' fill='rgba(255,0,0,0.8)'/>"
+      R += "<path transform='scale( 1 -1 ) translate( #{x} -3296 )' d='M 600 -550 L 3446 -550 3446 3546 600 3546 Z' fill='rgba(100,100,0,0.2)'/>"
     x += advance_x
   #.........................................................................................................
   R          += "</svg>"
