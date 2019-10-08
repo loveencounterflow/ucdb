@@ -78,7 +78,7 @@ Object.assign @, TEACUP
   settings  = { defaults..., settings..., }
   validate.ucdb_web_layout_SLUG_settings settings
   url       = COMMON.get_url '/v2/slug', { fontnick, text, }
-  width     = ( Array.from text ).length * 10 ### TAINT magic number, should be in styles ###
+  width     = ( Array.from text ).length * ( 685 / 86 ) ### TAINT magic number, should be in styles ###
   width     = "#{width}mm"
   height    = '10mm' ### TAINT magic number, should be in styles ###
   style     = "width:#{width};height:#{height};"
