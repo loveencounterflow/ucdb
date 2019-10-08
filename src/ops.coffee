@@ -57,7 +57,7 @@ S =
 ( jQuery 'document' ).ready ->
   log "^ucdb/ops@6672^ helo from UCDB"
   S.fontnicks = await fetch_fontnicks()
-  log '^2337^', S.fontnicks
+  log '^ucdb/web/ops@245337^', 'fontnicks:', S.fontnicks
   count = 0
   # for fontnick in S.fontnicks
   #   continue unless ( sample = await fetch_glyphsamples_from_fontnick fontnick )?

@@ -4,7 +4,7 @@
 ############################################################################################################
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'UCDB'
+badge                     = 'UCDB/WEB/SERVER'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -45,20 +45,23 @@ PD                        = require 'pipedreams'
   $watch
   $show  }                = PD.export()
 #...........................................................................................................
-TIMER                     = require '../timer'
-TEMPLATES                 = require './templates'
-COMMON                    = require './common'
-#...........................................................................................................
 Koa                       = require 'koa'
 HTTP                      = require 'http'
 root_router               = ( new require 'koa-router' )()
 serve                     = require 'koa-static'
 #...........................................................................................................
-O                         = {}
+O                         = @O = {}
 do =>
-  O.port        = 8080
-  O.db_path     = db_path = project_abspath '../benchmarks/assets/ucdb/ucdb.db'
-  O.ucdb        = ( require '../..' ).new_ucdb { db_path, }
+  O.port          = 8080
+  O.db_path       = db_path = project_abspath '../benchmarks/assets/ucdb/ucdb.db'
+  O.ucdb          = ( require '../..' ).new_ucdb { db_path, }
+  O.max_age       = 604800
+  O.cache_control = "max-age=#{O.max_age}"
+#...........................................................................................................
+TIMER                     = require '../timer'
+TEMPLATES                 = require './templates'
+COMMON                    = require './common'
+HELPERS                   = require '../helpers'
 
 #-----------------------------------------------------------------------------------------------------------
 @serve = ->
@@ -66,21 +69,19 @@ do =>
   server  = HTTP.createServer app.callback()
   server.listen O.port
   info "Server listening to http://localhost:#{O.port}"
-
-  root_router.get 'root',                       '/',                  @$root()
-  root_router.get 'dump',                       '/dump',              @$dump()
-  # root_router.get 'svg_bare',                   '/svg',               @$svg_bare()
-  # root_router.get 'svg_glyph',                  '/svg/glyph/:glyph',  @$svg_glyph()
-  # root_router.get 'svg_cid',                    '/svg/cid/:cid',      @$svg_cid()
-  # root_router.get 'svg_glyph',                  '/svg/glyph/:glyph',                    @$svg_glyph()
-  # root_router.get 'svg_glyph',                  '/svg/fontnick/:fontnick/glyph/:glyph', @$svg_glyph()
-  root_router.get 'v2_glyphimg',                '/v2/glyphimg',                         @$v2_glyphimg()
-  root_router.get 'v2_fontnicks',               '/v2/fontnicks',                        @$v2_fontnicks()
-  root_router.get 'v2_glyphsamples',            '/v2/glyphsamples/:fontnick',           @$v2_glyphsamples()
+  #.........................................................................................................
+  root_router.get 'root',                   '/',                            @$new_page 'inventory'
+  root_router.get 'long_samples_overview',  '/long-samples-overview',       @$new_page 'long_samples_overview'
+  root_router.get 'slugs',                  '/slugs',                       @$new_page 'slugs'
+  root_router.get 'dump',                   '/dump',                        @$dump()
+  root_router.get 'v2_glyphimg',            '/v2/glyphimg',                 @$v2_glyphimg()
+  root_router.get 'v2_slug',                '/v2/slug',                     @$v2_slug()
+  root_router.get 'v2_fontnicks',           '/v2/fontnicks',                @$v2_fontnicks()
+  root_router.get 'v2_glyphsamples',        '/v2/glyphsamples/:fontnick',   @$v2_glyphsamples()
   app
-    .use $time_request()
+    # .use $time_request()
     .use $echo()
-    .use serve project_abspath './public'
+    .use serve ( project_abspath './public' ), { maxage: O.max_age, }
     .use root_router.allowedMethods()
     .use root_router.routes()
   return app
@@ -99,7 +100,9 @@ $time_request = -> ( ctx, next ) =>
 
 #-----------------------------------------------------------------------------------------------------------
 $echo = -> ( ctx, next ) =>
-  info CND.grey ctx.request.URL.href
+  href = ctx.request.URL.href
+  if href.length > 108  then  info CND.grey href[ .. 105 ] + '...'
+  else                        info CND.grey href
   await next()
   return null
 
@@ -107,11 +110,24 @@ $echo = -> ( ctx, next ) =>
 #===========================================================================================================
 # ENDPOINTS
 #-----------------------------------------------------------------------------------------------------------
-@$root = => ( ctx ) =>
+@$new_page = ( template_name ) => ( ctx ) =>
   ctx.type = 'html'
-  ### TAINT should cache ###
-  ctx.body = TEMPLATES.minimal()
+  ctx.body = TEMPLATES[ template_name ] ctx
   return null
+
+# #-----------------------------------------------------------------------------------------------------------
+# @$root = => ( ctx ) =>
+#   ctx.type = 'html'
+#   ### TAINT should cache ###
+#   ctx.body = TEMPLATES.inventory()
+#   return null
+
+# #-----------------------------------------------------------------------------------------------------------
+# @$long_samples_overview = => ( ctx ) =>
+#   ctx.type = 'html'
+#   ### TAINT should cache ###
+#   ctx.body = TEMPLATES.long_samples_overview()
+#   return null
 
 #-----------------------------------------------------------------------------------------------------------
 @$dump = => ( ctx ) =>
@@ -124,7 +140,7 @@ $echo = -> ( ctx, next ) =>
 
 #-----------------------------------------------------------------------------------------------------------
 @$v2_fontnicks = => ( ctx ) =>
-  debug '^2337^', ctx.query
+  debug '^ucdb/web/server@2458337^', 'ctx.query:', ctx.query
   ctx.body = ( row.fontnick for row from O.ucdb.db.fontnicks() )
   ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
   ctx.body = [
@@ -144,7 +160,7 @@ sample_glyphs = Array.from ( """
 @$v2_glyphsamples = => ( ctx ) =>
   ### TAINT code duplication ###
   ### TAINT use wrappers or similar to abstract away error handling ###
-  debug '^66777^', H.SQL_generate_values_tuple sample_glyphs
+  # debug '^66777^', H.SQL_generate_values_tuple sample_glyphs
   process.exit 100
   ctx.body = ( row.fontnick for row from O.ucdb.db.fontnicks() )
   TEMPLATES.render_glyph_img fontnick, glyph
@@ -152,61 +168,110 @@ sample_glyphs = Array.from ( """
   for glyph in sample_glyphs
     fontnick  = ctx.params.fontnick ? 'sunexta'
     pathdata  = pathdata_from_glyph fontnick, glyph
-    svg       = svg_from_pathdata pathdata
+    svg       = SVG.glyph_from_pathdata pathdata
   return null
 
 #-----------------------------------------------------------------------------------------------------------
 @$v2_glyphimg = => ( ctx ) =>
   ### TAINT code duplication ###
   ### TAINT use wrappers or similar to abstract away error handling ###
-  debug '^676734^ query:', jr ctx.query
-  debug '^676734^ parameters:', jr ctx.params
+  # debug '^676734^ query:', jr ctx.query
+  # debug '^676734^ parameters:', jr ctx.params
   #.........................................................................................................
-  try
-    glyph     = ctx.query.glyph     ? '流'
-    fontnick  = ctx.query.fontnick  ? 'sunexta'
-    pathdata  = pathdata_from_glyph fontnick, glyph
-    throw new Error "unable to find pathdata for #{jr ctx.params}" unless pathdata?
+  glyph     = ctx.query.glyph     ? '流'
+  fontnick  = ctx.query.fontnick  ? 'sunexta'
+  pathdata  = await pathdata_from_glyph fontnick, glyph
+  ctx.set 'Cache-Control', O.cache_control ### TAINT use middleware to set cache control? ###
   #.........................................................................................................
-  catch error
-    ### TAINT use API to emit HTTP error ###
-    href      = ctx.request.URL.href
+  unless pathdata?
     ctx.status  = 302
     ctx.type    = '.txt'
-    ctx.set 'location', '/fallback-glyph.svg'
-    # ctx.body  = "not a valid request: #{href}"
-    warn '^ucdb/server@449879^', "when trying to respond to #{href}, an error occurred: #{error.message}"
+    # ctx.set 'location', '/fallback-glyph.svg'
+    ctx.set 'location', '/fallback-glyph.png'
     return null
   #.........................................................................................................
-  ctx.body  = svg_from_pathdata pathdata
   ctx.set 'content-type', 'image/svg+xml'
-  # debug '^37845^', ctx.body
+  ctx.body  = SVG.glyph_from_pathdata pathdata
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-svg_from_pathdata = ( pathdata ) ->
-  return """<?xml version="1.0" standalone="no"?>
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -800 4096 4896">
-    <path transform='scale( 1 -1 ) translate( 0 -3296 )' d="#{pathdata}"/>
-    </svg>"""
+@$v2_slug = => ( ctx ) =>
+  ### TAINT code duplication ###
+  ### TAINT use wrappers or similar to abstract away error handling ###
+  # debug '^676734^ query:', jr ctx.query
+  # debug '^676734^ parameters:', jr ctx.params
+  #.........................................................................................................
+  text          = ctx.query.text      ? '無此列文'
+  glyphs        = Array.from new Set text
+  fontnick      = ctx.query.fontnick  ? 'sunexta'
+  pathdatamap   = pathdatamap_from_glyphs fontnick, glyphs
+  svg           = SVG.slug_from_pathdatamap glyphs, pathdatamap
+  ########################################################
+  # ctx.set 'Cache-Control', O.cache_control ### TAINT use middleware to set cache control? ###
+  ctx.set 'content-type', 'image/svg+xml'
+  ctx.body = svg
+  return null
 
 #-----------------------------------------------------------------------------------------------------------
 pathdata_from_glyph = ( fontnick, glyph ) ->
   validate.ucdb_glyph glyph
-  ### TAINT missing outlines casue error, should return null instead or HTTP error ###
   pathdata = [ ( O.ucdb.db.pathdata_from_glyph { fontnick, glyph, } )..., ]
   return null unless pathdata.length is 1
   return pathdata[ 0 ].pathdata
 
-# ### TAINT trat conversion CID/glyph as cast in types module
-# #-----------------------------------------------------------------------------------------------------------
-# cid_from_cid_txt = ( cid_txt ) ->
-#   validate.nonempty_text cid_txt
-#   if cid_txt.startsWith '0x' then R = parseInt cid_txt[ 2 .. ], 16
-#   else                            R = parseInt cid_txt, 10
-#   return R if isa.number R
-#   ### TAINT use Failure ###
-#   throw new Error "^ucdb/server@88827 not a valid CID text: #{cid_txt}"
+#-----------------------------------------------------------------------------------------------------------
+pathdatamap_from_glyphs = ( fontnick, glyphs ) ->
+  ### TAINT query procedure to be updated as soon as ICQL knows hoe to serialize value tuples ###
+  n               = glyphs.length
+  glyphs_tuple    = HELPERS.SQL_generate_values_tuple glyphs
+  sql_template    = O.ucdb.db.pathdata_from_glyphs { fontnick, glyphs, n, }
+  sql             = sql_template.replace /\?glyphs\?/g, glyphs_tuple
+  ### TAINT should do this in DB (?) ###
+  ### TAINT make this transformation a method ###
+  R               = {}
+  R[ row.glyph ]  = row.pathdata for row from O.ucdb.db.$.query sql
+  return R
+
+
+############################################################################################################
+# ### TAINT SVG generation temporarily placed here; might move to templates with future version
+# of coffeenode-teacup
+#-----------------------------------------------------------------------------------------------------------
+SVG = {}
+
+#-----------------------------------------------------------------------------------------------------------
+SVG.glyph_from_pathdata = ( pathdata ) ->
+  return """<?xml version='1.0' standalone='no'?>
+    <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 -800 4096 4896'>
+    <path transform='scale( 1 -1 ) translate( 0 -3296 )' d='#{pathdata}'/>
+    </svg>"""
+
+#-----------------------------------------------------------------------------------------------------------
+SVG.slug_from_pathdatamap = ( glyphs, pathdatamap ) ->
+  # urge '^SVG.slug_from_pathdatamap@3367^', rpr pathdatalist[ .. 200 ]
+  x0          = 0
+  x           = 0
+  advance_x   = 4096 ### TAINT magic number, should be derived ###
+  glyph_count = glyphs.length
+  width       = x0 + advance_x * glyph_count
+  R           = ''
+  R          += "<?xml version='1.0' standalone='no'?>"
+  R          += "<svg xmlns='http://www.w3.org/2000/svg' viewBox='#{x0} -800 #{width} 4896'>"
+  ### insert blank pathdata for missing glyphs ###
+  # blank                           = 'M 0 0 L 4000 4000 L 4096 4000 96 0 Z'
+  # blank                           = ''
+  # blank                           = 'M 50 50 L 4046 50 4046 4046 50 4046 Z'
+  # return ( ( pathdata_by_glyph[ glyph ] ? blank ) for glyph in glyphs )
+  #.........................................................................................................
+  for glyph in glyphs
+    if ( pathdata = pathdatamap[ glyph ] )?
+      R += "<path transform='scale( 1 -1 ) translate( #{x} -3296 )' d='#{pathdata}'/>"
+    else
+      R += "<path transform='scale( 1 -1 ) translate( #{x} -3296 )' d='M 50 -550 L 4046 -550 4046 3546 50 3546 Z' fill='rgba(255,0,0,0.8)'/>"
+    x += advance_x
+  #.........................................................................................................
+  R          += "</svg>"
+  return R
 
 
 ############################################################################################################
