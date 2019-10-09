@@ -137,6 +137,13 @@ query walk_fontnick_table():
 query filepath_from_fontnick( fontnick ):
   select filepath from fontnicks where fontnick = $fontnick;
 
+-- ---------------------------------------------------------------------------------------------------------
+query fontnicks_with_outlines():
+  select distinct
+      fontnick
+    from outlines
+    order by fontnick;
+
 
 -- =========================================================================================================
 --
