@@ -368,6 +368,21 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   return null
 
 #-----------------------------------------------------------------------------------------------------------
+@_XXX_false_fallback_pathdata_from_SVGTTF_font = ( me, SVGTTF_font ) ->
+  ### TAINT ad-hoc procedure to obtain pathdata of false fallbacks; this will in the future be done
+  with MKTS Mirage (i.e. SQLite File Mirror) ###
+  fontnick  = SVGTTF_font.nick
+  path      = project_abspath 'configuration/fontnick-and-false-fallbacks.txt'
+  ### TAINT we re-read each time since file is small ###
+  source    = FS.readFileSync path, 'utf-8'
+  pattern   = /// ^ #{fontnick} \s+ (?<sample> \S+ ) $ ///mu
+  return null unless ( match = source.match pattern )?
+  cid       = ( match.groups.sample ).codePointAt 0
+  d         = SVGTTF.glyph_and_pathdata_from_cid SVGTTF_font.metrics, SVGTTF_font.otjsfont, cid
+  return null unless d?
+  return d.pathdata
+
+#-----------------------------------------------------------------------------------------------------------
 @_insert_into_table_outlines = ( me, fontnick, glyphrows ) ->
   ### NOTE to be called once for each font with all or some cid_ranges ###
   preamble          = []
@@ -393,9 +408,13 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   # tag                         = 'use-svgpath'
   tag                         = 'use-quickscale'
   #.........................................................................................................
+  false_fallback_pathdata = @_XXX_false_fallback_pathdata_from_SVGTTF_font me, SVGTTF_font
+  if false_fallback_pathdata
+    warn '^ucdb@6374445^', "filtering codepoints with outlines that look like fallback (placeholder glyph)"
+  #.........................................................................................................
   for { iclabel, cid, glyph, } from cast.iterator glyphrows
     d = SVGTTF.glyph_and_pathdata_from_cid SVGTTF_font.metrics, SVGTTF_font.otjsfont, cid, tag
-    continue unless d?
+    continue if ( not d? ) or ( d.pathdata is false_fallback_pathdata )
     { glyph
       pathdata }      = d
     whisper '^ucdb@1013^', me._outline_count - 1 if ( me._outline_count++ % 1000 ) is 0
@@ -456,9 +475,13 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 #-----------------------------------------------------------------------------------------------------------
 @create = ( settings = null ) -> new Promise ( resolve, reject ) =>
   me = @new_ucdb settings
+  urge 'ucdb/create@1/4'
   await @populate_table_fontnicks   me
+  urge 'ucdb/create@2/4'
   await @populate_table_main        me
+  urge 'ucdb/create@3/4'
   await @populate_table_outlines    me
+  urge 'ucdb/create@4/4'
   # me.db.create_view_main_with_deltas_etc()
   resolve me
 
