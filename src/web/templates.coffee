@@ -155,12 +155,13 @@ sample =
   #.........................................................................................................
   return @render =>
     @layout()
-    @TITLE 'UCDB'
-    # titles = ( ( key_as_title key ) for key of @ when not key.startswith '_' )
-    @H1 => "UCDB Landing Page"
-    @UL =>
-      @LI => @A { href: '/long-samples-overview', },  "long samples overview"
-      @LI => @A { href: '/slugs', },                  "slugs"
+    @HTML { lang: 'en', }, =>
+      @TITLE 'UCDB'
+      # titles = ( ( key_as_title key ) for key of @ when not key.startswith '_' )
+      @H1 => "UCDB Landing Page"
+      @UL =>
+        @LI => @A { href: '/long-samples-overview', },  "long samples overview"
+        @LI => @A { href: '/slugs', },                  "slugs"
 
 #===========================================================================================================
 #
@@ -205,6 +206,18 @@ sample =
             @SLUG fontnick, slug, { missing: 'drop', }
     #.......................................................................................................
     @JS     '/ops.js'
+    @DIV '.news', =>
+      @RAW """Any Turing-Complete lan&shy;guage can, in prin&shy;ci&shy;ple, com&shy;pute any&shy;thing any other Turing-Complete lan&shy;guage
+      can. I use NodeJS and my parsing library CaffeineEight to not only explain what it means for a
+      lan&shy;guage to be Turing-Complete but also build the parser and interpreter in less than 60 minutes and
+      80 lines of code. This is powerful stuff! Writing a toy programming lan&shy;guage doesn't have to be
+      difficult. With the right tools it can be easy and a useful exercise. At a minimum, it can be very
+      educational. Languages define the boundaries of our thinking. Writing your own lan&shy;guage, even if it's
+      just for play, helps you think way outside the box. And who knows, your new-found lan&shy;guage-writing
+      skills can also come in handy the next time you need a custom DSL or have to parse something more
+      complicated than regular expressions can handle."""
+    @DIV '#page-ready'
+    @DIV '.ruler', => "RULER"
     return null
 
 
