@@ -54,6 +54,7 @@ SVGTTF                    = require 'svgttf'
 runmode                   = 'production'
 runmode                   = 'debug'
 runmode                   = 'debug_small'
+runmode                   = 'debug_cross_cjk'
 
 #-----------------------------------------------------------------------------------------------------------
 cid_ranges_by_runmode  =
@@ -67,6 +68,9 @@ cid_ranges_by_runmode  =
     [ 0x0e100, 0x0e10d, ]
     [ 0x0e10f, 0x0e111, ]
     [ 0x20000, 0x20006, ]
+    ]
+  debug_cross_cjk: [
+    '𗐑一丁丂七丄丅丆万㐀㐁㐂𠀀𠀁𠀂𪜀𪜁𪜂𫝀𫝁𫝂𫠠𫠡𫠢𬺰𬺱𬺲'
     ]
   debug_small: [
     # [ 0x00001, 0x000ff, ]
