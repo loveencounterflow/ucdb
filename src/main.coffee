@@ -347,15 +347,17 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 #-----------------------------------------------------------------------------------------------------------
 @populate_table_outlines = ( me ) ->
   @create_table_outlines me
-  XXX_includes      = 'jizurafourbmp'.split /\s+/
-  XXX_includes      = 'sunexta kai babelstonehan'.split /\s+/
+  # XXX_includes      = 'jizurafourbmp'.split /\s+/
+  # XXX_includes      = 'sunexta kai babelstonehan'.split /\s+/
+  ### TAINT do not retrieve all glyphrows, iterate instead; call @_insert_into_table_outlines with
+  single glyphrow ###
   XXX_sql           = """
     select
         *
-      from main
-      where true
-        and ( cid between 0x0020 and 0x00ff ) or ( cid between 0x4e00 and 0xffff )
-        order by iclabel;"""
+      from _main
+      -- where true
+        -- and ( cid between 0x0020 and 0x00ff ) or ( cid between 0x4e00 and 0xffff )
+      order by iclabel;"""
   glyphrows         = ( row           for row from me.db.$.query XXX_sql        )
   fontnicks         = ( row.fontnick  for row from me.db.walk_fontnick_table()  )
   me._outline_count = 0
