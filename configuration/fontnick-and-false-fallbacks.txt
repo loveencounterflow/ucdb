@@ -1,0 +1,21 @@
+
+# Since some fonts do return shapes when queried for codepoints they *do not* have outlines for, and, on the
+# other hand, some fonts return the special glyph name '.notdef' for some codepoints they *do* have
+# outlines for, we cannot rely on the designation '.notdef' to decide whether a given font does or does not
+# provides an outline for a given codepoint.
+
+# Instead, we always assume that the designation '.notdef' might be erroneous; to filter out outlines that
+# do look legit but are in fact just fallback glyphs, this listing collects such `( fontnick, glyph )` pairs
+# for which we know a false positive (an outline that depicts a fallback glyph) is returned by that font.
+
+# It turns out that from over 200 fonts tested less than 5 do need to be explicitly listed here, so the
+# expected error rate—the chance that a given new font will have to be enlisted here—is below 2.5%.
+
+
+thtshynpone                       万
+dejavusansmonobold                万
+dejavusansmonoboldoblique         万
+dejavusansmonooblique             万
+
+
+
