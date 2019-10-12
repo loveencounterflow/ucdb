@@ -50,6 +50,7 @@ mkts_glyph_styles         = mkts_options.tex[ 'glyph-styles' ]
 mkts_fontfiles            = mkts_options.fonts.files
 MKNCR                     = require 'mingkwai-ncr'
 SVGTTF                    = require 'svgttf'
+MIRAGE                    = require 'sqlite-file-mirror'
 #...........................................................................................................
 runmode                   = 'production'
 runmode                   = 'debug'
@@ -337,16 +338,13 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 #===========================================================================================================
 # OUTLINES
 #-----------------------------------------------------------------------------------------------------------
-@create_table_outlines = ( me ) ->
-  me.db.create_table_outlines()
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
 @filepath_from_fontnick = ( me, fontnick ) -> me.db.$.single_value me.db.filepath_from_fontnick { fontnick, }
 
 #-----------------------------------------------------------------------------------------------------------
 @populate_table_outlines = ( me ) ->
-  @create_table_outlines me
+  me.db.create_table_contents()
+  me.db.create_table_outlines()
+  known_hashes = new Set()
   # XXX_includes      = 'jizurafourbmp'.split /\s+/
   # XXX_includes      = 'sunexta kai babelstonehan'.split /\s+/
   ### TAINT do not retrieve all glyphrows, iterate instead; call @_insert_into_table_outlines with
@@ -364,7 +362,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   for fontnick in fontnicks
     # continue unless fontnick in XXX_includes
     info "^ucdb@1011^ adding outlines for #{fontnick}"
-    @_insert_into_table_outlines me, fontnick, glyphrows
+    @_insert_into_table_outlines me, known_hashes, fontnick, glyphrows
   return null
 
 #-----------------------------------------------------------------------------------------------------------
@@ -383,11 +381,12 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   return d.pathdata
 
 #-----------------------------------------------------------------------------------------------------------
-@_insert_into_table_outlines = ( me, fontnick, glyphrows ) ->
+@_insert_into_table_outlines = ( me, known_hashes, fontnick, glyphrows ) ->
   ### NOTE to be called once for each font with all or some cid_ranges ###
-  preamble          = []
-  data              = []
+  outlines_data     = []
+  content_data      = []
   line_count        = 0
+  duplicate_count   = 0
   batch_size        = 5000
   # fragment insert_into_outlines_first(): insert into outlines ( iclabel, fontnick, pathdata ) values
   #.........................................................................................................
@@ -426,25 +425,49 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
       warn "^ucdb@3332^ illegal advance for #{SVGTTF_font.nick} #{cid_hex}: #{rpr advance}; setting to 1"
       advance           = 1
     ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
-    data.push ( me.db.insert_into_outlines_middle { iclabel, fontnick, advance, pathdata, } ) + ','
-    if data.length >= batch_size
-      line_count += @_flush_outlines me, data
+    content           = jr { advance, pathdata, }
+    hash              = MIRAGE.sha1sum_from_text content
+    #.......................................................................................................
+    if known_hashes.has hash
+      duplicate_count++
+    else
+      known_hashes.add hash
+      content_data.push ( me.db.insert_into_contents_middle { hash, content, } ) + ','
+    #.......................................................................................................
+    outlines_data.push ( me.db.insert_into_outlines_middle { iclabel, fontnick, pathdata_hash: hash, } ) + ','
+    if outlines_data.length >= batch_size
+      line_count += @_flush_outlines me, content_data, outlines_data
   #.........................................................................................................
-  line_count += @_flush_outlines me, data
-  #.........................................................................................................
+  line_count += @_flush_outlines me, content_data, outlines_data
+  if duplicate_count > 0
+    urge "^ucdb@3376^ found #{duplicate_count} duplicates for font #{fontnick}"
   return line_count
 
 #-----------------------------------------------------------------------------------------------------------
-@_flush_outlines = ( me, data ) ->
-  return 0 if data.length is 0
+@_flush_outlines = ( me, content_data, outlines_data ) ->
   ### TAINT code duplication, use ICQL method (TBW) ###
-  line_count        = data.length
-  last_idx          = line_count - 1
-  data[ last_idx ]  = data[ last_idx ].replace /,\s*$/g, ''
-  sql               = me.db.insert_into_outlines_first() + '\n' + ( data.join '\n' ) + ';'
-  me.db.$.execute sql
-  me.line_count    += line_count
-  data.length       = 0
+  return 0 if ( content_data.length is 0 ) and ( outlines_data.length is 0 )
+  #.........................................................................................................
+  remove_comma = ( data ) ->
+    last_idx          = data.length - 1
+    data[ last_idx ]  = data[ last_idx ].replace /,\s*$/g, ''
+    return null
+  #.........................................................................................................
+  line_count = content_data.length + outlines_data.length
+  #.........................................................................................................
+  if content_data.length > 0
+    remove_comma content_data
+    sql = me.db.insert_into_contents_first() + '\n' + ( content_data.join '\n' ) + ';'
+    me.db.$.execute sql
+  #.........................................................................................................
+  if outlines_data.length > 0
+    remove_comma outlines_data
+    sql = me.db.insert_into_outlines_first() + '\n' + ( outlines_data.join '\n' ) + ';'
+    me.db.$.execute sql
+  #.........................................................................................................
+  me.line_count          += line_count
+  content_data.length     = 0
+  outlines_data.length    = 0
   return line_count
 
 #-----------------------------------------------------------------------------------------------------------

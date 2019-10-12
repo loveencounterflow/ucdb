@@ -215,21 +215,26 @@ sample_glyphs = Array.from ( """
 #-----------------------------------------------------------------------------------------------------------
 pathdata_from_glyph = ( fontnick, glyph ) ->
   validate.ucdb_glyph glyph
-  pathdata = [ ( O.ucdb.db.pathdata_from_glyph { fontnick, glyph, } )..., ]
-  return null unless pathdata.length is 1
-  return pathdata[ 0 ].pathdata
+  rows = [ ( O.ucdb.db.outline_json_from_glyph { fontnick, glyph, } )..., ]
+  debug '^337467^', rows
+  return null unless rows.length is 1
+  return _pathdata_from_outline_row rows[ 0 ]
+
+#-----------------------------------------------------------------------------------------------------------
+_pathdata_from_outline_row = ( row ) -> ( JSON.parse row.outline_json ).pathdata
 
 #-----------------------------------------------------------------------------------------------------------
 pathdatamap_from_glyphs = ( fontnick, glyphs ) ->
   ### TAINT query procedure to be updated as soon as ICQL knows hoe to serialize value tuples ###
   n               = glyphs.length
   glyphs_tuple    = HELPERS.SQL_generate_values_tuple glyphs
-  sql_template    = O.ucdb.db.pathdata_from_glyphs { fontnick, glyphs, n, }
+  sql_template    = O.ucdb.db.outline_json_from_glyphs { fontnick, glyphs, n, }
   sql             = sql_template.replace /\?glyphs\?/g, glyphs_tuple
   ### TAINT should do this in DB (?) ###
   ### TAINT make this transformation a method ###
   R               = {}
-  R[ row.glyph ]  = row.pathdata for row from O.ucdb.db.$.query sql
+  for row from O.ucdb.db.$.query sql
+    R[ row.glyph ]  = _pathdata_from_outline_row row
   return R
 
 
