@@ -434,7 +434,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
       known_hashes.add hash
       content_data.push ( me.db.insert_into_contents_middle { hash, content, } ) + ','
     #.......................................................................................................
-    outlines_data.push ( me.db.insert_into_outlines_middle { iclabel, fontnick, pathdata_hash: hash, } ) + ','
+    outlines_data.push ( me.db.insert_into_outlines_middle { iclabel, fontnick, outline_json_hash: hash, } ) + ','
     if outlines_data.length >= batch_size
       line_count += @_flush_outlines me, content_data, outlines_data
   #.........................................................................................................

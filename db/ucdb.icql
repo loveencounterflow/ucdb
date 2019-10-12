@@ -179,33 +179,33 @@ procedure create_table_outlines():
   create table outlines (
     /*  NOTE: we use `iclabel`, not `glyph` or `cid` as primary key because in theory neither of the latter
         two is capable of expressing codepoints outside of Unicode. */
-    iclabel       text    not null  references _main      ( iclabel  ),
-    fontnick      text    not null  references fontnicks  ( fontnick ),
-    pathdata_hash text    not null  references contents   ( hash     ),
+    iclabel           text    not null  references _main      ( iclabel  ),
+    fontnick          text    not null  references fontnicks  ( fontnick ),
+    outline_json_hash text    not null  references contents   ( hash     ),
     primary key ( iclabel, fontnick ) );
 
 -- ---------------------------------------------------------------------------------------------------------
 -- ### TAINT as in main etc, above, the insertion parts can be derived mechanically from the table
 -- definition; as its stands, they're mere noise / code duplication:
-fragment insert_into_outlines_first(): insert into outlines ( iclabel, fontnick, pathdata_hash ) values
-fragment insert_into_outlines_middle( iclabel, fontnick, pathdata_hash ): ( $iclabel, $fontnick, $pathdata_hash )
+fragment insert_into_outlines_first(): insert into outlines ( iclabel, fontnick, outline_json_hash ) values
+fragment insert_into_outlines_middle( iclabel, fontnick, outline_json_hash ): ( $iclabel, $fontnick, $outline_json_hash )
 fragment insert_into_contents_first(): insert into contents ( hash, content ) values
 fragment insert_into_contents_middle( hash, content ): ( $hash, $content )
 
 -- ---------------------------------------------------------------------------------------------------------
 procedure create_outlines_indexes():
-  create index outlines_fontnick_index      on outlines ( fontnick      );
-  create index outlines_pathdata_hash_index on outlines ( pathdata_hash );
+  create index outlines_fontnick_index          on outlines ( fontnick          );
+  create index outlines_outline_json_hash_index on outlines ( outline_json_hash );
 
 -- ---------------------------------------------------------------------------------------------------------
 query duplicate_outlines():
   with v1 as ( select
-      OL.iclabel        as iclabel,
-      OL.fontnick       as fontnick,
-      count(*) over w   as count,
-      OL.pathdata_hash  as pathdata_hash
+      OL.iclabel            as iclabel,
+      OL.fontnick           as fontnick,
+      count(*) over w       as count,
+      OL.outline_json_hash  as outline_json_hash
     from outlines as OL
-    window w as ( partition by pathdata_hash
+    window w as ( partition by outline_json_hash
       range between unbounded preceding and unbounded following ) )
     select * from v1
     where v1.count > 1;
@@ -215,7 +215,7 @@ query outline_json_from_cid( fontnick, cid ):
   select
       CO.content    as outline_json
     from outlines as OL
-    join contents as CO on ( OL.pathdata_hash = CO.hash )
+    join contents as CO on ( OL.outline_json_hash = CO.hash )
     join _main    as MN using ( iclabel )
     where true
       and MN.cid      = $cid
@@ -227,7 +227,7 @@ query outline_json_from_glyph( fontnick, glyph ):
   select
       CO.content    as outline_json
     from outlines as OL
-    join contents as CO on ( OL.pathdata_hash = CO.hash )
+    join contents as CO on ( OL.outline_json_hash = CO.hash )
     join _main    as MN using ( iclabel )
     where true
       and MN.glyph    = $glyph
@@ -242,7 +242,7 @@ fragment outline_json_from_glyphs( fontnick, glyphs, n ):
       MN.glyph      as glyph,
       CO.content    as outline_json
     from outlines as OL
-    join contents as CO on ( OL.pathdata_hash = CO.hash )
+    join contents as CO on ( OL.outline_json_hash = CO.hash )
     join _main    as MN using ( iclabel       )
     where true
       and MN.glyph    in ?glyphs?
