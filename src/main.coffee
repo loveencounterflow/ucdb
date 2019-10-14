@@ -51,6 +51,7 @@ mkts_fontfiles            = mkts_options.fonts.files
 MKNCR                     = require 'mingkwai-ncr'
 SVGTTF                    = require 'svgttf'
 MIRAGE                    = require 'sqlite-file-mirror'
+RCFG                      = require './read-configuration'
 #...........................................................................................................
 runmode                   = 'production'
 runmode                   = 'debug'
@@ -146,20 +147,15 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 # FONTNICKS
 #-----------------------------------------------------------------------------------------------------------
 @read_fontnicks = ( me ) ->
+  await RCFG.read_configuration me
   R = {}
-  for entry in mkts_fontfiles
-    fontnick  = @_fontnick_from_texname entry.texname
-    filename  = entry.filename
-    otf       = entry.otf ? null
-    otf_txt   = if otf? then " # #{otf}" else ''
-    ### TAINT should collect OTF feature strings as well ###
-    # debug "#{fontnick}\t\t\t\t#{filename}#{otf_txt}"
+  for row from me.db.configured_fontnicks_and_filenames()
+    { fontnick
+      filename
+      otf     }       = row
     R[ fontnick ]     = { filename, }
     R[ fontnick ].otf = otf if otf?
   return R
-
-# #-----------------------------------------------------------------------------------------------------------
-# @_filesize_from_path = ( me, filepath ) -> ( await FSP.stat filepath ).size
 
 #-----------------------------------------------------------------------------------------------------------
 @_build_fontcache = ( me ) -> new Promise ( resolve, reject ) =>
@@ -192,7 +188,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 
 #-----------------------------------------------------------------------------------------------------------
 @populate_table_fontnicks = ( me ) -> new Promise ( resolve, reject ) =>
-  me.fontnicks    = @read_fontnicks me
+  me.fontnicks    = await @read_fontnicks me
   font_cache      = await @_build_fontcache me
   preamble        = []
   data            = []
@@ -216,9 +212,6 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   me.db.$.execute sql
   me.line_count += line_count
   resolve null
-
-#-----------------------------------------------------------------------------------------------------------
-@_fontnick_from_texname = ( texname ) -> ( texname.replace 'mktsFontfile', '' ).toLowerCase()
 
 #-----------------------------------------------------------------------------------------------------------
 @_fontnick_from_tex_block = ( me, tex_block ) ->
@@ -346,36 +339,34 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   me.db.create_table_outlines()
   known_hashes = new Set()
   # XXX_includes      = 'jizurafourbmp'.split /\s+/
-  # XXX_includes      = 'sunexta kai babelstonehan'.split /\s+/
+  XXX_includes      = null
+  # XXX_includes      = 'kai'.split /\s+/
+  XXX_includes      = """dejavusansmonobold thtshynpzero cuyuansf sunexta kai babelstonehan ipag""".split /\s+/
+  # XXX_includes      = 'thtshynpone'.split /\s+/
+  # XXX_includes      = 'thtshynptwo'.split /\s+/
   ### TAINT do not retrieve all glyphrows, iterate instead; call @_insert_into_table_outlines with
   single glyphrow ###
   XXX_sql           = """
     select
         *
       from _main
-      -- where true
-        -- and ( cid between 0x0020 and 0x00ff ) or ( cid between 0x4e00 and 0xffff )
-      order by iclabel;"""
+      order by cid;"""
   glyphrows         = ( row           for row from me.db.$.query XXX_sql        )
   fontnicks         = ( row.fontnick  for row from me.db.walk_fontnick_table()  )
   me._outline_count = 0
   for fontnick in fontnicks
-    # continue unless fontnick in XXX_includes
+    continue unless XXX_includes? and fontnick in XXX_includes ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
     info "^ucdb@1011^ adding outlines for #{fontnick}"
     @_insert_into_table_outlines me, known_hashes, fontnick, glyphrows
+  me.db.finalize_outlines()
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_XXX_false_fallback_pathdata_from_SVGTTF_font = ( me, SVGTTF_font ) ->
-  ### TAINT ad-hoc procedure to obtain pathdata of false fallbacks; this will in the future be done
-  with MKTS Mirage (i.e. SQLite File Mirror) ###
+@_get_false_fallback_pathdata_from_SVGTTF_font = ( me, SVGTTF_font ) ->
   fontnick  = SVGTTF_font.nick
-  path      = project_abspath 'configuration/fontnick-and-false-fallbacks.txt'
-  ### TAINT we re-read each time since file is small ###
-  source    = FS.readFileSync path, 'utf-8'
-  pattern   = /// ^ #{fontnick} \s+ (?<sample> \S+ ) $ ///mu
-  return null unless ( match = source.match pattern )?
-  cid       = ( match.groups.sample ).codePointAt 0
+  row       = ( me.db.$.first_row me.db.false_fallback_probe_from_fontnick { fontnick, } ) ? null
+  return null unless row?
+  cid       = row.probe.codePointAt 0
   d         = SVGTTF.glyph_and_pathdata_from_cid SVGTTF_font.metrics, SVGTTF_font.otjsfont, cid
   return null unless d?
   return d.pathdata
@@ -388,6 +379,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   line_count        = 0
   duplicate_count   = 0
   batch_size        = 5000
+  progress_count    = 100 ### output progress whenever multiple of this number reached ###
   # fragment insert_into_outlines_first(): insert into outlines ( iclabel, fontnick, pathdata ) values
   #.........................................................................................................
   ### TAINT refactor ###
@@ -403,21 +395,16 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   # return null
   SVGTTF_font.advance_factor  = SVGTTF_font.metrics.em_size / SVGTTF_font.otjsfont.unitsPerEm
   XXX_advance_scale_factor    = SVGTTF_font.advance_factor * ( SVGTTF_font.metrics.global_glyph_scale ? 1 )
-  # tag                         = 'use-dumb-svg-parser'
-  # tag                         = 'use-svgpath'
-  tag                         = 'use-quickscale'
   #.........................................................................................................
-  false_fallback_pathdata = @_XXX_false_fallback_pathdata_from_SVGTTF_font me, SVGTTF_font
-  if false_fallback_pathdata
+  false_fallback_pathdata = @_get_false_fallback_pathdata_from_SVGTTF_font me, SVGTTF_font
+  if false_fallback_pathdata?
     warn '^ucdb@6374445^', "filtering codepoints with outlines that look like fallback (placeholder glyph)"
   #.........................................................................................................
   for { iclabel, cid, glyph, } from cast.iterator glyphrows
-    d = SVGTTF.glyph_and_pathdata_from_cid SVGTTF_font.metrics, SVGTTF_font.otjsfont, cid, tag
-    continue if ( not d? ) or ( d.pathdata is false_fallback_pathdata )
-    { glyph
-      pathdata }      = d
-    whisper '^ucdb@1013^', me._outline_count - 1 if ( me._outline_count++ % 1000 ) is 0
-    advance           = glyph.advanceWidth * XXX_advance_scale_factor
+    d = SVGTTF.glyph_and_pathdata_from_cid SVGTTF_font.metrics, SVGTTF_font.otjsfont, cid
+    continue if ( not d? ) or ( false_fallback_pathdata? and ( d.pathdata is false_fallback_pathdata ) )
+    whisper '^ucdb@1013^', me._outline_count - 1 if ( me._outline_count++ % progress_count ) is 0
+    advance           = d.glyph.advanceWidth * XXX_advance_scale_factor
     ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
     if ( isa.nan advance ) or ( advance is 0 )
       ### TAINT code repetition ###
@@ -425,7 +412,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
       warn "^ucdb@3332^ illegal advance for #{SVGTTF_font.nick} #{cid_hex}: #{rpr advance}; setting to 1"
       advance           = 1
     ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
-    content           = jr { advance, pathdata, }
+    content           = jr { advance, pathdata: d.pathdata, }
     hash              = MIRAGE.sha1sum_from_text content
     #.......................................................................................................
     if known_hashes.has hash
@@ -435,7 +422,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
       content_data.push ( me.db.insert_into_contents_middle { hash, content, } ) + ','
     #.......................................................................................................
     outlines_data.push ( me.db.insert_into_outlines_middle { iclabel, fontnick, outline_json_hash: hash, } ) + ','
-    if outlines_data.length >= batch_size
+    if ( outlines_data.length + content_data.length ) >= batch_size
       line_count += @_flush_outlines me, content_data, outlines_data
   #.........................................................................................................
   line_count += @_flush_outlines me, content_data, outlines_data
@@ -446,35 +433,25 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 #-----------------------------------------------------------------------------------------------------------
 @_flush_outlines = ( me, content_data, outlines_data ) ->
   ### TAINT code duplication, use ICQL method (TBW) ###
-  return 0 if ( content_data.length is 0 ) and ( outlines_data.length is 0 )
   #.........................................................................................................
   remove_comma = ( data ) ->
     last_idx          = data.length - 1
     data[ last_idx ]  = data[ last_idx ].replace /,\s*$/g, ''
     return null
   #.........................................................................................................
-  line_count = content_data.length + outlines_data.length
-  #.........................................................................................................
-  if content_data.length > 0
-    remove_comma content_data
-    sql = me.db.insert_into_contents_first() + '\n' + ( content_data.join '\n' ) + ';'
+  store_data = ( name, data ) ->
+    return if data.length is 0
+    remove_comma data
+    sql = me.db[ name ]() + '\n' + ( data.join '\n' ) + ';'
     me.db.$.execute sql
+    data.length = 0
+    return null
   #.........................................................................................................
-  if outlines_data.length > 0
-    remove_comma outlines_data
-    sql = me.db.insert_into_outlines_first() + '\n' + ( outlines_data.join '\n' ) + ';'
-    me.db.$.execute sql
-  #.........................................................................................................
-  me.line_count          += line_count
-  content_data.length     = 0
-  outlines_data.length    = 0
+  line_count      = content_data.length + outlines_data.length
+  store_data 'insert_into_contents_first',   content_data
+  store_data 'insert_into_outlines_first',  outlines_data
+  me.line_count  += line_count
   return line_count
-
-#-----------------------------------------------------------------------------------------------------------
-@create_outlines_indexes = ( me ) ->
-  ### NOTE to be called once when all outlines for all fonts have been inserted ###
-  me.db.create_outlines_indexes()
-  return null
 
 
 #===========================================================================================================
