@@ -250,11 +250,29 @@ fragment outline_json_from_glyphs( fontnick, glyphs, n ):
     limit $n;
 
 -- ---------------------------------------------------------------------------------------------------------
+query configured_fontnicks_and_filenames():
+  select
+      fontnick,
+      filename,
+      otf
+    from configuration_fontnicks_filenames_and_otf_features
+    order by fontnick;
+
+-- ---------------------------------------------------------------------------------------------------------
 query fontnicks():
   select
       fontnick
     from fontnicks
     order by fontnick;
+
+-- ---------------------------------------------------------------------------------------------------------
+query false_fallback_probe_from_fontnick( fontnick ):
+  select
+      fontnick,
+      probe
+    from configuration_fontnick_and_false_fallbacks
+    where fontnick = $fontnick;
+
 
 -- =========================================================================================================
 --
