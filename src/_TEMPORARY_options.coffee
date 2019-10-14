@@ -140,6 +140,12 @@ module.exports = options =
     home: '\\mktsPathsFontsHome'
     files: [
       # { texname: 'mktsFontfileJizurathreeb',                   filename: 'jizura3b-from-svg-rewritten-by-fontforge.ttf',                        }
+
+      { texname: 'cuyuansf', filename: 'CTCuYuanSF-repaired.ttf', }
+
+      { texname: 'mktsFontfileKouonea',           subfolder: 'ochiai-oracle-bone-inscriptions', filename: 'Kou_1A++.ttf',                   }
+      { texname: 'mktsFontfileHycuzhuanf',        subfolder: 'hanyi', filename: 'HYCuZhuanF.TTF',               }
+      { texname: 'mktsFontfileEbasninetwoseven',  subfolder: 'seal', filename: 'ebas927.ttf',                   }
       { texname: 'mktsFontfileBabelstonehan',                  filename: 'BabelStoneHan.ttf',                   }
       { texname: 'mktsFontfileBiaukai',                        filename: 'BiauKai.ttf',                         }
       { texname: 'mktsFontfileCwtexqfangsongmedium',           filename: 'cwTeXQFangsong-Medium.ttf',           }
@@ -399,6 +405,7 @@ module.exports = options =
       { texname: 'mktsFontfileNotoserifjpmedium',             subfolder: 'NotoSerifJP', filename: 'NotoSerifJP-Medium.otf',    }
       { texname: 'mktsFontfileNotoserifjpregular',            subfolder: 'NotoSerifJP', filename: 'NotoSerifJP-Regular.otf',    }
       { texname: 'mktsFontfileNotoserifjpsemibold',           subfolder: 'NotoSerifJP', filename: 'NotoSerifJP-SemiBold.otf',    }
+      { texname: 'mktsFontfileNotoserifcjkblack',             subfolder: 'NotoSerifJP', filename: 'NotoSerifCJK-Black.ttc',    }
 
       { texname: 'mktsFontfileThkhaaitpzero',                 subfolder: 'TH-Khaai', filename: 'TH-Khaai-TP0.ttf', }
       { texname: 'mktsFontfileThkhaaitptwo',                  subfolder: 'TH-Khaai', filename: 'TH-Khaai-TP2.ttf', }

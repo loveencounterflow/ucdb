@@ -1,4 +1,4 @@
-# fontnick 												filename 												OTF features
+# fontnick             filename             OTF features
 aleobold                          Aleo-Bold.otf
 aleobolditalic                    Aleo-BoldItalic.otf
 aleoitalic                        Aleo-Italic.otf
@@ -12,6 +12,7 @@ bitterbold                        Bitter-Bold.otf
 bitterbolditalic                  Bitter-BoldItalic.otf
 bitteritalic                      Bitter-Italic.otf
 bitterregular                     Bitter-Regular.otf
+cuyuansf                          CTCuYuanSF-repaired.ttf
 cwtexqfangsongmedium              cwTeXQFangsong-Medium.ttf
 cwtexqheibold                     cwTeXQHei-Bold.ttf
 cwtexqkaimedium                   cwTeXQKai-Medium.ttf
@@ -39,22 +40,23 @@ dejavuserifcondenseditalic        DejaVuSerifCondensed-Italic.ttf
 dejavuserifitalic                 DejaVuSerif-Italic.ttf
 droidsansfallbackfull             DroidSansFallbackFull.ttf
 droidsansjapanese                 DroidSansJapanese.ttf
-ebgaramondeightitalic             EBGaramond08-Italic.otf            	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
-ebgaramondeightregular            EBGaramond08-Regular.otf           	Numbers={Monospaced,Lining}
-ebgaramondeightsc                 EBGaramondSC08-Regular.otf         	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
-ebgaramondinitials                EBGaramond-Initials.otf            	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
-ebgaramondinitialsfone            EBGaramond-InitialsF1.otf          	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
-ebgaramondinitialsftwo            EBGaramond-InitialsF2.otf          	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
-ebgaramondtwelveallsc             EBGaramond12-AllSC.otf             	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
-ebgaramondtwelveitalic            EBGaramond12-Italic.otf            	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
-ebgaramondtwelveitalicscall       EBGaramond12-Italic.otf            	Letters={SmallCaps,UppercaseSmallCaps},Numbers={Monospaced,Lining}
-ebgaramondtwelveitalicsclower     EBGaramond12-Italic.otf            	Letters={SmallCaps},Numbers={Monospaced,Lining}
-ebgaramondtwelveitalicscupper     EBGaramond12-Italic.otf            	Letters={UppercaseSmallCaps},Numbers={Monospaced,Lining}
-ebgaramondtwelveregular           EBGaramond12-Regular.otf           	Numbers={Monospaced,Lining}
-ebgaramondtwelveregularscall      EBGaramond12-Regular.otf           	Letters={SmallCaps,UppercaseSmallCaps},Numbers={Monospaced,Lining}
-ebgaramondtwelveregularsclower    EBGaramond12-Regular.otf           	Letters={SmallCaps},Numbers={Monospaced,Lining}
-ebgaramondtwelveregularscupper    EBGaramond12-Regular.otf           	Letters={UppercaseSmallCaps},Numbers={Monospaced,Lining}
-ebgaramondtwelvesc                EBGaramondSC12-Regular.otf         	Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebasninetwoseven                  ebas927.ttf
+ebgaramondeightitalic             EBGaramond08-Italic.otf             Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondeightregular            EBGaramond08-Regular.otf            Numbers={Monospaced,Lining}
+ebgaramondeightsc                 EBGaramondSC08-Regular.otf          Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondinitials                EBGaramond-Initials.otf             Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondinitialsfone            EBGaramond-InitialsF1.otf           Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondinitialsftwo            EBGaramond-InitialsF2.otf           Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondtwelveallsc             EBGaramond12-AllSC.otf              Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondtwelveitalic            EBGaramond12-Italic.otf             Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
+ebgaramondtwelveitalicscall       EBGaramond12-Italic.otf             Letters={SmallCaps,UppercaseSmallCaps},Numbers={Monospaced,Lining}
+ebgaramondtwelveitalicsclower     EBGaramond12-Italic.otf             Letters={SmallCaps},Numbers={Monospaced,Lining}
+ebgaramondtwelveitalicscupper     EBGaramond12-Italic.otf             Letters={UppercaseSmallCaps},Numbers={Monospaced,Lining}
+ebgaramondtwelveregular           EBGaramond12-Regular.otf            Numbers={Monospaced,Lining}
+ebgaramondtwelveregularscall      EBGaramond12-Regular.otf            Letters={SmallCaps,UppercaseSmallCaps},Numbers={Monospaced,Lining}
+ebgaramondtwelveregularsclower    EBGaramond12-Regular.otf            Letters={SmallCaps},Numbers={Monospaced,Lining}
+ebgaramondtwelveregularscupper    EBGaramond12-Regular.otf            Letters={UppercaseSmallCaps},Numbers={Monospaced,Lining}
+ebgaramondtwelvesc                EBGaramondSC12-Regular.otf          Numbers={Monospaced,Lining},Ligatures={Rare,Historic}
 epgyobld                          EPGYOBLD.TTF
 epgyosho                          EPGYOSHO.TTF
 epkaisho                          EPKAISHO.TTF
@@ -83,10 +85,10 @@ hanamina                          HanaMinA.ttf
 hanaminb                          HanaMinB.ttf
 hminglanb                         H-MingLan-B.ttf
 hminglanr                         H-MingLan-R.ttf
-iosevkatermslabbold               iosevka-term-slab-bold.ttf         	CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
-iosevkatermslabbolditalic         iosevka-term-slab-bolditalic.ttf   	CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
-iosevkatermslabmedium             iosevka-term-slab-medium.ttf       	CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
-iosevkatermslabmediumitalic       iosevka-term-slab-mediumitalic.ttf 	CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
+iosevkatermslabbold               iosevka-term-slab-bold.ttf          CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
+iosevkatermslabbolditalic         iosevka-term-slab-bolditalic.ttf    CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
+iosevkatermslabmedium             iosevka-term-slab-medium.ttf        CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
+iosevkatermslabmediumitalic       iosevka-term-slab-mediumitalic.ttf  CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
 ipaexg                            ipaexg.ttf
 ipaexm                            ipaexm.ttf
 ipag                              ipag.ttf
@@ -95,6 +97,8 @@ ipam                              ipam.ttf
 ipamp                             ipamp.ttf
 jizurathreeb                      jizura3b.ttf
 kai                               Kai.ttf
+kouonea                           Kou_1A++.ttf
+hycuzhuanf                        HYCuZhuanF.TTF
 lmromantenitalic                  lmroman10-italic.otf
 lmromantenregular                 lmroman10-regular.otf
 merriweatherblack                 Merriweather-Black.ttf
@@ -118,6 +122,7 @@ notoserifjplight                  NotoSerifJP-Light.otf
 notoserifjpmedium                 NotoSerifJP-Medium.otf
 notoserifjpregular                NotoSerifJP-Regular.otf
 notoserifjpsemibold               NotoSerifJP-SemiBold.otf
+notoserifcjkblack                 NotoSerifCJK-Black.ttc
 optima                            Optima.ttc
 oswaldbold                        Oswald-Bold.ttf
 oswaldlight                       Oswald-Light.ttf
