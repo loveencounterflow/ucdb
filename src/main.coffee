@@ -47,7 +47,6 @@ PD                        = require 'pipedreams'
 #...........................................................................................................
 mkts_options              = require './_TEMPORARY_options'
 mkts_glyph_styles         = mkts_options.tex[ 'glyph-styles' ]
-mkts_fontfiles            = mkts_options.fonts.files
 MKNCR                     = require 'mingkwai-ncr'
 SVGTTF                    = require 'svgttf'
 MIRAGE                    = require 'sqlite-file-mirror'
