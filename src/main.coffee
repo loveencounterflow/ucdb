@@ -340,7 +340,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   # XXX_includes      = 'jizurafourbmp'.split /\s+/
   XXX_includes      = null
   # XXX_includes      = 'kai'.split /\s+/
-  XXX_includes      = """dejavusansmonobold thtshynpzero cuyuansf sunexta kai babelstonehan ipag""".split /\s+/
+  # XXX_includes      = """dejavusansmonobold thtshynpzero cuyuansf sunexta kai babelstonehan ipag""".split /\s+/
   # XXX_includes      = 'thtshynpone'.split /\s+/
   # XXX_includes      = 'thtshynptwo'.split /\s+/
   ### TAINT do not retrieve all glyphrows, iterate instead; call @_insert_into_table_outlines with

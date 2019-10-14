@@ -205,7 +205,7 @@ sample_glyphs = Array.from ( """
   glyphs        = Array.from new Set text
   fontnick      = ctx.query.fontnick  ? 'sunexta'
   pathdatamap   = pathdatamap_from_glyphs fontnick, glyphs
-  svg           = SVG.slug_from_pathdatamap glyphs, pathdatamap
+  svg           = SVG.slug_from_pathdatamap fontnick, glyphs, pathdatamap
   ########################################################
   # ctx.set 'Cache-Control', O.cache_control ### TAINT use middleware to set cache control? ###
   ctx.set 'content-type', 'image/svg+xml'
@@ -234,7 +234,10 @@ pathdatamap_from_glyphs = ( fontnick, glyphs ) ->
   ### TAINT make this transformation a method ###
   R               = {}
   for row from O.ucdb.db.$.query sql
-    R[ row.glyph ]  = _pathdata_from_outline_row row
+    { outline_nr,
+      shared_outline_count  } = row
+    pathdata                  = _pathdata_from_outline_row row
+    R[ row.glyph ]  = { pathdata, outline_nr, shared_outline_count, }
   return R
 
 
@@ -252,8 +255,7 @@ SVG.glyph_from_pathdata = ( pathdata ) ->
     </svg>"""
 
 #-----------------------------------------------------------------------------------------------------------
-SVG.slug_from_pathdatamap = ( glyphs, pathdatamap ) ->
-  # urge '^SVG.slug_from_pathdatamap@3367^', rpr pathdatalist[ .. 200 ]
+SVG.slug_from_pathdatamap = ( fontnick, glyphs, pathdatamap ) ->
   x0          = 0
   x           = 0
   advance_x   = 4096 ### TAINT magic number, should be derived ###
@@ -261,7 +263,14 @@ SVG.slug_from_pathdatamap = ( glyphs, pathdatamap ) ->
   width       = x0 + advance_x * glyph_count
   R           = ''
   R          += "<?xml version='1.0' standalone='no'?>"
-  R          += "<svg xmlns='http://www.w3.org/2000/svg' viewBox='#{x0} -800 #{width} 4896'>"
+  # R          += "<svg xmlns='http://www.w3.org/2000/svg' viewBox='#{x0} -800 #{width} 4896'>"
+  R          += "<svg xmlns='http://www.w3.org/2000/svg' viewBox='#{x0} -800 #{width} 4996'>"
+  R          += "<style>"
+  R          += ".olnr {"
+  R          += " fill: red;"
+  R          += " font-family: helvetica;"
+  R          += " font-size: 1500px; }"
+  R          += "</style>"
   ### insert blank pathdata for missing glyphs ###
   # blank                           = 'M 0 0 L 4000 4000 L 4096 4000 96 0 Z'
   # blank                           = ''
@@ -269,10 +278,22 @@ SVG.slug_from_pathdatamap = ( glyphs, pathdatamap ) ->
   # return ( ( pathdata_by_glyph[ glyph ] ? blank ) for glyph in glyphs )
   #.........................................................................................................
   for glyph in glyphs
-    if ( pathdata = pathdatamap[ glyph ] )?
+    entry = pathdatamap[ glyph ]
+    #.......................................................................................................
+    if entry?
+      { pathdata
+        outline_nr
+        shared_outline_count } = entry
       R += "<path transform='scale( 1 -1 ) translate( #{x} -3296 )' d='#{pathdata}'/>"
+      if shared_outline_count > 1
+        urge '^ucdb/server@8931^', fontnick, glyph, shared_outline_count
+        push  = Math.floor x + advance_x * 0.9 + 0.5
+        R    += "<text class='olnr' x='#{push}' y='4296'>#{outline_nr}</text>"
+    #.......................................................................................................
     else
+      ### add fallback glyph ###
       R += "<path transform='scale( 1 -1 ) translate( #{x} -3296 )' d='M 600 -550 L 3446 -550 3446 3546 600 3546 Z' fill='rgba(100,100,0,0.2)'/>"
+    #.......................................................................................................
     x += advance_x
   #.........................................................................................................
   R          += "</svg>"
