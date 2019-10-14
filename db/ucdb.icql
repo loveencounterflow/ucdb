@@ -204,7 +204,8 @@ procedure finalize_outlines():
   create view outlines as select
       iclabel               as iclabel,
       fontnick              as fontnick,
-      dense_rank() over w   as outline_nr,
+      dense_rank()  over w  as outline_nr,
+      count(*)      over w  as shared_outline_count,
       outline_json_hash     as outline_json_hash
     from _outlines
     window w as ( partition by iclabel
@@ -258,8 +259,10 @@ query outline_json_from_glyph( fontnick, glyph ):
 -- replaced by sth like `$tuple:glyphs` as soon as ICQL has been updated
 fragment outline_json_from_glyphs( fontnick, glyphs, n ):
   select
-      MN.glyph      as glyph,
-      CO.content    as outline_json
+      MN.glyph                as glyph,
+      CO.content              as outline_json,
+      OL.outline_nr           as outline_nr,
+      OL.shared_outline_count as shared_outline_count
     from outlines as OL
     join contents as CO on ( OL.outline_json_hash = CO.hash )
     join _main    as MN using ( iclabel       )
