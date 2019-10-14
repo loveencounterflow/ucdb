@@ -19,7 +19,9 @@ query sqlite_index_infos():
 fragment create_table_main_first():
   drop table  if exists cpfrs;
   drop table  if exists variables;
-  drop table  if exists outlines;
+  drop view   if exists duplicate_outlines;
+  drop view   if exists outlines;
+  drop table  if exists _outlines;
   drop view   if exists main;
   drop table  if exists _main_fallback;
   drop table  if exists _main;
@@ -115,7 +117,8 @@ procedure create_main_indexes():
 -- FONTNICKS
 -- ---------------------------------------------------------------------------------------------------------
 fragment create_table_fontnicks_first():
-  drop table  if exists outlines;
+  drop view   if exists outlines;
+  drop table  if exists _outlines;
   drop table  if exists fontnicks;
   -- .......................................................................................................
   create table fontnicks (
@@ -166,8 +169,8 @@ query read_lines():
 procedure create_table_contents():
   drop table if exists contents;
   create table contents (
-    hash    text  not null  unique,
-    content text  not null  unique,
+    hash    text    not null  unique,
+    content text    not null  unique,
     primary key ( hash ),
     -- ### TAINT should use regex to check string content
     -- ### TAINT magic number 17 (length of sha1sum)
@@ -175,31 +178,40 @@ procedure create_table_contents():
 
 -- ---------------------------------------------------------------------------------------------------------
 procedure create_table_outlines():
-  drop table if exists outlines;
-  create table outlines (
+  drop table if exists _outlines;
+  create table _outlines (
     /*  NOTE: we use `iclabel`, not `glyph` or `cid` as primary key because in theory neither of the latter
         two is capable of expressing codepoints outside of Unicode. */
     iclabel           text    not null  references _main      ( iclabel  ),
     fontnick          text    not null  references fontnicks  ( fontnick ),
+    outline_nr        integer, -- counts distinct outline variants per codepoint
     outline_json_hash text    not null  references contents   ( hash     ),
     primary key ( iclabel, fontnick ) );
 
 -- ---------------------------------------------------------------------------------------------------------
 -- ### TAINT as in main etc, above, the insertion parts can be derived mechanically from the table
 -- definition; as its stands, they're mere noise / code duplication:
-fragment insert_into_outlines_first(): insert into outlines ( iclabel, fontnick, outline_json_hash ) values
+fragment insert_into_outlines_first(): insert into _outlines ( iclabel, fontnick, outline_json_hash ) values
 fragment insert_into_outlines_middle( iclabel, fontnick, outline_json_hash ): ( $iclabel, $fontnick, $outline_json_hash )
 fragment insert_into_contents_first(): insert into contents ( hash, content ) values
 fragment insert_into_contents_middle( hash, content ): ( $hash, $content )
 
 -- ---------------------------------------------------------------------------------------------------------
-procedure create_outlines_indexes():
-  create index outlines_fontnick_index          on outlines ( fontnick          );
-  create index outlines_outline_json_hash_index on outlines ( outline_json_hash );
-
--- ---------------------------------------------------------------------------------------------------------
-query duplicate_outlines():
-  with v1 as ( select
+procedure finalize_outlines():
+  drop view if exists duplicate_outlines;
+  drop view if exists outlines;
+  -- .......................................................................................................
+  create view outlines as select
+      iclabel               as iclabel,
+      fontnick              as fontnick,
+      dense_rank() over w   as outline_nr,
+      outline_json_hash     as outline_json_hash
+    from _outlines
+    window w as ( partition by iclabel
+      order by outline_json_hash )
+    order by iclabel, fontnick;
+  -- .......................................................................................................
+  create view duplicate_outlines as with v1 as ( select
       OL.iclabel            as iclabel,
       OL.fontnick           as fontnick,
       count(*) over w       as count,
@@ -209,6 +221,13 @@ query duplicate_outlines():
       range between unbounded preceding and unbounded following ) )
     select * from v1
     where v1.count > 1;
+  -- .......................................................................................................
+  create index outlines_fontnick_index          on _outlines ( fontnick          );
+  create index outlines_outline_json_hash_index on _outlines ( outline_json_hash );
+  -- recommended by sqlite> .lint fkey-indexes
+  -- CREATE INDEX 'outlines_outline_json_hash' ON 'outlines'('outline_json_hash'); --> contents(hash)
+  -- CREATE INDEX 'outlines_fontnick' ON 'outlines'('fontnick'); --> fontnicks(fontnick)
+
 
 -- ---------------------------------------------------------------------------------------------------------
 query outline_json_from_cid( fontnick, cid ):
