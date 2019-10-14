@@ -81,7 +81,7 @@ HELPERS                   = require '../helpers'
   app
     # .use $time_request()
     .use $echo()
-    .use serve ( project_abspath './public' ), { maxage: O.max_age, }
+    .use serve ( project_abspath './public' ) #, { maxage: O.max_age, }
     .use root_router.allowedMethods()
     .use root_router.routes()
   return app
@@ -181,7 +181,7 @@ sample_glyphs = Array.from ( """
   glyph     = ctx.query.glyph     ? '流'
   fontnick  = ctx.query.fontnick  ? 'sunexta'
   pathdata  = await pathdata_from_glyph fontnick, glyph
-  ctx.set 'Cache-Control', O.cache_control ### TAINT use middleware to set cache control? ###
+  # ctx.set 'Cache-Control', O.cache_control ### TAINT use middleware to set cache control? ###
   #.........................................................................................................
   unless pathdata?
     ctx.status  = 302
