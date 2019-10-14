@@ -354,7 +354,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   fontnicks         = ( row.fontnick  for row from me.db.walk_fontnick_table()  )
   me._outline_count = 0
   for fontnick in fontnicks
-    continue unless XXX_includes? and fontnick in XXX_includes ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
+    continue if XXX_includes? and fontnick not in XXX_includes ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
     info "^ucdb@1011^ adding outlines for #{fontnick}"
     @_insert_into_table_outlines me, known_hashes, fontnick, glyphrows
   me.db.finalize_outlines()
