@@ -340,9 +340,18 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   me.db.create_table_outlines()
   known_hashes = new Set()
   # XXX_includes      = 'jizurafourbmp'.split /\s+/
-  XXX_includes      = null
+  # XXX_includes      = null
   # XXX_includes      = 'kai'.split /\s+/
   # XXX_includes      = """dejavusansmonobold thtshynpzero cuyuansf sunexta kai babelstonehan ipag""".split /\s+/
+  XXX_includes      = """ipag""".split /\s+/
+  # XXX_includes      = """sourcehanserifheavyjapan
+  #   sourcehanserifregularjapan
+  #   sourcehanserifheavykorea
+  #   sourcehanserifregularkorea
+  #   sourcehanserifheavymainland
+  #   sourcehanserifregularmainland
+  #   sourcehanserifheavytaiwan
+  #   sourcehanserifregulartaiwan""".split /\s+/
   # XXX_includes      = 'thtshynpone'.split /\s+/
   # XXX_includes      = 'thtshynptwo'.split /\s+/
   ### TAINT do not retrieve all glyphrows, iterate instead; call @_insert_into_table_outlines with
@@ -614,6 +623,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 if require.main is module then do =>
   # info await @_build_fontcache null
   await @write_ucdb()
+
   # # await @read_rsgs null
   # @_find_fontnick_ranges()
   # help await @_describe_filename null, 'DejaVuSansMono-Bold.ttf'
