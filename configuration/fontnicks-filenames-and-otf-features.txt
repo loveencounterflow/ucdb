@@ -1,4 +1,9 @@
 # fontnick             filename             OTF features
+
+# glyphwikione                      gw2588251.ttf
+
+
+shufajiachaomingti                书法家超明体.ttf
 aleobold                          Aleo-Bold.otf
 aleobolditalic                    Aleo-BoldItalic.otf
 aleoitalic                        Aleo-Italic.otf
@@ -81,8 +86,20 @@ flowdejavusansmono                FlowDejaVuSansMono.ttf
 fontsjapanesegothic               fonts-japanese-gothic.ttf
 fontsjapanesemincho               fonts-japanese-mincho.ttf
 gltsukijifivego                   GL-Tsukiji-5go.ttf
+
 hanamina                          HanaMinA.ttf
 hanaminb                          HanaMinB.ttf
+
+hanaminaotf                       HanaMinA.otf
+hanaminaotf                       HanaMinA.ttf
+hanaminbotf                       HanaMinB.otf
+hanaminbotf                       HanaMinB.ttf
+hanamincotf                       HanaMinC.otf
+hanaminexaoneotf                  HanaMinExA1.otf
+hanaminexatwootf                  HanaMinExA2.otf
+hanaminexbotf                     HanaMinExB.otf
+hanaminiotf                       HanaMinI.otf
+
 hminglanb                         H-MingLan-B.ttf
 hminglanr                         H-MingLan-R.ttf
 iosevkatermslabbold               iosevka-term-slab-bold.ttf          CharacterVariant={15,21,3,24,19,17,23,51,46,44,34}
@@ -186,6 +203,16 @@ sourcesansprolightitalic          SourceSansPro-LightItalic.ttf
 sourcesansproregular              SourceSansPro-Regular.ttf
 sourcesansprosemibold             SourceSansPro-Semibold.ttf
 sourcesansprosemibolditalic       SourceSansPro-SemiboldItalic.ttf
+
+sourcehanserifheavyjapan          SourceHanSerif-Heavy.otf
+sourcehanserifregularjapan        SourceHanSerif-Regular.otf
+sourcehanserifheavykorea          SourceHanSerifK-Heavy.otf
+sourcehanserifregularkorea        SourceHanSerifK-Regular.otf
+sourcehanserifheavymainland       SourceHanSerifSC-Heavy.otf
+sourcehanserifregularmainland     SourceHanSerifSC-Regular.otf
+sourcehanserifheavytaiwan         SourceHanSerifTC-Heavy.otf
+sourcehanserifregulartaiwan       SourceHanSerifTC-Regular.otf
+
 stintultracondensedregular        StintUltraCondensed-Regular.ttf
 sunexta                           sun-exta.ttf
 sunextb                           Sun-ExtB.ttf
@@ -208,7 +235,11 @@ ubuntumonori                      UbuntuMono-RI.ttf
 ubuntur                           Ubuntu-R.ttf
 ubunturi                          Ubuntu-RI.ttf
 ukai                              ukai.ttc
+umingttcone                       uming001.ttf
 uming                             uming.ttc
+unifonttwelve                     unifont-12.1.03.ttf
+unifontcsurtwelve                 unifont_csur-12.1.03.ttf
+unifontuppertwelve                unifont_upper-12.1.03.ttf
 unifrakturcook                    UnifrakturCook.ttf
 unifrakturcooklight               UnifrakturCook-Light.ttf
 unifrakturmaguntia                UnifrakturMaguntia.ttf

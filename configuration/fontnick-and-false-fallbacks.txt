@@ -18,5 +18,6 @@ dejavusansmonoboldoblique         万
 dejavusansmonooblique             万
 jizurafourbmp                     𗐑
 jizurathreeb                      𗐑
+umingttcone                       𗐑
 
 
