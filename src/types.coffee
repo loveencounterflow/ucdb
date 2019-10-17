@@ -44,7 +44,7 @@ intertype                 = new ( require 'intertype' ).Intertype module.exports
 @declare 'ucdb_cid',
   tests:
     "x is an integer":                        ( x ) -> @isa.integer x
-    "x is between 0x20 and 0x10ffff":         ( x ) -> 0x20 < x < 0x10ffff
+    "x is between 0x20 and 0x10ffff":         ( x ) -> 0x0 <= x <= 0x10ffff
 
 #-----------------------------------------------------------------------------------------------------------
 @declare 'ucdb_cid_codepage_text',
