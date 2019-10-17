@@ -202,21 +202,25 @@ procedure finalize_outlines():
   drop view if exists outlines;
   -- .......................................................................................................
   create view outlines as select
-      iclabel               as iclabel,
-      fontnick              as fontnick,
-      dense_rank()  over w  as outline_nr,
-      count(*)      over w  as shared_outline_count,
-      outline_json_hash     as outline_json_hash
+      iclabel                 as iclabel,
+      fontnick                as fontnick,
+      dense_rank()  over drw  as outline_nr,
+      count(*)      over cw   as shared_outline_count,
+      outline_json_hash       as outline_json_hash
     from _outlines
-    window w as ( partition by iclabel
+    window drw as ( partition by iclabel
+      order by outline_json_hash ),
+    cw as ( partition by iclabel, outline_json_hash
       order by outline_json_hash )
     order by iclabel, fontnick;
   -- .......................................................................................................
   create view duplicate_outlines as with v1 as ( select
-      OL.iclabel            as iclabel,
-      OL.fontnick           as fontnick,
-      count(*) over w       as count,
-      OL.outline_json_hash  as outline_json_hash
+      OL.iclabel                as iclabel,
+      OL.fontnick               as fontnick,
+      count(*) over w           as count,
+      OL.shared_outline_count   as shared_outline_count,
+      OL.outline_nr             as outline_nr,
+      OL.outline_json_hash      as outline_json_hash
     from outlines as OL
     window w as ( partition by outline_json_hash
       range between unbounded preceding and unbounded following ) )
@@ -294,6 +298,33 @@ query false_fallback_probe_from_fontnick( fontnick ):
       probe
     from configuration_fontnick_and_false_fallbacks
     where fontnick = $fontnick;
+
+-- ---------------------------------------------------------------------------------------------------------
+query read_prepare_configuration_styles_codepoints_and_fontnicks():
+  select * from configuration_styles_codepoints_and_fontnicks order by linenr;
+
+-- ---------------------------------------------------------------------------------------------------------
+procedure prepare_configuration_tables():
+  -- ### TAINT would be better to set up all columns in table definition
+  -- .......................................................................................................
+  alter table configuration_rsgs_and_blocks rename column range to range_txt;
+  alter table configuration_rsgs_and_blocks add column first_cid integer not null default -1;
+  alter table configuration_rsgs_and_blocks add column last_cid  integer not null default -1;
+  -- .......................................................................................................
+  alter table configuration_styles_codepoints_and_fontnicks rename column ranges to range_txt;
+  alter table configuration_styles_codepoints_and_fontnicks add column first_cid integer not null default -1;
+  alter table configuration_styles_codepoints_and_fontnicks add column last_cid  integer not null default -1;
+
+-- ---------------------------------------------------------------------------------------------------------
+procedure finalize_configuration_tables():
+  create index cfg_rsgs_first_cid_index     on configuration_rsgs_and_blocks ( first_cid  );
+  create index cfg_rsgs_last_cid_index      on configuration_rsgs_and_blocks ( last_cid   );
+  create index cfg_rsgs_rsg_index           on configuration_rsgs_and_blocks ( rsg        );
+  create index cfg_rsgs_blockname_index     on configuration_rsgs_and_blocks ( blockname  );
+  create index cfg_rsgs_icgroup_index       on configuration_rsgs_and_blocks ( icgroup    );
+  -- .......................................................................................................
+  create index cfg_styles_first_cid_index   on configuration_styles_codepoints_and_fontnicks ( first_cid );
+  create index cfg_styles_last_cid_index    on configuration_styles_codepoints_and_fontnicks ( last_cid  );
 
 
 -- =========================================================================================================
