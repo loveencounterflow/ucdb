@@ -287,7 +287,7 @@ SVG.slug_from_pathdatamap = ( fontnick, glyphs, pathdatamap ) ->
         shared_outline_count } = entry
       R += "<path transform='scale( 1 -1 ) translate( #{x} -3296 )' d='#{pathdata}'/>"
       if shared_outline_count > 1
-        urge '^ucdb/server@8931^', fontnick, glyph, shared_outline_count
+        # urge '^ucdb/server@8931^', fontnick, glyph, shared_outline_count
         push  = Math.floor x + advance_x * 0.9 + 0.5
         R    += "<text class='olnr' x='#{push}' y='4296'>#{outline_nr}</text>"
     #.......................................................................................................
