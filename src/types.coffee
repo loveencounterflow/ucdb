@@ -47,21 +47,43 @@ intertype                 = new ( require 'intertype' ).Intertype module.exports
     "x is between 0x20 and 0x10ffff":         ( x ) -> 0x20 < x < 0x10ffff
 
 #-----------------------------------------------------------------------------------------------------------
+@declare 'ucdb_cid_codepage_text',
+  tests:
+    "x is a text":                            ( x ) -> @isa.text x
+    "x matches one to four hex digits":       ( x ) -> ( x.match /// ^ [0-9a-f]{1,4} $ ///u )?
+
+#-----------------------------------------------------------------------------------------------------------
 @declare 'ucdb_glyph',
   tests:
     "x is a text":                            ( x ) -> @isa.text x
     "x contains single codepoint":            ( x ) -> ( x.match ///^.$///u )?
 
 #-----------------------------------------------------------------------------------------------------------
+@declare 'nonnegative_integer',             ( x ) => ( Number.isInteger x ) and x >= 0
+
+#-----------------------------------------------------------------------------------------------------------
 ### TAINT experimental ###
 L = @
 @cast =
+
+  #---------------------------------------------------------------------------------------------------------
   iterator: ( x ) ->
     switch ( type = L.type_of x )
       when 'generator'          then return x
       when 'generatorfunction'  then return x()
       when 'list'               then return ( -> y for y in x )()
     throw new Error "^ucdb/types@3422 unable to cast a #{type} as iterator"
+
+  #---------------------------------------------------------------------------------------------------------
+  hex: ( x ) ->
+    L.validate.nonnegative_integer x
+    return '0x' + x.toString 16
+
+  #---------------------------------------------------------------------------------------------------------
+  ucdb_cid_codepage_number: ( x ) ->
+    L.validate.ucdb_cid_codepage_text x
+    return parseInt x + '00', 16
+
 
 #     "x.file_path is a ?nonempty text":        ( x ) -> ( not x.file_path?   ) or @isa.nonempty_text x.file_path
 #     "x.text is a ?text":                      ( x ) -> ( not x.text?        ) or @isa.text          x.text
