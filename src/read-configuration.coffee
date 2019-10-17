@@ -100,37 +100,77 @@ MIRAGE                    = require 'sqlite-file-mirror'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
+@_cidrange_from_rsg = ( rsg ) -> return { first_cid: 111, last_cid: 111, }
+
+#-----------------------------------------------------------------------------------------------------------
+@_cidrange_from_text_with_rsgs = ( range_txt ) ->
+  return @_cidrange_from_rsg range_txt.replace /^rsg:/, '' if range_txt.startsWith 'rsg:'
+  return @_cidrange_from_text_without_rsgs range_txt
+
+#-----------------------------------------------------------------------------------------------------------
+@_cidrange_from_text_without_rsgs = ( range_txt ) ->
+  unless ( R = @_optional_cidrange_from_text_without_rsgs range_txt )?
+    throw new Error "^ucdb/cfg@3388 unknown format for field 'ranges': #{rpr range_txt}"
+  validate.ucdb_cid R.first_cid
+  validate.ucdb_cid R.last_cid
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_optional_cidrange_from_text_without_rsgs = ( range_txt ) ->
+  ### TAINT consider doing this in types/`cast` ###
+  ### Given a text, try to interpret it as a CID range, considering the following alternatives:
+    * an `*` (asterisk), indicating all codepoints;
+    * a character literal like `'字'` or `'x'`, indicated by single quotes;
+    * a hexadecimal CID, indicated by a leading `0x`, or
+    * a hexadecimal CID range of the form `0x000..0x999` (with two dots).
+    A `null` is returned in case none of the above is applicable.
+  ###
+  first_cid = null
+  last_cid  = null
+  #.........................................................................................................
+  if range_txt is "*"
+    ### any codepoint: ###
+    first_cid = 0x000020
+    last_cid  = 0x10ffff
+  #.........................................................................................................
+  else if range_txt.startsWith "'"
+    ### character literal: ###
+    glyph = range_txt.replace /// ^ ' ( . ) ' ///us, '$1'
+    validate.chr glyph
+    first_cid = glyph.codePointAt 0
+  #.........................................................................................................
+  else if range_txt.startsWith '0x'
+    if ( cids_hex = range_txt.split '..' ).length is 2
+      ### hexadecimal CID range of the form `0x000..0x999` (with two dots) ###
+      first_cid = parseInt cids_hex[ 0 ][ 2 .. ], 16
+      last_cid  = parseInt cids_hex[ 1 ][ 2 .. ], 16
+    else
+      ### hexadecimal CID, indicated by a leading `0x` ###
+      first_cid = parseInt range_txt[ 2 .. ], 16
+  #.........................................................................................................
+  else
+    return null
+  #.........................................................................................................
+  last_cid ?= first_cid
+  return { first_cid, last_cid, }
+
+#-----------------------------------------------------------------------------------------------------------
 @compile_configurations = ( me ) ->
   me.db.prepare_configuration_tables()
-  for row from me.db.read_prepare_configuration_styles_codepoints_and_fontnicks()
-    first_cid = null
-    last_cid  = null
-    #.......................................................................................................
-    if row.range_txt is "*"
-      first_cid = 0x000020
-      last_cid  = 0x10ffff
-    #.......................................................................................................
-    else if row.range_txt.startsWith "rsg:"
-      whisper '^2333^', jr row
-      debug '^77363^', "RSG"
-    #.......................................................................................................
-    else if row.range_txt.startsWith "'"
-      glyph = row.range_txt.replace /// ^ ' ( . ) ' ///us, '$1'
-      validate.chr glyph
-      first_cid = glyph.codePointAt 0
-    #.......................................................................................................
-    else if row.range_txt.startsWith '0x'
-      if ( cids_hex = row.range_txt.split '..' ).length is 2
-        whisper '^2333^', jr row
-        debug '^77363^', "hex CID range"
-      else
-        whisper '^2333^', jr row
-        debug '^77363^', "hex single CID"
-    #.......................................................................................................
-    else
-      throw new Error "^ucdb/cfg@3387 unknown format for field 'ranges': #{rpr row.range_txt}"
-    #.......................................................................................................
-    last_cid ?= first_cid
+  #.........................................................................................................
+  for row from me.dbr.read_configuration_rsgs_and_blocks()
+    { linenr, }               = row
+    { first_cid, last_cid, }  = @_cidrange_from_text_without_rsgs row.range_txt
+    me.dbw.update_configuration_rsgs_and_blocks { linenr, first_cid, last_cid, }
+  #.........................................................................................................
+  for row from me.db.read_configuration_styles_codepoints_and_fontnicks()
+    { linenr, }               = row
+    { first_cid, last_cid, }  = @_cidrange_from_text_with_rsgs row.range_txt
+    me.dbw.update_configuration_styles_codepoints_and_fontnicks { linenr, first_cid, last_cid, }
   #.........................................................................................................
   me.db.finalize_configuration_tables()
+
+
+
+
 

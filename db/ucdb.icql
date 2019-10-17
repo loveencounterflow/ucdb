@@ -300,8 +300,12 @@ query false_fallback_probe_from_fontnick( fontnick ):
     where fontnick = $fontnick;
 
 -- ---------------------------------------------------------------------------------------------------------
-query read_prepare_configuration_styles_codepoints_and_fontnicks():
+query read_configuration_styles_codepoints_and_fontnicks():
   select * from configuration_styles_codepoints_and_fontnicks order by linenr;
+
+-- ---------------------------------------------------------------------------------------------------------
+query read_configuration_rsgs_and_blocks():
+  select * from configuration_rsgs_and_blocks order by linenr;
 
 -- ---------------------------------------------------------------------------------------------------------
 procedure prepare_configuration_tables():
@@ -314,6 +318,18 @@ procedure prepare_configuration_tables():
   alter table configuration_styles_codepoints_and_fontnicks rename column ranges to range_txt;
   alter table configuration_styles_codepoints_and_fontnicks add column first_cid integer not null default -1;
   alter table configuration_styles_codepoints_and_fontnicks add column last_cid  integer not null default -1;
+
+-- ---------------------------------------------------------------------------------------------------------
+procedure update_configuration_rsgs_and_blocks( linenr, first_cid, last_cid ):
+  update configuration_rsgs_and_blocks
+    set ( first_cid, last_cid ) = ( $first_cid, $last_cid )
+    where linenr = $linenr;
+
+-- ---------------------------------------------------------------------------------------------------------
+procedure update_configuration_styles_codepoints_and_fontnicks( linenr, first_cid, last_cid ):
+  update configuration_styles_codepoints_and_fontnicks
+    set ( first_cid, last_cid ) = ( $first_cid, $last_cid )
+    where linenr = $linenr;
 
 -- ---------------------------------------------------------------------------------------------------------
 procedure finalize_configuration_tables():
