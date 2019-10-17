@@ -232,7 +232,9 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   return null unless ( command = style.cmd  )?
   validate.nonempty_text command
   unless ( fontnick = @fontnick_by_texstyles[ command ] )?
-    throw new Error "^ucdb@1008^ unknown texstyle #{rpr texstyle}"
+    # throw new Error "^ucdb@1008^ unknown texstyle #{rpr style}"
+    warn "^ucdb@1008^ unknown texstyle #{rpr style}"
+    return null
   return fontnick
 
 #-----------------------------------------------------------------------------------------------------------
