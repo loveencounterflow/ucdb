@@ -32,6 +32,7 @@ SERVER                    = require './server'
 #...........................................................................................................
 { isa
   validate
+  cast
   type_of }               = SERVER.types
 
 
@@ -164,6 +165,7 @@ sample =
       @UL =>
         @LI => @A { href: '/long-samples-overview', },  "long samples overview"
         @LI => @A { href: '/slugs', },                  "slugs"
+        @LI => @A { href: '/grid',  },                  "grid"
 
 #===========================================================================================================
 #
@@ -245,6 +247,52 @@ sample =
     # @DIV '#page-ready'
     # @DIV '.ruler', => "RULER"
     return null
+
+#-----------------------------------------------------------------------------------------------------------
+@grid = ( ctx ) ->
+  ### TAINT also implement listing from RSGs ###
+  debug '^33442^', ctx.query
+  fontnick      = ctx.query.fontnick  ? 'sunexta'
+  firstpage     = ctx.query.firstpage ? '4e'
+  lastpage      = ctx.query.lastpage  ? '4f'
+  # lastpage      = ctx.query.lastpage  ? '9f'
+  firstpage_cid = cast.ucdb_cid_codepage_number firstpage
+  lastpage_cid  = cast.ucdb_cid_codepage_number lastpage
+  [ firstpage_cid, lastpage_cid, ] = [ lastpage_cid, firstpage_cid, ] if firstpage_cid > lastpage_cid
+  firstpage     = ( ( firstpage_cid >> 8 ).toString 16 ).replace /00$/, ''
+  lastpage      = ( ( lastpage_cid  >> 8 ).toString 16 ).replace /00$/, ''
+  #.........................................................................................................
+  return @render =>
+    @layout()
+    @TITLE 'UCDB'
+    @DIV => "UCDB"
+    @H3 => "Grid for CIDs 0x#{firstpage}00 ..0x#{lastpage}00"
+    #.......................................................................................................
+    debug '^2772^', firstpage_cid, firstpage
+    debug '^2772^', lastpage_cid, lastpage
+    for cid0_table in [ firstpage_cid .. lastpage_cid ] by 0x100
+      cid1_table      = cid0_table + 0xff
+      cid0_table_hex  = cast.hex cid0_table
+      cid1_table_hex  = cast.hex cid1_table
+      @DIV '.xxxheading', "#{cid0_table_hex}..#{cid1_table_hex} (#{fontnick})"
+      @TABLE =>
+        # @TR '.xxxrow', =>
+        #   @TH '.xxxheader'
+        #   for delta in [ 0x0 .. 0xf ]
+        #     delta_hex = cast.hex delta
+        #     @TH '.xxxheader', => delta_hex
+        for cid0_row in [ cid0_table .. cid1_table ] by 0x10
+          cid0_row_hex = cast.hex cid0_row
+          @TR '.xxxrow', =>
+            @TH '.xxxheader', => cid0_row_hex
+            slug = ( ( String.fromCodePoint cid0_row + delta ) for delta in [ 0x0 .. 0xf ] ).join ''
+            @TD '.xxxdata', =>
+              @SLUG fontnick, slug, { missing: 'drop', }
+            null
+          null
+        null
+    null
+    #.......................................................................................................
 
 
 # #-----------------------------------------------------------------------------------------------------------

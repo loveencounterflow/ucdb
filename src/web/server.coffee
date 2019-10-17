@@ -73,6 +73,7 @@ HELPERS                   = require '../helpers'
   root_router.get 'root',                   '/',                            @$new_page 'inventory'
   root_router.get 'long_samples_overview',  '/long-samples-overview',       @$new_page 'long_samples_overview'
   root_router.get 'slugs',                  '/slugs',                       @$new_page 'slugs'
+  root_router.get 'grid',                   '/grid',                        @$new_page 'grid'
   root_router.get 'dump',                   '/dump',                        @$dump()
   root_router.get 'v2_glyphimg',            '/v2/glyphimg',                 @$v2_glyphimg()
   root_router.get 'v2_slug',                '/v2/slug',                     @$v2_slug()
