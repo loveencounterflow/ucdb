@@ -4,6 +4,7 @@
   "description": "UCDB, a UniCodeDataBase",
   "main": "lib/main.js",
   "dependencies": {
+    "@flatten-js/interval-tree": "^1.0.8",
     "cnd": "^4.6.0",
     "coffeenode-teacup": "^0.2.0",
     "glob": "^7.1.4",
@@ -14,6 +15,7 @@
     "koa-router": "^7.4.0",
     "koa-static": "^5.0.0",
     "mingkwai-ncr": "^0.4.2",
+    "multimix": "^2.1.0",
     "node-notifier": "^6.0.0",
     "pipedreams": "^12.1.0",
     "respawn": "^2.6.0",
