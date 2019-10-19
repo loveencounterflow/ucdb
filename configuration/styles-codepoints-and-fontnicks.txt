@@ -37,24 +37,24 @@
 +style:ming                   rsg:u-punct               lmromantenregular
 +style:ming                   rsg:u-latn-1              lmromantenregular
 +style:ming                   rsg:u-hang-syl            nanummyeongjo
-+style:ming                   rsg:u-arrow               @default
-+style:ming                   rsg:u-arrow-b             @default
-+style:ming                   rsg:u-boxdr               @default
-+style:ming                   rsg:u-cjk-cmpf            @default
-+style:ming                   rsg:u-llsym               @default
-+style:ming                   rsg:u                     @default
-+style:ming                   rsg:u-cjk-strk            @default
-+style:ming                   rsg:u-cjk-xa              @default
-+style:ming                   rsg:u-geoms               @default
-+style:ming                   rsg:u-cjk                 @default
-+style:ming                   rsg:u-cjk-rad2            @default
++style:ming                   rsg:u-arrow               sunexta
++style:ming                   rsg:u-arrow-b             sunexta
++style:ming                   rsg:u-boxdr               sunexta
++style:ming                   rsg:u-cjk-cmpf            sunexta
++style:ming                   rsg:u-llsym               sunexta
++style:ming                   rsg:u                     sunexta
++style:ming                   rsg:u-cjk-strk            sunexta
++style:ming                   rsg:u-cjk-xa              sunexta
++style:ming                   rsg:u-geoms               sunexta
++style:ming                   rsg:u-cjk                 sunexta
++style:ming                   rsg:u-cjk-rad2            sunexta
 # +style:ming                   rsg:u-cjk-xb              sunflowerucjkxb
 +style:ming                   rsg:u-cjk-xb              thtshynptwo
 +style:ming                   '·'                       ebgaramondtwelveregular # U+00B7 MIDDLE DOT
 
 ### Arrows ###
 +style:ming                   '⤾'                       dejavuserif
-+style:ming                   '₰'                       @default
++style:ming                   '₰'                       sunexta
 
 ### Ideographic description characters: ###
 +style:ming                   '↻'                       jizurathreeb      glyph: ''
@@ -121,39 +121,39 @@
 
 #.....................................................................................................
 ### Ideographic Punctuation, Fullwidth Forms: ###
-+style:ming                   '《'         @default    raise: -0.2
-+style:ming                   '》'         @default    raise: -0.2
++style:ming                   '《'         sunexta    raise: -0.2
++style:ming                   '》'         sunexta    raise: -0.2
 +style:ming                   '《'         nanummyeongjo
 +style:ming                   '》'         nanummyeongjo
 +style:ming                   '【'         nanummyeongjo
 +style:ming                   '】'         nanummyeongjo
-+style:ming                   '。'         @default        push: 0.5, raise: 0.25
-+style:ming                   '、'         @default        push: 0.5, raise: 0.25
-+style:ming                   '，'         @default        push: 0.5, raise: 0.25
-+style:ming                   '．'         @default
-+style:ming                   '：'         @default        push: 0.5, raise: 0.25
-+style:ming                   '；'         @default
-+style:ming                   '！'         @default
-+style:ming                   '？'         @default
-+style:ming                   '＂'         @default
-+style:ming                   '＇'         @default
-+style:ming                   '｀'         @default
-+style:ming                   '＾'         @default
-+style:ming                   '～'         @default
-+style:ming                   '￣'         @default
-+style:ming                   '＿'         @default
-+style:ming                   '＆'         @default
-+style:ming                   '＠'         @default
-+style:ming                   '＃'         @default
-+style:ming                   '％'         @default
-+style:ming                   '＋'         @default
-+style:ming                   '－'         @default
-+style:ming                   '＊'         @default
-+style:ming                   '＝'         @default
-+style:ming                   '＜'         @default
-+style:ming                   '＞'         @default
-+style:ming                   '（'         @default    push: -0.25
-+style:ming                   '）'         @default    push:  0.25
++style:ming                   '。'         sunexta        push: 0.5, raise: 0.25
++style:ming                   '、'         sunexta        push: 0.5, raise: 0.25
++style:ming                   '，'         sunexta        push: 0.5, raise: 0.25
++style:ming                   '．'         sunexta
++style:ming                   '：'         sunexta        push: 0.5, raise: 0.25
++style:ming                   '；'         sunexta
++style:ming                   '！'         sunexta
++style:ming                   '？'         sunexta
++style:ming                   '＂'         sunexta
++style:ming                   '＇'         sunexta
++style:ming                   '｀'         sunexta
++style:ming                   '＾'         sunexta
++style:ming                   '～'         sunexta
++style:ming                   '￣'         sunexta
++style:ming                   '＿'         sunexta
++style:ming                   '＆'         sunexta
++style:ming                   '＠'         sunexta
++style:ming                   '＃'         sunexta
++style:ming                   '％'         sunexta
++style:ming                   '＋'         sunexta
++style:ming                   '－'         sunexta
++style:ming                   '＊'         sunexta
++style:ming                   '＝'         sunexta
++style:ming                   '＜'         sunexta
++style:ming                   '＞'         sunexta
++style:ming                   '（'         sunexta    push: -0.25
++style:ming                   '）'         sunexta    push:  0.25
       # '［':  null
       # '］':  null
       # '｛':  null
@@ -174,37 +174,37 @@
 #.....................................................................................................
 ### TAINT this replacement should only be used in certain environments such as the KWIC index ###
 +style:ming                   '囗'         jizurathreeb glyph: ''
-+style:ming                   '扌'         @default      push: 0.05
-+style:ming                   '亻'         @default      push: 0.6
-+style:ming                   '釒'         @default      push: 0.5
-+style:ming                   '钅'         @default      push: 0.4
-+style:ming                   '冫'         @default      push: 0.55
-+style:ming                   '牜'         @default      push: 0.5
-+style:ming                   '飠'         @default      push: 0.4
-+style:ming                   '犭'         @default      push: 0.3
-+style:ming                   '忄'         @default      push: 0.5
-+style:ming                   '礻'         @default      push: 0.3
-+style:ming                   '衤'         @default      push: 0.2
-+style:ming                   '讠'         @default      push: 0.5
-+style:ming                   '卩'         @default      push: -0.4
-+style:ming                   ''         @default      push: 0.5, raise: -0.2
-+style:ming                   '糹'         @default      push: 0.4
-+style:ming                   '纟'         @default      push: 0.4
-+style:ming                   '阝'         @default      push: 0.6
-+style:ming                   '彳'         @default      push: 0.15
++style:ming                   '扌'         sunexta      push: 0.05
++style:ming                   '亻'         sunexta      push: 0.6
++style:ming                   '釒'         sunexta      push: 0.5
++style:ming                   '钅'         sunexta      push: 0.4
++style:ming                   '冫'         sunexta      push: 0.55
++style:ming                   '牜'         sunexta      push: 0.5
++style:ming                   '飠'         sunexta      push: 0.4
++style:ming                   '犭'         sunexta      push: 0.3
++style:ming                   '忄'         sunexta      push: 0.5
++style:ming                   '礻'         sunexta      push: 0.3
++style:ming                   '衤'         sunexta      push: 0.2
++style:ming                   '讠'         sunexta      push: 0.5
++style:ming                   '卩'         sunexta      push: -0.4
++style:ming                   ''         sunexta      push: 0.5, raise: -0.2
++style:ming                   '糹'         sunexta      push: 0.4
++style:ming                   '纟'         sunexta      push: 0.4
++style:ming                   '阝'         sunexta      push: 0.6
++style:ming                   '彳'         sunexta      push: 0.15
 +style:ming                   '𧾷'         thtshynptwo   push: 0.5,
 +style:ming                   '𩰊'         thtshynptwo   push: -0.25,
 +style:ming                   '𩰋'         thtshynptwo   push: 0.25,
 +style:ming                   '𥫗'         thtshynptwo             raise: -0.2,
-+style:ming                   '䒑'         @default                raise: -0.1
-+style:ming                   '灬'         @default                raise: 0.4
-+style:ming                   '爫'         @default                raise: -0.125
-+style:ming                   '覀'         @default                raise: -0.0
-+style:ming                   '乛'         @default                raise: -0.25
-+style:ming                   '龸'         @default                raise: -0.15
-+style:ming                   '宀'         @default                raise: -0.2
-+style:ming                   '罓'         @default                raise: -0.2
-+style:ming                   '龹'         @default                raise: -0.12
++style:ming                   '䒑'         sunexta                raise: -0.1
++style:ming                   '灬'         sunexta                raise: 0.4
++style:ming                   '爫'         sunexta                raise: -0.125
++style:ming                   '覀'         sunexta                raise: -0.0
++style:ming                   '乛'         sunexta                raise: -0.25
++style:ming                   '龸'         sunexta                raise: -0.15
++style:ming                   '宀'         sunexta                raise: -0.2
++style:ming                   '罓'         sunexta                raise: -0.2
++style:ming                   '龹'         sunexta                raise: -0.12
 +style:ming                   '癶'         babelstonehan           raise: -0.2
 +style:ming                   '龵'         babelstonehan           raise: -0.1
 +style:ming                   '〇'         babelstonehan           raise: -0.05
