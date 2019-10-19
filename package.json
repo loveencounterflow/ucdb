@@ -7,6 +7,7 @@
     "@flatten-js/interval-tree": "^1.0.8",
     "cnd": "^4.6.0",
     "coffeenode-teacup": "^0.2.0",
+    "coffeescript": "^2.4.1",
     "glob": "^7.1.4",
     "icql": "^5.1.3",
     "inotifywait": "^1.8.3",
