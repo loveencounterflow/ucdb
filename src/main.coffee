@@ -51,6 +51,7 @@ MKNCR                     = require 'mingkwai-ncr'
 SVGTTF                    = require 'svgttf'
 MIRAGE                    = require 'sqlite-file-mirror'
 RCFG                      = require './read-configuration'
+Multimix                  = require 'multimix'
 #...........................................................................................................
 runmode                   = 'production'
 runmode                   = 'debug'
@@ -618,6 +619,19 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 #       ( CND.grey row.last_cid             )
 #       # ( CND.yellow row.cid.toString 16 ), \
 #       # ( CND.orange if row.last_cid? then row.next_cid.toString 16 else '' )
+
+
+#===========================================================================================================
+#
+#-----------------------------------------------------------------------------------------------------------
+MAIN = @
+class Ucdb extends Multimix
+  @include MAIN, { overwrite: false, }
+  @include ( require './styles.mixin' ), { overwrite: false, }
+  # @extend MAIN, { overwrite: false, }
+
+module.exports = UCDB = new Ucdb()
+
 
 ############################################################################################################
 if require.main is module then do =>
