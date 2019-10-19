@@ -39,7 +39,8 @@ types                     = require './types'
 require                   './exception-handler'
 @_styles_ivtree           = null
 @_styles_cache            = {}
-
+CS                        = require 'coffeescript'
+VM                        = require 'vm'
 
 #-----------------------------------------------------------------------------------------------------------
 sort_cid_ranges_by_nr = ( cid_ranges ) -> cid_ranges.sort ( a, b ) -> a.nr - b.nr
@@ -59,11 +60,36 @@ sort_cid_ranges_by_nr = ( cid_ranges ) -> cid_ranges.sort ( a, b ) -> a.nr - b.n
   #.........................................................................................................
   for d from me.db.read_configuration_styles_codepoints_and_fontnicks()
     count++
-    d.type  = 'glyphstyle'
-    d.nr    = count
+    d.type        = 'glyphstyle'
+    d.nr          = count
+    d.glyphstyle  = @_compile_style_txt d.glyphstyle
     @_styles_ivtree.insert [ d.first_cid, d.last_cid, ], d
   #.........................................................................................................
   return count
+
+#-----------------------------------------------------------------------------------------------------------
+@_compile_style_txt = ( style_txt ) ->
+  return null unless style_txt?
+  ### TAINT should probably be done when reading configuration files ###
+  return null if ( style_txt.match /^\s*#/ )?
+  style_txt = "{#{style_txt}}" unless style_txt.startsWith '{'
+  try
+    R = VM.runInNewContext CS.compile style_txt, { bare: true, }
+  catch error
+    throw new Error "^ucdb/styles@8686 when trying to parse #{rpr style_txt}, an error occurred: #{error.message}"
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
+@_included_style_properties = Object.freeze [ 'fontnick', 'glyphstyle', 'icgroup', 'rsg', ]
+# @_included_style_properties = Object.freeze [ 'styletag', 'fontnick', 'glyphstyle', 'icgroup', 'rsg', ]
+
+#-----------------------------------------------------------------------------------------------------------
+@_delete_extraneous_style_properties = ( style ) ->
+  R         = {}
+  for key, value of style
+    continue unless key in @_included_style_properties
+    R[ key ] = value
+  return R
 
 #-----------------------------------------------------------------------------------------------------------
 @style_from_glyph = ( me, glyph ) ->
@@ -73,17 +99,20 @@ sort_cid_ranges_by_nr = ( cid_ranges ) -> cid_ranges.sort ( a, b ) -> a.nr - b.n
 #-----------------------------------------------------------------------------------------------------------
 @style_from_cid = ( me, cid ) ->
   validate.ucdb_cid cid
-  debug '^35345^', "built style cache",   @_provide_style_cache me unless @_styles_ivtree?
+  @_provide_style_cache me unless @_styles_ivtree?
   return R if ( R = @_styles_cache[ cid ] )?
   entries = @_styles_ivtree.search [ cid, cid, ]
-  debug '^3237^', jr entries
   sort_cid_ranges_by_nr entries ### TAINT necessary? ###
-  R       = Object.assign [], entries...
-  delete R.nr
-  delete R.linenr
-  delete R.kanji
-  delete R.range_txt
-  delete R.type
+  default_style   = {}
+  R               = {}
+  for entry in entries
+    if ( stylename = entry.styletag ? '*' ) is '*'
+      default_style = assign default_style, entry
+    else
+      ( R[ stylename ] ?= [] ).push entry
+  default_style   = @_delete_extraneous_style_properties default_style
+  for stylename, entries of R
+    R[ stylename ] = @_delete_extraneous_style_properties assign default_style, R[ stylename ]...
   @_styles_cache[ cid ] = R
   return R
 
