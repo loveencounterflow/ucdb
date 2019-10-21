@@ -362,6 +362,18 @@ query read_lines( limit ):
     -- order by vnr_blob
     limit $limit;
 
+-- =========================================================================================================
+--
+-- ---------------------------------------------------------------------------------------------------------
+query XXX_combifont( styletag ):
+  select
+      *
+    from _main as MN
+    where true
+      -- and ( MN.is_u9cjkidg )
+    -- order by vnr_blob
+    ;
+
 -- -- ---------------------------------------------------------------------------------------------------------
 -- procedure create_view_main_with_deltas_etc():
 --   drop view   if exists stages;
