@@ -100,15 +100,19 @@ MIRAGE                    = require 'sqlite-file-mirror'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@_cidrange_from_rsg = ( rsg ) -> return { first_cid: 111, last_cid: 111, }
+@_cidrange_from_rsg = ( me, rsg ) ->
+  unless ( rows = [ ( me.db.cidrange_from_rsg { rsg, })..., ] ).length is 1
+    throw new Error "^ucdb/cfg@2282 unknown RSG #{rpr rsg}"
+  return rows[ 0 ]
 
 #-----------------------------------------------------------------------------------------------------------
-@_cidrange_from_text_with_rsgs = ( range_txt ) ->
-  return @_cidrange_from_rsg range_txt.replace /^rsg:/, '' if range_txt.startsWith 'rsg:'
-  return @_cidrange_from_text_without_rsgs range_txt
+@_cidrange_from_text_with_rsgs = ( me, range_txt ) ->
+  if range_txt.startsWith 'rsg:'
+    return @_cidrange_from_rsg me, range_txt.replace /^rsg:/, ''
+  return @_cidrange_from_text_without_rsgs me, range_txt
 
 #-----------------------------------------------------------------------------------------------------------
-@_cidrange_from_text_without_rsgs = ( range_txt ) ->
+@_cidrange_from_text_without_rsgs = ( me, range_txt ) ->
   unless ( R = @_optional_cidrange_from_text_without_rsgs range_txt )?
     throw new Error "^ucdb/cfg@3388 unknown format for field 'ranges': #{rpr range_txt}"
   validate.ucdb_cid R.first_cid
