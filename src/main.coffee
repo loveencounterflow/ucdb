@@ -347,8 +347,8 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   # XXX_includes      = 'jizurafourbmp'.split /\s+/
   # XXX_includes      = null
   # XXX_includes      = 'kai'.split /\s+/
-  # XXX_includes      = """dejavusansmonobold thtshynpzero cuyuansf sunexta kai babelstonehan ipag""".split /\s+/
-  XXX_includes      = """ipag""".split /\s+/
+  XXX_includes      = """dejavusansmonobold thtshynpzero cuyuansf sunexta kai babelstonehan ipag""".split /\s+/
+  # XXX_includes      = """ipag""".split /\s+/
   # XXX_includes      = """sourcehanserifheavyjapan
   #   sourcehanserifregularjapan
   #   sourcehanserifheavykorea
