@@ -301,18 +301,16 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
       iclabel     = @_get_iclabel me, cid, glyph, csg, rsg
       # tex_glyph   = description?.tex?.codepoint ? null
       #.....................................................................................................
-      tex_block   = description?.tex?.block     ? null
-      fontnick    = @_fontnick_from_style_or_tex_block me, style, tex_block
-      unless fontnick?
-        warn "^ucdb@1010^ missing fontnick for #{fncr} #{glyph}"
-        continue
-      style       = jr @_cleanup_style me, style
+      # tex_block   = description?.tex?.block     ? null
+      # fontnick    = @_fontnick_from_style_or_tex_block me, style, tex_block
+      # unless fontnick?
+      #   warn "^ucdb@1010^ missing fontnick for #{fncr} #{glyph}"
+      #   continue
+      # style       = jr @_cleanup_style me, style
       #.....................................................................................................
       row         = {
         iclabel, glyph, cid, is_u9cjkidg, tags,
-        csg, rsg, fncr, sfncr, ncr, xncr,
-        fontnick, style, }
-        # fontnick, style, tex_block, tex_glyph, }
+        csg, rsg, fncr, sfncr, ncr, xncr, }
       data.push ( me.db.create_table_main_middle row ) + ','
   #.........................................................................................................
   if ( last_idx = data.length - 1 ) > -1
@@ -322,14 +320,6 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   me.db.$.execute sql
   me.line_count  += line_count
   me.db.create_main_indexes()
-  #.........................................................................................................
-  ### Fallback glyph: ###
-  if ( style = mkts_options.tex.fallback_glyph )?
-    line_count++
-    fontnick        = @_fontnick_from_style_or_tex_block me, style, null
-    style           = jr @_cleanup_style me, style
-    me.db.insert_fallback { fontnick, style, }
-  #.........................................................................................................
   resolve { line_count, }
   return null
 

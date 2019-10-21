@@ -54,10 +54,6 @@ fragment create_table_main_first():
     sfncr       text    not null,
     ncr         text    not null,
     xncr        text    not null,
-    fontnick    text    not null,
-    style       json,
-    -- tex_block   text    not null,
-    -- tex_glyph   text,
     primary key ( iclabel ) );
   -- .......................................................................................................
   create table _main_fallback (
@@ -72,10 +68,6 @@ fragment create_table_main_first():
     sfncr       text    unique default null,
     ncr         text    unique default null,
     xncr        text    unique default null,
-    fontnick    text    unique not null,
-    style       json    unique not null,
-    -- tex_block   text    not null,
-    -- tex_glyph   text,
     check (
       iclabel       is null and
       glyph         is null and
@@ -93,14 +85,9 @@ fragment create_table_main_first():
     iclabel,
     glyph, cid, is_u9cjkidg, tags,
     csg, rsg,
-    fncr, sfncr, ncr, xncr,
-    fontnick, style ) values
-fragment create_table_main_middle( iclabel, glyph, cid, is_u9cjkidg, tags, csg, rsg, fncr, sfncr, ncr, xncr, fontnick, style ):
-  ( $iclabel, $glyph, $cid, $is_u9cjkidg, $tags, $csg, $rsg, $fncr, $sfncr, $ncr, $xncr, $fontnick, $style )
-
--- ---------------------------------------------------------------------------------------------------------
-procedure insert_fallback( fontnick, style ):
-  insert into _main_fallback ( fontnick, style ) values ( $fontnick, $style );
+    fncr, sfncr, ncr, xncr ) values
+fragment create_table_main_middle( iclabel, glyph, cid, is_u9cjkidg, tags, csg, rsg, fncr, sfncr, ncr, xncr ):
+  ( $iclabel, $glyph, $cid, $is_u9cjkidg, $tags, $csg, $rsg, $fncr, $sfncr, $ncr, $xncr )
 
 
 -- =========================================================================================================
