@@ -22,9 +22,7 @@ fragment create_table_main_first():
   drop view   if exists duplicate_outlines;
   drop view   if exists outlines;
   drop table  if exists _outlines;
-  drop view   if exists main;
-  drop table  if exists _main_fallback;
-  drop table  if exists _main;
+  drop table  if exists main;
   -- .......................................................................................................
   create table variables (
     key     text        not null  unique,
@@ -42,7 +40,7 @@ fragment create_table_main_first():
     ( 'cpfr-cjkb', 0x20000, 0x2a6ff, 'CJK Ideographs Extension B' ),
     ( 'cpfr-cjkc', 0x2a700, 0x3ffff, 'CJK Ideographs beyond Extension B' );
   -- .......................................................................................................
-  create table _main (
+  create table main (
     iclabel     text    not null  unique,
     glyph       text    not null  unique,
     cid         integer not null  unique,
@@ -55,33 +53,7 @@ fragment create_table_main_first():
     ncr         text    not null,
     xncr        text    not null,
     primary key ( iclabel ) );
-  -- .......................................................................................................
-  create table _main_fallback (
-    iclabel     text    unique default null,
-    glyph       text    unique default null,
-    cid         integer unique default null,
-    is_u9cjkidg boolean unique default null,
-    tags        text    unique default null,
-    csg         text    unique default null,
-    rsg         text    unique default null,
-    fncr        text    unique default null,
-    sfncr       text    unique default null,
-    ncr         text    unique default null,
-    xncr        text    unique default null,
-    check (
-      iclabel       is null and
-      glyph         is null and
-      cid           is null and
-      is_u9cjkidg   is null and
-      tags          is null and
-      csg           is null and
-      rsg           is null and
-      fncr          is null and
-      sfncr         is null and
-      ncr           is null and
-      xncr          is null ) );
-  create view main as select * from _main union all select * from _main_fallback;
-  insert into _main (
+  insert into main (
     iclabel,
     glyph, cid, is_u9cjkidg, tags,
     csg, rsg,
@@ -94,10 +66,10 @@ fragment create_table_main_middle( iclabel, glyph, cid, is_u9cjkidg, tags, csg, 
 --
 -- ---------------------------------------------------------------------------------------------------------
 procedure create_main_indexes():
-  -- create index main_iclabel_index on _main ( iclabel );
-  -- create index main_glyph_index on _main ( glyph );
-  create index main_csg_index   on _main ( csg );
-  create index main_rsg_index   on _main ( rsg );
+  -- create index main_iclabel_index on main ( iclabel );
+  -- create index main_glyph_index on main ( glyph );
+  create index main_csg_index   on main ( csg );
+  create index main_rsg_index   on main ( rsg );
 
 
 -- =========================================================================================================
@@ -169,7 +141,7 @@ procedure create_table_outlines():
   create table _outlines (
     /*  NOTE: we use `iclabel`, not `glyph` or `cid` as primary key because in theory neither of the latter
         two is capable of expressing codepoints outside of Unicode. */
-    iclabel           text    not null  references _main      ( iclabel  ),
+    iclabel           text    not null  references main      ( iclabel  ),
     fontnick          text    not null  references fontnicks  ( fontnick ),
     outline_nr        integer, -- counts distinct outline variants per codepoint
     outline_json_hash text    not null  references contents   ( hash     ),
@@ -227,7 +199,7 @@ query outline_json_from_cid( fontnick, cid ):
       CO.content    as outline_json
     from outlines as OL
     join contents as CO on ( OL.outline_json_hash = CO.hash )
-    join _main    as MN using ( iclabel )
+    join main    as MN using ( iclabel )
     where true
       and MN.cid      = $cid
       and OL.fontnick = $fontnick
@@ -239,7 +211,7 @@ query outline_json_from_glyph( fontnick, glyph ):
       CO.content    as outline_json
     from outlines as OL
     join contents as CO on ( OL.outline_json_hash = CO.hash )
-    join _main    as MN using ( iclabel )
+    join main    as MN using ( iclabel )
     where true
       and MN.glyph    = $glyph
       and OL.fontnick = $fontnick
@@ -256,7 +228,7 @@ fragment outline_json_from_glyphs( fontnick, glyphs, n ):
       OL.shared_outline_count as shared_outline_count
     from outlines as OL
     join contents as CO on ( OL.outline_json_hash = CO.hash )
-    join _main    as MN using ( iclabel       )
+    join main    as MN using ( iclabel       )
     where true
       and MN.glyph    in ?glyphs?
       and OL.fontnick = $fontnick
@@ -355,7 +327,7 @@ query read_lines( limit ):
 query XXX_combifont( styletag ):
   select
       *
-    from _main as MN
+    from main as MN
     where true
       -- and ( MN.is_u9cjkidg )
     -- order by vnr_blob

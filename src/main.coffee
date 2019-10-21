@@ -354,7 +354,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   XXX_sql           = """
     select
         *
-      from _main
+      from main
       order by cid;"""
   glyphrows         = ( row           for row from me.db.$.query XXX_sql        )
   fontnicks         = ( row.fontnick  for row from me.db.walk_fontnick_table()  )
