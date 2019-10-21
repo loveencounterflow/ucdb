@@ -342,6 +342,14 @@ procedure finalize_configuration_tables():
   create index cfg_styles_first_cid_index   on configuration_styles_codepoints_and_fontnicks ( first_cid );
   create index cfg_styles_last_cid_index    on configuration_styles_codepoints_and_fontnicks ( last_cid  );
 
+-- ---------------------------------------------------------------------------------------------------------
+query cidrange_from_rsg( rsg ):
+  select
+      first_cid,
+      last_cid
+    from configuration_rsgs_and_blocks
+    where rsg = $rsg;
+
 
 -- =========================================================================================================
 --
