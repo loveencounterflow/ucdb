@@ -45,9 +45,9 @@ MIRAGE                    = require 'sqlite-file-mirror'
     name:                         'configuration_fontnick_and_false_fallbacks'
     path:       project_abspath   'configuration/fontnick-and-false-fallbacks.txt'
     fields: [
-      { name: 'linenr',   type: 'integer', null:  false,  }
-      { name: 'fontnick', type: 'text',    null:  false,  }
-      { name: 'probe',    type: 'text',    null:  false,  }
+      { name: 'linenr',   type: 'integer', null:  false,                }
+      { name: 'fontnick', type: 'text',    null:  false,  unique: true, }
+      { name: 'probe',    type: 'text',    null:  false,                }
       ]
     format:     'wsv'
   #.........................................................................................................
@@ -56,12 +56,12 @@ MIRAGE                    = require 'sqlite-file-mirror'
     name:                         'configuration_rsgs_and_blocks'
     path:       project_abspath   'configuration/rsgs-and-blocks.txt'
     fields: [
-      { name: 'linenr',     type: 'integer',  null: false,  }
-      { name: 'icgroup',    type: 'text',     null: false,  }
-      { name: 'rsg',        type: 'text',     null: true,   }
-      { name: 'kanji',      type: 'boolean',  null: false,  }
-      { name: 'range',      type: 'text',     null: false,  }
-      { name: 'blockname',  type: 'text',     null: false,  }
+      { name: 'linenr',     type: 'integer',  null: false,                }
+      { name: 'icgroup',    type: 'text',     null: false,  unique: true, }
+      { name: 'rsg',        type: 'text',     null: false,  unique: true, }
+      { name: 'kanji',      type: 'boolean',  null: false,                }
+      { name: 'range',      type: 'text',     null: false,                }
+      { name: 'blockname',  type: 'text',     null: false,                }
       ]
     format:     'wsv'
   #.........................................................................................................
@@ -71,7 +71,7 @@ MIRAGE                    = require 'sqlite-file-mirror'
     path:       project_abspath   'configuration/fontnicks-filenames-and-otf-features.txt'
     fields: [
       { name: 'linenr',   type: 'integer', null:  false,                }
-      { name: 'fontnick', type: 'text',    null:  false,                }
+      { name: 'fontnick', type: 'text',    null:  false,  unique: true, }
       { name: 'filename', type: 'text',    null:  false,                }
       { name: 'otf',      type: 'text',    null:  true,  default: null, }
       ]

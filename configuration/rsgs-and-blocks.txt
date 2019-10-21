@@ -269,8 +269,8 @@ ux1f80      u-x-1f80              false  0x1f800..0x1f8ff         Supplemental A
 ux02a0      u-x-02a0              false  0x02a00..0x02aff         Supplemental Mathematical Operators
 ux02e0      u-punct-s             false  0x02e00..0x02e7f         Supplemental Punctuation
 ux1f90      u-x-1f90              false  0x1f900..0x1f9ff         Supplemental Symbols and Pictographs
-uxf000      u-pua-xa              false  0xf0000..0xfffff         Supplementary Private Use Area-A
-ux1000      u-pua-xb              false  0x100000..0x10ffff       Supplementary Private Use Area-B
+upuaxa      u-pua-xa              false  0xf0000..0xfffff         Supplementary Private Use Area-A
+upuaxb      u-pua-xb              false  0x100000..0x10ffff       Supplementary Private Use Area-B
 ux1d80      u-x-1d80              false  0x1d800..0x1daaf         Sutton SignWriting
 ux0a80      u-x-0a80              false  0x0a800..0x0a82f         Syloti Nagri
 ux0070      u-x-0070              false  0x00700..0x0074f         Syriac

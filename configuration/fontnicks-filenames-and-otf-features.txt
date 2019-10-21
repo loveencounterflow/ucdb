@@ -91,9 +91,7 @@ hanamina                          HanaMinA.ttf
 hanaminb                          HanaMinB.ttf
 
 hanaminaotf                       HanaMinA.otf
-hanaminaotf                       HanaMinA.ttf
 hanaminbotf                       HanaMinB.otf
-hanaminbotf                       HanaMinB.ttf
 hanamincotf                       HanaMinC.otf
 hanaminexaoneotf                  HanaMinExA1.otf
 hanaminexatwootf                  HanaMinExA2.otf
