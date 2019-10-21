@@ -348,7 +348,8 @@ query cidrange_from_rsg( rsg ):
       first_cid,
       last_cid
     from configuration_rsgs_and_blocks
-    where rsg = $rsg;
+    where rsg = $rsg
+    limit 1;
 
 
 -- =========================================================================================================
