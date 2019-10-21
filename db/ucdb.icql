@@ -276,12 +276,12 @@ fragment outline_json_from_glyphs( fontnick, glyphs, n ):
     limit $n;
 
 -- ---------------------------------------------------------------------------------------------------------
-query configured_fontnicks_and_filenames():
+query configured_fontnicks_and_files():
   select
       fontnick,
       filename,
       otf
-    from configuration_fontnicks_filenames_and_otf_features
+    from cfg_fontnicks_and_files
     order by fontnick;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -296,58 +296,58 @@ query false_fallback_probe_from_fontnick( fontnick ):
   select
       fontnick,
       probe
-    from configuration_fontnick_and_false_fallbacks
+    from cfg_fontnick_and_false_fallbacks
     where fontnick = $fontnick;
 
 -- ---------------------------------------------------------------------------------------------------------
-query read_configuration_styles_codepoints_and_fontnicks():
-  select * from configuration_styles_codepoints_and_fontnicks order by linenr;
+query read_cfg_styles_codepoints_and_fontnicks():
+  select * from cfg_styles_codepoints_and_fontnicks order by linenr;
 
 -- ---------------------------------------------------------------------------------------------------------
-query read_configuration_rsgs_and_blocks():
-  select * from configuration_rsgs_and_blocks order by linenr;
+query read_cfg_rsgs_and_blocks():
+  select * from cfg_rsgs_and_blocks order by linenr;
 
 -- ---------------------------------------------------------------------------------------------------------
-procedure prepare_configuration_tables():
+procedure prepare_cfg_tables():
   -- ### TAINT would be better to set up all columns in table definition
   -- .......................................................................................................
-  alter table configuration_rsgs_and_blocks rename column range to range_txt;
-  alter table configuration_rsgs_and_blocks add column first_cid integer not null default -1;
-  alter table configuration_rsgs_and_blocks add column last_cid  integer not null default -1;
+  alter table cfg_rsgs_and_blocks rename column range to range_txt;
+  alter table cfg_rsgs_and_blocks add column first_cid integer not null default -1;
+  alter table cfg_rsgs_and_blocks add column last_cid  integer not null default -1;
   -- .......................................................................................................
-  alter table configuration_styles_codepoints_and_fontnicks rename column ranges to range_txt;
-  alter table configuration_styles_codepoints_and_fontnicks add column first_cid integer not null default -1;
-  alter table configuration_styles_codepoints_and_fontnicks add column last_cid  integer not null default -1;
+  alter table cfg_styles_codepoints_and_fontnicks rename column ranges to range_txt;
+  alter table cfg_styles_codepoints_and_fontnicks add column first_cid integer not null default -1;
+  alter table cfg_styles_codepoints_and_fontnicks add column last_cid  integer not null default -1;
 
 -- ---------------------------------------------------------------------------------------------------------
-procedure update_configuration_rsgs_and_blocks( linenr, first_cid, last_cid ):
-  update configuration_rsgs_and_blocks
+procedure update_cfg_rsgs_and_blocks( linenr, first_cid, last_cid ):
+  update cfg_rsgs_and_blocks
     set ( first_cid, last_cid ) = ( $first_cid, $last_cid )
     where linenr = $linenr;
 
 -- ---------------------------------------------------------------------------------------------------------
-procedure update_configuration_styles_codepoints_and_fontnicks( linenr, first_cid, last_cid ):
-  update configuration_styles_codepoints_and_fontnicks
+procedure update_cfg_styles_codepoints_and_fontnicks( linenr, first_cid, last_cid ):
+  update cfg_styles_codepoints_and_fontnicks
     set ( first_cid, last_cid ) = ( $first_cid, $last_cid )
     where linenr = $linenr;
 
 -- ---------------------------------------------------------------------------------------------------------
-procedure finalize_configuration_tables():
-  create index cfg_rsgs_first_cid_index     on configuration_rsgs_and_blocks ( first_cid  );
-  create index cfg_rsgs_last_cid_index      on configuration_rsgs_and_blocks ( last_cid   );
-  create index cfg_rsgs_rsg_index           on configuration_rsgs_and_blocks ( rsg        );
-  create index cfg_rsgs_blockname_index     on configuration_rsgs_and_blocks ( blockname  );
-  create index cfg_rsgs_icgroup_index       on configuration_rsgs_and_blocks ( icgroup    );
+procedure finalize_cfg_tables():
+  create index cfg_rsgs_first_cid_index     on cfg_rsgs_and_blocks ( first_cid  );
+  create index cfg_rsgs_last_cid_index      on cfg_rsgs_and_blocks ( last_cid   );
+  create index cfg_rsgs_rsg_index           on cfg_rsgs_and_blocks ( rsg        );
+  create index cfg_rsgs_blockname_index     on cfg_rsgs_and_blocks ( blockname  );
+  create index cfg_rsgs_icgroup_index       on cfg_rsgs_and_blocks ( icgroup    );
   -- .......................................................................................................
-  create index cfg_styles_first_cid_index   on configuration_styles_codepoints_and_fontnicks ( first_cid );
-  create index cfg_styles_last_cid_index    on configuration_styles_codepoints_and_fontnicks ( last_cid  );
+  create index cfg_styles_first_cid_index   on cfg_styles_codepoints_and_fontnicks ( first_cid );
+  create index cfg_styles_last_cid_index    on cfg_styles_codepoints_and_fontnicks ( last_cid  );
 
 -- ---------------------------------------------------------------------------------------------------------
 query cidrange_from_rsg( rsg ):
   select
       first_cid,
       last_cid
-    from configuration_rsgs_and_blocks
+    from cfg_rsgs_and_blocks
     where rsg = $rsg
     limit 1;
 

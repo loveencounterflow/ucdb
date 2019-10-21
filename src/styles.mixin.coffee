@@ -52,13 +52,13 @@ sort_cid_ranges_by_nr = ( cid_ranges ) -> cid_ranges.sort ( a, b ) -> a.nr - b.n
   @_styles_ivtree   = new IntervalTree()
   count             = 0
   #.........................................................................................................
-  for d from me.db.read_configuration_rsgs_and_blocks()
+  for d from me.db.read_cfg_rsgs_and_blocks()
     count++
     d.type  = 'block'
     d.nr    = count
     @_styles_ivtree.insert [ d.first_cid, d.last_cid, ], d
   #.........................................................................................................
-  for d from me.db.read_configuration_styles_codepoints_and_fontnicks()
+  for d from me.db.read_cfg_styles_codepoints_and_fontnicks()
     count++
     d.type        = 'glyphstyle'
     d.nr          = count

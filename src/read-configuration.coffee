@@ -40,10 +40,10 @@ MIRAGE                    = require 'sqlite-file-mirror'
   ### TAINT derive table name from filename ###
   ### TAINT avoid repetition, implement method to overwrite (SQL drop, create if (not) exists) ###
   #.........................................................................................................
-  MIRAGE.drop_source  me.mirage,  'configuration_fontnick_and_false_fallbacks'
+  MIRAGE.drop_source  me.mirage,  'cfg_fontnick_and_false_fallbacks'
   MIRAGE.add_source   me.mirage,
-    name:                         'configuration_fontnick_and_false_fallbacks'
-    path:       project_abspath   'configuration/fontnick-and-false-fallbacks.txt'
+    name:                         'cfg_fontnick_and_false_fallbacks'
+    path:       project_abspath   'cfg/fontnick-and-false-fallbacks.txt'
     fields: [
       { name: 'linenr',   type: 'integer', null:  false,                }
       { name: 'fontnick', type: 'text',    null:  false,  unique: true, }
@@ -51,10 +51,10 @@ MIRAGE                    = require 'sqlite-file-mirror'
       ]
     format:     'wsv'
   #.........................................................................................................
-  MIRAGE.drop_source  me.mirage,  'configuration_rsgs_and_blocks'
+  MIRAGE.drop_source  me.mirage,  'cfg_rsgs_and_blocks'
   MIRAGE.add_source   me.mirage,
-    name:                         'configuration_rsgs_and_blocks'
-    path:       project_abspath   'configuration/rsgs-and-blocks.txt'
+    name:                         'cfg_rsgs_and_blocks'
+    path:       project_abspath   'cfg/rsgs-and-blocks.txt'
     fields: [
       { name: 'linenr',     type: 'integer',  null: false,                }
       { name: 'icgroup',    type: 'text',     null: false,  unique: true, }
@@ -65,10 +65,10 @@ MIRAGE                    = require 'sqlite-file-mirror'
       ]
     format:     'wsv'
   #.........................................................................................................
-  MIRAGE.drop_source  me.mirage,  'configuration_fontnicks_filenames_and_otf_features'
+  MIRAGE.drop_source  me.mirage,  'cfg_fontnicks_and_files'
   MIRAGE.add_source   me.mirage,
-    name:                         'configuration_fontnicks_filenames_and_otf_features'
-    path:       project_abspath   'configuration/fontnicks-filenames-and-otf-features.txt'
+    name:                         'cfg_fontnicks_and_files'
+    path:       project_abspath   'cfg/fontnicks-and-files.txt'
     fields: [
       { name: 'linenr',   type: 'integer', null:  false,                }
       { name: 'fontnick', type: 'text',    null:  false,  unique: true, }
@@ -77,10 +77,10 @@ MIRAGE                    = require 'sqlite-file-mirror'
       ]
     format:     'wsv'
   #.........................................................................................................
-  MIRAGE.drop_source  me.mirage,  'configuration_styles_codepoints_and_fontnicks'
+  MIRAGE.drop_source  me.mirage,  'cfg_styles_codepoints_and_fontnicks'
   MIRAGE.add_source   me.mirage,
-    name:                         'configuration_styles_codepoints_and_fontnicks'
-    path:       project_abspath   'configuration/styles-codepoints-and-fontnicks.txt'
+    name:                         'cfg_styles_codepoints_and_fontnicks'
+    path:       project_abspath   'cfg/styles-codepoints-and-fontnicks.txt'
     fields: [
       { name: 'linenr',     type: 'integer', null:  false,                }
       { name: 'styletag',   type: 'text',    null:  false,                }
@@ -160,25 +160,25 @@ MIRAGE                    = require 'sqlite-file-mirror'
 
 #-----------------------------------------------------------------------------------------------------------
 @compile_configurations = ( me ) ->
-  me.db.prepare_configuration_tables()
+  me.db.prepare_cfg_tables()
   #.........................................................................................................
   try
     #.......................................................................................................
-    for row from me.dbr.read_configuration_rsgs_and_blocks()
+    for row from me.dbr.read_cfg_rsgs_and_blocks()
       { linenr, }               = row
       { first_cid, last_cid, }  = @_cidrange_from_text_without_rsgs me, row.range_txt
-      me.dbw.update_configuration_rsgs_and_blocks { linenr, first_cid, last_cid, }
+      me.dbw.update_cfg_rsgs_and_blocks { linenr, first_cid, last_cid, }
     #.......................................................................................................
-    for row from me.db.read_configuration_styles_codepoints_and_fontnicks()
+    for row from me.db.read_cfg_styles_codepoints_and_fontnicks()
       { linenr, }               = row
       { first_cid, last_cid, }  = @_cidrange_from_text_with_rsgs me, row.range_txt
-      me.dbw.update_configuration_styles_codepoints_and_fontnicks { linenr, first_cid, last_cid, }
+      me.dbw.update_cfg_styles_codepoints_and_fontnicks { linenr, first_cid, last_cid, }
   catch error
     throw new Error """^ucdb/cfg@7632 when trying to compile row
       #{jr row}
       from configuration, an error occurred: #{error.message}"""
   #.........................................................................................................
-  me.db.finalize_configuration_tables()
+  me.db.finalize_cfg_tables()
 
 
 
