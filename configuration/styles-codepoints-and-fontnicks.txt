@@ -42,7 +42,7 @@
 +style:ming                   rsg:u-boxdr               sunexta
 +style:ming                   rsg:u-cjk-cmpf            sunexta
 +style:ming                   rsg:u-llsym               sunexta
-+style:ming                   rsg:u                     sunexta
+# +style:ming                   rsg:u                     sunexta
 +style:ming                   rsg:u-cjk-strk            sunexta
 +style:ming                   rsg:u-cjk-xa              sunexta
 +style:ming                   rsg:u-geoms               sunexta
