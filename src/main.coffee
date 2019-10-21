@@ -148,13 +148,17 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 # FONTNICKS
 #-----------------------------------------------------------------------------------------------------------
 @read_fontnicks = ( me ) ->
-  R = {}
-  for row from me.db.configured_fontnicks_and_filenames()
+  R         = {}
+  has_rows  = false
+  for row from me.db.configured_fontnicks_and_files()
     { fontnick
       filename
       otf     }       = row
+    has_rows          = true
     R[ fontnick ]     = { filename, }
     R[ fontnick ].otf = otf if otf?
+  unless has_rows
+    throw new Error "^ucdb@98567 unable to find any configured fonts"
   return R
 
 #-----------------------------------------------------------------------------------------------------------
