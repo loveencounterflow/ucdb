@@ -158,15 +158,21 @@ MIRAGE                    = require 'sqlite-file-mirror'
 @compile_configurations = ( me ) ->
   me.db.prepare_configuration_tables()
   #.........................................................................................................
-  for row from me.dbr.read_configuration_rsgs_and_blocks()
-    { linenr, }               = row
-    { first_cid, last_cid, }  = @_cidrange_from_text_without_rsgs row.range_txt
-    me.dbw.update_configuration_rsgs_and_blocks { linenr, first_cid, last_cid, }
-  #.........................................................................................................
-  for row from me.db.read_configuration_styles_codepoints_and_fontnicks()
-    { linenr, }               = row
-    { first_cid, last_cid, }  = @_cidrange_from_text_with_rsgs row.range_txt
-    me.dbw.update_configuration_styles_codepoints_and_fontnicks { linenr, first_cid, last_cid, }
+  try
+    #.......................................................................................................
+    for row from me.dbr.read_configuration_rsgs_and_blocks()
+      { linenr, }               = row
+      { first_cid, last_cid, }  = @_cidrange_from_text_without_rsgs me, row.range_txt
+      me.dbw.update_configuration_rsgs_and_blocks { linenr, first_cid, last_cid, }
+    #.......................................................................................................
+    for row from me.db.read_configuration_styles_codepoints_and_fontnicks()
+      { linenr, }               = row
+      { first_cid, last_cid, }  = @_cidrange_from_text_with_rsgs me, row.range_txt
+      me.dbw.update_configuration_styles_codepoints_and_fontnicks { linenr, first_cid, last_cid, }
+  catch error
+    throw new Error """^ucdb/cfg@7632 when trying to compile row
+      #{jr row}
+      from configuration, an error occurred: #{error.message}"""
   #.........................................................................................................
   me.db.finalize_configuration_tables()
 
