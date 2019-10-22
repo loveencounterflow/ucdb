@@ -21,6 +21,7 @@ fragment create_table_main_first():
   drop table  if exists variables;
   drop view   if exists duplicate_outlines;
   drop view   if exists outlines;
+  drop view   if exists combifont;
   drop table  if exists _outlines;
   drop table  if exists main;
   -- .......................................................................................................
@@ -298,6 +299,8 @@ procedure finalize_cfg_tables():
   create index cfg_rsgs_blockname_index     on cfg_rsgs_and_blocks ( blockname  );
   create index cfg_rsgs_icgroup_index       on cfg_rsgs_and_blocks ( icgroup    );
   -- .......................................................................................................
+  create index cfg_styles_styletag_index    on cfg_styles_codepoints_and_fontnicks ( styletag  );
+  create index cfg_styles_fontnick_index    on cfg_styles_codepoints_and_fontnicks ( fontnick  );
   create index cfg_styles_first_cid_index   on cfg_styles_codepoints_and_fontnicks ( first_cid );
   create index cfg_styles_last_cid_index    on cfg_styles_codepoints_and_fontnicks ( last_cid  );
 
@@ -324,13 +327,30 @@ query read_lines( limit ):
 -- =========================================================================================================
 --
 -- ---------------------------------------------------------------------------------------------------------
-query XXX_combifont( styletag ):
-  select
+procedure create_view_combifont():
+  -- thx to https://stackoverflow.com/a/8749095
+  -- The `left outer join` solves the 'biggest x in subgroup' problem more efficiently than alternative
+  -- formulations with sub-`select`s provided there are proper indexes in the referenced tables.
+  drop view if exists combifont;
+  create view combifont as with V1 as ( select
       *
     from main as MN
-    where true
-      -- and ( MN.is_u9cjkidg )
-    -- order by vnr_blob
+    join cfg_styles_codepoints_and_fontnicks as CS on ( MN.cid between CS.first_cid and CS.last_cid )
+    -- where MN.is_u9cjkidg
+    order by MN.iclabel, CS.linenr )
+    select
+        V1.linenr       as linenr,
+        V1.iclabel      as iclabel,
+        V1.styletag     as styletag,
+        V1.fontnick     as fontnick,
+        V1.glyphstyle   as glyphstyle
+      from V1 as V1
+      left outer join V1 as V2 on ( true
+        and V1.iclabel  = V2.iclabel
+        and V1.styletag = V2.styletag
+        and V1.linenr   < V2.linenr )
+      where V2.linenr is null
+      order by iclabel, styletag, linenr
     ;
 
 -- -- ---------------------------------------------------------------------------------------------------------
