@@ -22,6 +22,7 @@ fragment create_table_main_first():
   drop view   if exists duplicate_outlines;
   drop view   if exists outlines;
   drop view   if exists combifont;
+  drop view   if exists all_glyphs_and_stylerules;
   drop table  if exists _outlines;
   drop table  if exists main;
   -- .......................................................................................................
@@ -332,20 +333,23 @@ procedure create_view_combifont():
   -- The `left outer join` solves the 'biggest x in subgroup' problem more efficiently than alternative
   -- formulations with sub-`select`s provided there are proper indexes in the referenced tables.
   drop view if exists combifont;
-  create view combifont as with V1 as ( select
+  drop view if exists all_glyphs_and_stylerules;
+  -- .......................................................................................................
+  create view all_glyphs_and_stylerules as select
       *
     from main as MN
     join cfg_styles_codepoints_and_fontnicks as CS on ( MN.cid between CS.first_cid and CS.last_cid )
     -- where MN.is_u9cjkidg
-    order by MN.iclabel, CS.linenr )
-    select
+    order by MN.iclabel, CS.linenr;
+  -- .......................................................................................................
+  create view combifont as select
         V1.linenr       as linenr,
         V1.iclabel      as iclabel,
         V1.styletag     as styletag,
         V1.fontnick     as fontnick,
         V1.glyphstyle   as glyphstyle
-      from V1 as V1
-      left outer join V1 as V2 on ( true
+      from all_glyphs_and_stylerules as V1
+      left outer join all_glyphs_and_stylerules as V2 on ( true
         and V1.iclabel  = V2.iclabel
         and V1.styletag = V2.styletag
         and V1.linenr   < V2.linenr )
