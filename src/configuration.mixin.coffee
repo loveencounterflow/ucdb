@@ -34,7 +34,7 @@ types                     = require './types'
 glob                      = require 'glob'
 require                   './exception-handler'
 MIRAGE                    = require 'sqlite-file-mirror'
-UCDB                      = require '..'
+
 
 #-----------------------------------------------------------------------------------------------------------
 @_add_sources = ( me ) ->
