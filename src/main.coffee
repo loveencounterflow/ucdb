@@ -72,7 +72,7 @@ cid_ranges_by_runmode  =
     [ 0x20000, 0x20006, ]
     ]
   debug_cross_cjk: [
-    '𗐑𥳑字好松一丁丂七丄丅丆万㐀㐁㐂龰龱龲龳龴龵龶龷龸龹龺龻⺶龼龽龾龿鿀鿁鿂鿃鿄鿅鿆鿇鿈鿉鿊鿋鿌鿍鿎鿏鿐鿑鿒鿓鿔鿕鿖鿗鿘鿙鿚鿛鿜鿝鿞鿟鿠鿡鿢鿣鿤鿥鿦鿧鿨鿩鿪鿫鿬鿭鿮鿯𠀀𠀁𠀂𪜀𪜁𪜂𫝀𫝁𫝂𫠠𫠡𫠢𬺰𬺱𬺲〡〢〣〤〥〦〧〨〩〸〹〺〻〼〽🉠🉡🉢🉣🉤🉥'
+    '𗐑𥳑字好松一丁丂七丄丅丆万㐀㐁㐂龰龱龲龳龴龵龶龷龸龹𡗗龺龻⺶龼龽龾龿鿀鿁鿂鿃鿄鿅鿆鿇鿈鿉鿊鿋鿌鿍鿎鿏鿐鿑鿒鿓鿔鿕鿖鿗鿘鿙鿚鿛鿜鿝鿞鿟鿠鿡鿢鿣鿤鿥鿦鿧鿨鿩鿪鿫鿬鿭鿮鿯𠀀𠀁𠀂𪜀𪜁𪜂𫝀𫝁𫝂𫠠𫠡𫠢𬺰𬺱𬺲〡〢〣〤〥〦〧〨〩〸〹〺〻〼〽🉠🉡🉢🉣🉤🉥'
     # '𗐑𥳑字好松一丁丂七丄丅丆万㐀㐁㐂龹龺龻龼鿋鿛鿮鿯𠀀𠀁𠀂𪜀𪜁𪜂𫝀𫝁𫝂𫠠𫠡𫠢𬺰𬺱𬺲〡〢〣〤〥〦〧〨〩〸〹〺〻〼〽🉠🉡🉢🉣🉤🉥'
     ]
   debug_small: [
@@ -334,11 +334,27 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   me.db.create_table_contents()
   me.db.create_table_outlines()
   known_hashes = new Set()
-  # XXX_includes      = 'jizurafourbmp'.split /\s+/
+  # XXX_includes      = 'jizurafourbmp'
   # XXX_includes      = null
-  # XXX_includes      = 'kai'.split /\s+/
-  XXX_includes      = """dejavusansmonobold thtshynpzero cuyuansf sunexta kai babelstonehan ipag""".split /\s+/
-  # XXX_includes      = """ipag""".split /\s+/
+  # XXX_includes      = 'kai'
+  XXX_includes      = """
+    babelstonehan
+    cuyuansf
+    dejavusansmonobold
+    hanaminaotf
+    hanaminbotf
+    hanaminexatwootf
+    ipag
+    jizurathreeb
+    kai
+    sourcehanserifheavytaiwan
+    sunexta
+    thtshynptwo
+    thtshynpzero
+    umingttcone
+    unifonttwelve
+    """
+  # XXX_includes      = """ipag"""
   # XXX_includes      = """sourcehanserifheavyjapan
   #   sourcehanserifregularjapan
   #   sourcehanserifheavykorea
@@ -346,9 +362,12 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   #   sourcehanserifheavymainland
   #   sourcehanserifregularmainland
   #   sourcehanserifheavytaiwan
-  #   sourcehanserifregulartaiwan""".split /\s+/
-  # XXX_includes      = 'thtshynpone'.split /\s+/
-  # XXX_includes      = 'thtshynptwo'.split /\s+/
+  #   sourcehanserifregulartaiwan"""
+  # XXX_includes      = 'thtshynpone'
+  # XXX_includes      = 'thtshynptwo'
+  if XXX_includes?
+    XXX_includes = XXX_includes.split /\s+/
+    XXX_includes = XXX_includes.filter ( x ) -> x isnt ''
   ### TAINT do not retrieve all glyphrows, iterate instead; call @_insert_into_table_outlines with
   single glyphrow ###
   XXX_sql           = """
