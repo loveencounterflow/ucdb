@@ -167,12 +167,14 @@ procedure finalize_outlines():
       fontnick                as fontnick,
       dense_rank()  over drw  as outline_nr,
       count(*)      over cw   as shared_outline_count,
-      outline_json_hash       as outline_json_hash
-    from _outlines
-    window drw as ( partition by iclabel
-      order by outline_json_hash ),
-    cw as ( partition by iclabel, outline_json_hash
-      order by outline_json_hash )
+      outline_json_hash       as outline_json_hash,
+      CO.content              as outline_json
+    from _outlines  as OL
+    join contents   as CO on ( OL.outline_json_hash = CO.hash )
+    window drw as ( partition by OL.iclabel
+      order by OL.outline_json_hash ),
+    cw as ( partition by OL.iclabel, OL.outline_json_hash
+      order by OL.outline_json_hash )
     order by iclabel, fontnick;
   -- .......................................................................................................
   create view duplicate_outlines as with v1 as ( select
@@ -198,9 +200,8 @@ procedure finalize_outlines():
 -- ---------------------------------------------------------------------------------------------------------
 query outline_json_from_cid( fontnick, cid ):
   select
-      CO.content    as outline_json
+      outline_json
     from outlines as OL
-    join contents as CO on ( OL.outline_json_hash = CO.hash )
     join main    as MN using ( iclabel )
     where true
       and MN.cid      = $cid
@@ -210,9 +211,8 @@ query outline_json_from_cid( fontnick, cid ):
 -- ---------------------------------------------------------------------------------------------------------
 query outline_json_from_glyph( fontnick, glyph ):
   select
-      CO.content    as outline_json
+      outline_json
     from outlines as OL
-    join contents as CO on ( OL.outline_json_hash = CO.hash )
     join main    as MN using ( iclabel )
     where true
       and MN.glyph    = $glyph
