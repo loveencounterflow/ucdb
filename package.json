@@ -4,7 +4,6 @@
   "description": "UCDB, a UniCodeDataBase",
   "main": "lib/main.js",
   "dependencies": {
-    "@flatten-js/interval-tree": "^1.0.8",
     "cnd": "^4.6.0",
     "coffeenode-teacup": "^0.2.0",
     "coffeescript": "^2.4.1",
