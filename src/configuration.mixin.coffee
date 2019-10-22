@@ -34,6 +34,7 @@ types                     = require './types'
 glob                      = require 'glob'
 require                   './exception-handler'
 MIRAGE                    = require 'sqlite-file-mirror'
+UCDB                      = require '..'
 
 #-----------------------------------------------------------------------------------------------------------
 @_add_sources = ( me ) ->
@@ -160,6 +161,7 @@ MIRAGE                    = require 'sqlite-file-mirror'
 
 #-----------------------------------------------------------------------------------------------------------
 @compile_configurations = ( me ) ->
+  info '^ucdb/cfg@8873^', "compiling configuration tables"
   me.db.prepare_cfg_tables()
   #.........................................................................................................
   try
@@ -172,9 +174,11 @@ MIRAGE                    = require 'sqlite-file-mirror'
     for row from me.db.read_cfg_styles_codepoints_and_fontnicks()
       { linenr, }               = row
       { first_cid, last_cid, }  = @_cidrange_from_text_with_rsgs me, row.range_txt
+      # debug '^347622^', ( k for k of UCDB )
+      # debug '^347622^', UCDB.compile_style_txt me, row.glyphstyle
       me.dbw.update_cfg_styles_codepoints_and_fontnicks { linenr, first_cid, last_cid, }
   catch error
-    throw new Error """^ucdb/cfg@7632 when trying to compile row
+    throw new Error """^ucdb/cfg@7632^ when trying to compile row
       #{jr row}
       from configuration, an error occurred: #{error.message}"""
   #.........................................................................................................
