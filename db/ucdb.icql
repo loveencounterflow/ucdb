@@ -277,8 +277,12 @@ procedure prepare_cfg_tables():
   alter table cfg_rsgs_and_blocks add column last_cid  integer not null default -1;
   -- .......................................................................................................
   alter table cfg_styles_codepoints_and_fontnicks rename column ranges to range_txt;
-  alter table cfg_styles_codepoints_and_fontnicks add column first_cid integer not null default -1;
-  alter table cfg_styles_codepoints_and_fontnicks add column last_cid  integer not null default -1;
+  alter table cfg_styles_codepoints_and_fontnicks add column first_cid        integer   not null default -1;
+  alter table cfg_styles_codepoints_and_fontnicks add column last_cid         integer   not null default -1;
+  alter table cfg_styles_codepoints_and_fontnicks add column glyphstyle_glyph text      default null;
+  alter table cfg_styles_codepoints_and_fontnicks add column glyphstyle_push  float     default null;
+  alter table cfg_styles_codepoints_and_fontnicks add column glyphstyle_raise float     default null;
+  alter table cfg_styles_codepoints_and_fontnicks add column glyphstyle_scale float     default null;
 
 -- ---------------------------------------------------------------------------------------------------------
 procedure update_cfg_rsgs_and_blocks( linenr, first_cid, last_cid ):
@@ -343,11 +347,15 @@ procedure create_view_combifont():
     order by MN.iclabel, CS.linenr;
   -- .......................................................................................................
   create view combifont as select
-        V1.linenr       as linenr,
-        V1.iclabel      as iclabel,
-        V1.styletag     as styletag,
-        V1.fontnick     as fontnick,
-        V1.glyphstyle   as glyphstyle
+        V1.linenr           as linenr,
+        V1.iclabel          as iclabel,
+        V1.styletag         as styletag,
+        V1.fontnick         as fontnick,
+        V1.glyphstyle       as glyphstyle,
+        V1.glyphstyle_glyph as glyphstyle_glyph,
+        V1.glyphstyle_push  as glyphstyle_push,
+        V1.glyphstyle_raise as glyphstyle_raise,
+        V1.glyphstyle_scale as glyphstyle_scale
       from all_glyphs_and_stylerules as V1
       left outer join all_glyphs_and_stylerules as V2 on ( true
         and V1.iclabel  = V2.iclabel
