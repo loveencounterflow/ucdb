@@ -19,7 +19,7 @@
 
 
 # Use this font for all codepoints when the style is heavy (black) Ming:
-+style:ming,weight:900css     *                     sourcehanserifheavytaiwan
++style:ming,weight:900css     *                         sourcehanserifheavytaiwan
 
 # Use this font for regular weight Ming style:
 +style:ming                   *                         sunexta
