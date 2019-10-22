@@ -1,5 +1,10 @@
 
-# Mappings from styles to fonts modulo codepoint ranges and individual codepoints
+# Mappings from styles to fonts modulo codepoint ranges and individual codepoints.
+
+# The second field of each line will be turned into a CID (codepoint) range `[c1..c2]`; then, in order to
+# find the appropriate font and glyph formatting for a given styletag `tx` and codepoint `cx`, the last
+# record where both the styletag matches the one given and the codepoint is within the range given `c1 <= cx
+# <= c2` yields the fontnick and glyphstyle for that style and codepoint.
 
 # `weight:000css` denotes a [CSS Font Weight
 # Value](https://developer.mozilla.org/en-US/docs/Web/CSS/font-weight); we're using the `css` suffix as an
