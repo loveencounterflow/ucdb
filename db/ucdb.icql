@@ -20,6 +20,8 @@ fragment create_table_main_first():
   drop table  if exists cpfrs;
   drop table  if exists variables;
   drop view   if exists duplicate_outlines;
+  drop view   if exists combifont_missing_outlines;
+  drop view   if exists combifont_outlines;
   drop view   if exists outlines;
   drop view   if exists combifont;
   drop view   if exists all_glyphs_and_stylerules;
@@ -291,9 +293,18 @@ procedure update_cfg_rsgs_and_blocks( linenr, first_cid, last_cid ):
     where linenr = $linenr;
 
 -- ---------------------------------------------------------------------------------------------------------
+-- ### TAINT boilerplate
 procedure update_cfg_styles_codepoints_and_fontnicks( linenr, first_cid, last_cid ):
   update cfg_styles_codepoints_and_fontnicks
     set ( first_cid, last_cid ) = ( $first_cid, $last_cid )
+    where linenr = $linenr;
+
+-- ---------------------------------------------------------------------------------------------------------
+-- ### TAINT boilerplate
+procedure update_cfg_styles_codepoints_and_fontnicks( linenr, first_cid, last_cid, glyphstyle_glyph, glyphstyle_push, glyphstyle_raise, glyphstyle_scale ):
+  update cfg_styles_codepoints_and_fontnicks
+    set ( first_cid, last_cid,   glyphstyle_glyph,  glyphstyle_push,  glyphstyle_raise,  glyphstyle_scale ) =
+       ( $first_cid, $last_cid, $glyphstyle_glyph, $glyphstyle_push, $glyphstyle_raise, $glyphstyle_scale )
     where linenr = $linenr;
 
 -- ---------------------------------------------------------------------------------------------------------
@@ -336,6 +347,8 @@ procedure create_view_combifont():
   -- thx to https://stackoverflow.com/a/8749095
   -- The `left outer join` solves the 'biggest x in subgroup' problem more efficiently than alternative
   -- formulations with sub-`select`s provided there are proper indexes in the referenced tables.
+  drop view if exists combifont_missing_outlines;
+  drop view if exists combifont_outlines;
   drop view if exists combifont;
   drop view if exists all_glyphs_and_stylerules;
   -- .......................................................................................................
@@ -347,23 +360,37 @@ procedure create_view_combifont():
     order by MN.iclabel, CS.linenr;
   -- .......................................................................................................
   create view combifont as select
-        V1.linenr           as linenr,
-        V1.iclabel          as iclabel,
-        V1.styletag         as styletag,
-        V1.fontnick         as fontnick,
-        V1.glyphstyle       as glyphstyle,
-        V1.glyphstyle_glyph as glyphstyle_glyph,
-        V1.glyphstyle_push  as glyphstyle_push,
-        V1.glyphstyle_raise as glyphstyle_raise,
-        V1.glyphstyle_scale as glyphstyle_scale
-      from all_glyphs_and_stylerules as V1
-      left outer join all_glyphs_and_stylerules as V2 on ( true
-        and V1.iclabel  = V2.iclabel
-        and V1.styletag = V2.styletag
-        and V1.linenr   < V2.linenr )
-      where V2.linenr is null
-      order by iclabel, styletag, linenr
-    ;
+      V1.linenr           as linenr,
+      V1.iclabel          as iclabel,
+      V1.styletag         as styletag,
+      V1.fontnick         as fontnick,
+      V1.glyphstyle       as glyphstyle,
+      V1.glyphstyle_glyph as glyphstyle_glyph,
+      V1.glyphstyle_push  as glyphstyle_push,
+      V1.glyphstyle_raise as glyphstyle_raise,
+      V1.glyphstyle_scale as glyphstyle_scale
+    from all_glyphs_and_stylerules as V1
+    left outer join all_glyphs_and_stylerules as V2 on ( true
+      and V1.iclabel  = V2.iclabel
+      and V1.styletag = V2.styletag
+      and V1.linenr   < V2.linenr )
+    where V2.linenr is null
+    order by iclabel, styletag;
+  -- .......................................................................................................
+  create view combifont_outlines as select
+      *
+    from      combifont as CF
+    left join outlines  as OL using ( iclabel, fontnick );
+  -- .......................................................................................................
+  create view combifont_missing_outlines as select
+      linenr,
+      iclabel,
+      styletag,
+      fontnick,
+      outline_json_hash
+    from combifont_outlines
+    where outline_json_hash is null
+    order by fontnick, iclabel, styletag;
 
 -- -- ---------------------------------------------------------------------------------------------------------
 -- procedure create_view_main_with_deltas_etc():
