@@ -19,14 +19,16 @@ query sqlite_index_infos():
 fragment create_table_main_first():
   drop table  if exists cpfrs;
   drop table  if exists variables;
-  drop view   if exists duplicate_outlines;
+  -- drop view   if exists duplicate_outlines;
+  drop view   if exists all_outlines;
+  drop view   if exists _all_outlines;
   drop view   if exists combifont_missing_outlines_as_cid_ranges;
   drop view   if exists combifont_missing_outlines;
-  drop view   if exists combifont_outlines;
-  drop view   if exists outlines;
-  drop view   if exists combifont;
+  drop view   if exists outlines_of_combifonts;
+  drop view   if exists outlines_of_sourcefonts;
+  drop view   if exists combifonts;
   drop view   if exists all_glyphs_and_stylerules;
-  drop table  if exists _outlines;
+  drop table  if exists _outlines_of_sourcefonts;
   drop table  if exists main;
   -- .......................................................................................................
   create table variables (
@@ -82,8 +84,8 @@ query read_codepoint_records( limit ): select * from main limit $limit;
 -- FONTNICKS
 -- ---------------------------------------------------------------------------------------------------------
 fragment create_table_fontnicks_first():
-  drop view   if exists outlines;
-  drop table  if exists _outlines;
+  drop view   if exists outlines_of_sourcefonts;
+  drop table  if exists _outlines_of_sourcefonts;
   drop table  if exists fontnicks;
   -- .......................................................................................................
   create table fontnicks (
@@ -109,7 +111,7 @@ query filepath_from_fontnick( fontnick ):
 query fontnicks_with_outlines():
   select distinct
       fontnick
-    from outlines
+    from all_outlines
     order by fontnick;
 
 
@@ -129,70 +131,49 @@ procedure create_table_contents():
 
 -- ---------------------------------------------------------------------------------------------------------
 procedure create_table_outlines():
-  drop table if exists _outlines;
-  create table _outlines (
+  drop table if exists _outlines_of_sourcefonts;
+  create table _outlines_of_sourcefonts (
     /*  NOTE: we use `iclabel`, not `glyph` or `cid` as primary key because in theory neither of the latter
         two is capable of expressing codepoints outside of Unicode. */
-    iclabel           text    not null  references main      ( iclabel  ),
+    iclabel           text    not null  references main       ( iclabel  ),
     fontnick          text    not null  references fontnicks  ( fontnick ),
-    outline_nr        integer, -- counts distinct outline variants per codepoint
     outline_json_hash text    not null  references contents   ( hash     ),
     primary key ( iclabel, fontnick ) );
 
 -- ---------------------------------------------------------------------------------------------------------
 -- ### TAINT as in main etc, above, the insertion parts can be derived mechanically from the table
 -- definition; as its stands, they're mere noise / code duplication:
-fragment insert_into_outlines_first(): insert into _outlines ( iclabel, fontnick, outline_json_hash ) values
+fragment insert_into_outlines_first(): insert into _outlines_of_sourcefonts ( iclabel, fontnick, outline_json_hash ) values
 fragment insert_into_outlines_middle( iclabel, fontnick, outline_json_hash ): ( $iclabel, $fontnick, $outline_json_hash )
 fragment insert_into_contents_first(): insert into contents ( hash, content ) values
 fragment insert_into_contents_middle( hash, content ): ( $hash, $content )
 
 -- ---------------------------------------------------------------------------------------------------------
 procedure finalize_outlines():
-  drop view if exists duplicate_outlines;
-  drop view if exists outlines;
+  drop view if exists outlines_of_sourcefonts;
   -- .......................................................................................................
-  create view outlines as select
+  create view outlines_of_sourcefonts as select
       iclabel                 as iclabel,
       fontnick                as fontnick,
-      dense_rank()  over drw  as outline_nr,
-      count(*)      over cw   as shared_outline_count,
       outline_json_hash       as outline_json_hash,
       CO.content              as outline_json
-    from _outlines  as OL
-    join contents   as CO on ( OL.outline_json_hash = CO.hash )
-    window drw as ( partition by OL.iclabel
-      order by OL.outline_json_hash ),
-    cw as ( partition by OL.iclabel, OL.outline_json_hash
-      order by OL.outline_json_hash )
+    from _outlines_of_sourcefonts as OL
+    join contents                 as CO on ( OL.outline_json_hash = CO.hash )
     order by iclabel, fontnick;
   -- .......................................................................................................
-  create view duplicate_outlines as with v1 as ( select
-      OL.iclabel                as iclabel,
-      OL.fontnick               as fontnick,
-      count(*) over w           as count,
-      OL.shared_outline_count   as shared_outline_count,
-      OL.outline_nr             as outline_nr,
-      OL.outline_json_hash      as outline_json_hash
-    from outlines as OL
-    window w as ( partition by outline_json_hash
-      range between unbounded preceding and unbounded following ) )
-    select * from v1
-    where v1.count > 1;
-  -- .......................................................................................................
-  create index outlines_fontnick_index          on _outlines ( fontnick          );
-  create index outlines_outline_json_hash_index on _outlines ( outline_json_hash );
+  create index outlines_fontnick_index          on _outlines_of_sourcefonts ( fontnick          );
+  create index outlines_outline_json_hash_index on _outlines_of_sourcefonts ( outline_json_hash );
   -- recommended by sqlite> .lint fkey-indexes
-  -- CREATE INDEX 'outlines_outline_json_hash' ON 'outlines'('outline_json_hash'); --> contents(hash)
-  -- CREATE INDEX 'outlines_fontnick' ON 'outlines'('fontnick'); --> fontnicks(fontnick)
+  -- CREATE INDEX 'outlines_outline_json_hash' ON 'outlines_of_sourcefonts'('outline_json_hash'); --> contents(hash)
+  -- CREATE INDEX 'outlines_fontnick' ON 'outlines_of_sourcefonts'('fontnick'); --> fontnicks(fontnick)
 
 
 -- ---------------------------------------------------------------------------------------------------------
 query outline_json_from_cid( fontnick, cid ):
   select
       outline_json
-    from outlines as OL
-    join main    as MN using ( iclabel )
+    from outlines_of_sourcefonts  as OL
+    join main                     as MN using ( iclabel )
     where true
       and MN.cid      = $cid
       and OL.fontnick = $fontnick
@@ -202,8 +183,8 @@ query outline_json_from_cid( fontnick, cid ):
 query outline_json_from_glyph( fontnick, glyph ):
   select
       outline_json
-    from outlines as OL
-    join main    as MN using ( iclabel )
+    from outlines_of_sourcefonts  as OL
+    join main                     as MN using ( iclabel )
     where true
       and MN.glyph    = $glyph
       and OL.fontnick = $fontnick
@@ -215,11 +196,11 @@ query outline_json_from_glyph( fontnick, glyph ):
 fragment outline_json_from_glyphs( fontnick, glyphs, n ):
   select
       MN.glyph                as glyph,
-      CO.content              as outline_json,
+      OL.outline_json         as outline_json,
       OL.outline_nr           as outline_nr,
       OL.shared_outline_count as shared_outline_count
-    from outlines as OL
-    join contents as CO on ( OL.outline_json_hash = CO.hash )
+    from all_outlines as OL
+    -- join contents as CO on ( OL.outline_json_hash = CO.hash )
     join main    as MN using ( iclabel       )
     where true
       and MN.glyph    in ?glyphs?
@@ -322,14 +303,12 @@ query cidrange_from_rsg( rsg ):
 -- =========================================================================================================
 --
 -- ---------------------------------------------------------------------------------------------------------
-procedure create_view_combifont():
-  -- thx to https://stackoverflow.com/a/8749095
-  -- The `left outer join` solves the 'biggest x in subgroup' problem more efficiently than alternative
-  -- formulations with sub-`select`s provided there are proper indexes in the referenced tables.
+procedure create_view_combifonts():
+  drop view if exists all_outlines;
   drop view if exists combifont_missing_outlines_as_cid_ranges;
   drop view if exists combifont_missing_outlines;
-  drop view if exists combifont_outlines;
-  drop view if exists combifont;
+  drop view if exists outlines_of_combifonts;
+  drop view if exists combifonts;
   drop view if exists all_glyphs_and_stylerules;
   -- .......................................................................................................
   create view all_glyphs_and_stylerules as select
@@ -339,7 +318,10 @@ procedure create_view_combifont():
     -- where MN.is_u9cjkidg
     order by MN.iclabel, CS.linenr;
   -- .......................................................................................................
-  create view combifont as select
+  -- thx to https://stackoverflow.com/a/8749095
+  -- The `left outer join` solves the 'biggest x in subgroup' problem more efficiently than alternative
+  -- formulations with sub-`select`s provided there are proper indexes in the referenced tables.
+  create view combifonts as select
       V1.linenr           as linenr,
       V1.iclabel          as iclabel,
       V1.styletag         as styletag,
@@ -357,10 +339,10 @@ procedure create_view_combifont():
     where V2.linenr is null
     order by iclabel, styletag;
   -- .......................................................................................................
-  create view combifont_outlines as select
+  create view outlines_of_combifonts as select
       *
-    from      combifont as CF
-    left join outlines  as OL using ( iclabel, fontnick );
+    from      combifonts                 as CF
+    left join outlines_of_sourcefonts   as OL using ( iclabel, fontnick );
   -- .......................................................................................................
   create view combifont_missing_outlines as select
       OL.linenr                 as linenr,
@@ -369,7 +351,7 @@ procedure create_view_combifont():
       OL.styletag               as styletag,
       OL.fontnick               as fontnick,
       OL.outline_json_hash      as outline_json_hash
-    from combifont_outlines as OL
+    from outlines_of_combifonts as OL
     join main               as MN using ( iclabel )
     where outline_json_hash is null
     order by OL.fontnick, OL.iclabel, OL.styletag;
@@ -404,7 +386,53 @@ procedure create_view_combifont():
       V2.outline_json_hash                          as outline_json_hash
     from V2
     join main as MF on ( V2.first_cid = MF.cid )
-    join main as ML on ( V2.last_cid  = ML.cid )
-    ;
+    join main as ML on ( V2.last_cid  = ML.cid );
 
+-- ---------------------------------------------------------------------------------------------------------
+procedure create_view_all_outlines():
+  drop view if exists _all_outlines;
+  drop view if exists all_outlines;
+  create view _all_outlines as select
+      'sourcefont'                                  as type,
+      OL.iclabel                                    as iclabel,
+      OL.fontnick                                   as fontnick,
+      OL.outline_json_hash                          as outline_json_hash,
+      OL.outline_json                               as outline_json
+    from outlines_of_sourcefonts as OL
+    union all select
+      'combifont'                                   as type,
+      CO.iclabel                                    as iclabel,
+      CO.styletag                                   as fontnick,
+      CO.outline_json_hash                          as outline_json_hash,
+      CO.outline_json                               as outline_json
+    from outlines_of_combifonts as CO
+    where CO.outline_json is not null
+    order by iclabel, fontnick;
+  -- .......................................................................................................
+  create view all_outlines as select
+      OL.iclabel                                    as iclabel,
+      OL.fontnick                                   as fontnick,
+      dense_rank()  over drw                        as outline_nr,
+      count(*)      over cw                         as shared_outline_count,
+      OL.outline_json_hash                          as outline_json_hash,
+      OL.outline_json                               as outline_json
+    from _all_outlines as OL
+    window drw as ( partition by OL.iclabel
+      order by OL.outline_json_hash ),
+    cw as ( partition by OL.iclabel, OL.outline_json_hash
+      order by OL.outline_json_hash )
+    order by iclabel, fontnick;
 
+  -- -- .......................................................................................................
+  -- create view duplicate_outlines as with v1 as ( select
+  --     OL.iclabel                as iclabel,
+  --     OL.fontnick               as fontnick,
+  --     count(*) over w           as count,
+  --     OL.shared_outline_count   as shared_outline_count,
+  --     OL.outline_nr             as outline_nr,
+  --     OL.outline_json_hash      as outline_json_hash
+  --   from outlines_of_sourcefonts as OL
+  --   window w as ( partition by outline_json_hash
+  --     range between unbounded preceding and unbounded following ) )
+  --   select * from v1
+  --   where v1.count > 1;
