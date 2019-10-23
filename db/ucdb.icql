@@ -65,15 +65,16 @@ fragment create_table_main_first():
 fragment create_table_main_middle( iclabel, glyph, cid, is_u9cjkidg, tags, csg, rsg, fncr, sfncr, ncr, xncr ):
   ( $iclabel, $glyph, $cid, $is_u9cjkidg, $tags, $csg, $rsg, $fncr, $sfncr, $ncr, $xncr )
 
-
--- =========================================================================================================
---
 -- ---------------------------------------------------------------------------------------------------------
 procedure create_main_indexes():
   -- create index main_iclabel_index on main ( iclabel );
   -- create index main_glyph_index on main ( glyph );
   create index main_csg_index   on main ( csg );
   create index main_rsg_index   on main ( rsg );
+
+-- ---------------------------------------------------------------------------------------------------------
+query read_codepoint_records(): select * from main;
+query read_codepoint_records( limit ): select * from main limit $limit;
 
 
 -- =========================================================================================================
@@ -110,20 +111,6 @@ query fontnicks_with_outlines():
     from outlines
     order by fontnick;
 
-
--- =========================================================================================================
---
--- ---------------------------------------------------------------------------------------------------------
-query count_lines():
-  select count(*) from main;
-
--- ---------------------------------------------------------------------------------------------------------
-query read_lines():
-  select
-      *
-    from main
-    -- order by vnr_blob
-    ;
 
 
 -- =========================================================================================================
@@ -330,15 +317,6 @@ query cidrange_from_rsg( rsg ):
     limit 1;
 
 
--- =========================================================================================================
---
--- ---------------------------------------------------------------------------------------------------------
-query read_lines( limit ):
-  select
-      *
-    from main
-    -- order by vnr_blob
-    limit $limit;
 
 -- =========================================================================================================
 --
