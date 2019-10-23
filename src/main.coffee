@@ -337,24 +337,24 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   # XXX_includes      = 'jizurafourbmp'
   # XXX_includes      = null
   # XXX_includes      = 'kai'
-  XXX_includes      = """
-    babelstonehan
-    cuyuansf
-    dejavusansmonobold
-    hanaminaotf
-    hanaminbotf
-    hanaminexatwootf
-    ipag
-    jizurathreeb
-    kai
-    sourcehanserifheavytaiwan
-    sunexta
-    thtshynptwo
-    thtshynpzero
-    umingttcone
-    unifonttwelve
-    """
-  # XXX_includes      = """ipag"""
+  # XXX_includes      = """
+  #   babelstonehan
+  #   cuyuansf
+  #   dejavusansmonobold
+  #   hanaminaotf
+  #   hanaminbotf
+  #   hanaminexatwootf
+  #   ipag
+  #   jizurathreeb
+  #   kai
+  #   sourcehanserifheavytaiwan
+  #   sunexta
+  #   thtshynptwo
+  #   thtshynpzero
+  #   umingttcone
+  #   unifonttwelve
+  #   """
+  XXX_includes      = """sunexta thtshynptwo thtshynpone"""
   # XXX_includes      = """sourcehanserifheavyjapan
   #   sourcehanserifregularjapan
   #   sourcehanserifheavykorea
