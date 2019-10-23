@@ -71,8 +71,20 @@ either:
 Choice (b) is left for the future, **for the moment we only support monospaced HPFs** to accommodate for the
 most important use case, namely providing fonts for CJK ideographs.
 
+## Outlines
 
+<!--
+    aggregate
+    onefont
+    stylefont
+    unifont
+    combifonts
+    fusion
+    fusefont
+ -->
 
+`outlines_of_sourcefonts`
+`outlines_of_combifonts`
 
 
 
