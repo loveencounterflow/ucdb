@@ -20,6 +20,7 @@ fragment create_table_main_first():
   drop table  if exists cpfrs;
   drop table  if exists variables;
   drop view   if exists duplicate_outlines;
+  drop view   if exists combifont_missing_outlines_as_cid_ranges;
   drop view   if exists combifont_missing_outlines;
   drop view   if exists combifont_outlines;
   drop view   if exists outlines;
@@ -325,6 +326,7 @@ procedure create_view_combifont():
   -- thx to https://stackoverflow.com/a/8749095
   -- The `left outer join` solves the 'biggest x in subgroup' problem more efficiently than alternative
   -- formulations with sub-`select`s provided there are proper indexes in the referenced tables.
+  drop view if exists combifont_missing_outlines_as_cid_ranges;
   drop view if exists combifont_missing_outlines;
   drop view if exists combifont_outlines;
   drop view if exists combifont;
@@ -361,135 +363,48 @@ procedure create_view_combifont():
     left join outlines  as OL using ( iclabel, fontnick );
   -- .......................................................................................................
   create view combifont_missing_outlines as select
-      linenr,
-      iclabel,
-      styletag,
-      fontnick,
-      outline_json_hash
-    from combifont_outlines
+      OL.linenr                 as linenr,
+      OL.iclabel                as iclabel,
+      MN.cid                    as cid,
+      OL.styletag               as styletag,
+      OL.fontnick               as fontnick,
+      OL.outline_json_hash      as outline_json_hash
+    from combifont_outlines as OL
+    join main               as MN using ( iclabel )
     where outline_json_hash is null
-    order by fontnick, iclabel, styletag;
-
--- -- ---------------------------------------------------------------------------------------------------------
--- procedure create_view_main_with_deltas_etc():
---   drop view   if exists stages;
---   drop view   if exists _fontnick_priorities;
---   drop view   if exists _fontnick_boundaries_1;
---   drop view   if exists fontnick_boundaries;
---   drop view   if exists _main_with_deltas;
---   -- .......................................................................................................
---   create view _main_with_deltas as select
---       *,
---       -- iclabel                                           as iclabel,
---       -- csg                                               as csg,
---       -- cid                                               as cid,
---       -- lag(  cid, 1, 0x000000 )        over w1           as rear_cid,
---       -- lead( cid, 1, 0x10ffff )        over w1           as fore_cid,
---       cid - lag(  cid, 1, 0x000000 )  over w1           as rear_delta_cid,
---             lead( cid, 1, 0x10ffff )  over w1 - cid     as fore_delta_cid
---     from main
---     window w1 as ( partition by fontnick order by cid )
---     order by cid;
---   -- .......................................................................................................
---   create view _fontnick_boundaries_1 as with v1 as ( select
---         *
---       from _main_with_deltas
---       where ( rear_delta_cid != 1 ) or ( fore_delta_cid != 1 ) )
---     select
---         *,
---         case
---           when ( rear_delta_cid != 1 and fore_delta_cid != 1 )  then  'single'
---           when ( rear_delta_cid != 1 )                          then  'start'
---           else                                                        'stop' end      as boundary_type
---       from v1
---       order by cid;
---   -- .......................................................................................................
---   create view fontnick_boundaries as with v1 as ( select
---       *,
---       case
---         when boundary_type = 'start'  then  lead( cid, 1, null ) over ( order by cid )
---         when boundary_type = 'single' then  cid
---         else                                null end                                    as last_cid
---     from _fontnick_boundaries_1 )
---     select
---         v1.fontnick         as fontnick,
---         v1.cid              as first_cid,
---         v1.iclabel          as first_iclabel,
---         r2.cid              as last_cid,
---         r2.iclabel          as last_iclabel
---       from
---         v1
---         left join main as r2 on ( v1.last_cid = r2.cid )
---         where v1.boundary_type != 'stop'
---         order by v1.fontnick, v1.cid;
---   -- .......................................................................................................
---   create view _fontnick_priorities as select
---       fontnick                                as fontnick,
---       case fontnick
---         when 'sunexta'        then  100
---         when 'jizurathreeb'   then  900
---         else                        500 end   as priority
---     from fontnicks;
---   -- .......................................................................................................
---   create view stages as select
---       r1.fontnick                             as fontnick,
---       r4.cpfr                                 as cpfr,
---       dense_rank() over w                     as stagenr,
---       printf( 's%03d', dense_rank() over w )  as stagenick,
---       r3.priority                             as priority,
---       r1.first_cid                            as first_cid,
---       r1.last_cid                             as last_cid,
---       r1.first_iclabel                        as first_iclabel,
---       r1.last_iclabel                         as last_iclabel,
---       r2.filesize                             as filesize,
---       r2.filename                             as filename,
---       r2.filepath                             as filepath,
---       r2.otf                                  as otf
---     from      fontnick_boundaries   as r1
---     left join fontnicks             as r2 using ( fontnick )
---     left join _fontnick_priorities  as r3 using ( fontnick )
---     left join cpfrs                 as r4 on ( r1.first_cid >= r4.first_cid and r1.last_cid <= r4.last_cid )
---     window w as ( order by priority, filesize desc, fontnick )
---     order by r3.priority, filesize desc, fontnick
---     ;
+    order by OL.fontnick, OL.iclabel, OL.styletag;
+  -- .......................................................................................................
+  create view combifont_missing_outlines_as_cid_ranges as with V1 as ( select
+      -- row_number() over ( order by id ) - id as group_id,
+      dense_rank() over ( order by cid ) - cid      as group_id,
+      linenr                                        as linenr,
+      cid                                           as cid,
+      iclabel                                       as iclabel,
+      styletag                                      as styletag,
+      fontnick                                      as fontnick,
+      outline_json_hash                             as outline_json_hash
+    from combifont_missing_outlines ), V2 as ( select
+      V1.linenr                                     as linenr,
+      min( V1.cid )                                 as first_cid,
+      max( V1.cid )                                 as last_cid,
+      V1.styletag                                   as styletag,
+      V1.fontnick                                   as fontnick,
+      V1.outline_json_hash                          as outline_json_hash
+    from V1
+    group by V1.group_id
+    order by first_cid )
+    select
+      V2.linenr                                     as linenr,
+      -- V2.first_cid                                  as first_cid,
+      -- V2.last_cid                                   as last_cid,
+      MF.iclabel                                    as first_iclabel,
+      ML.iclabel                                    as last_iclabel,
+      V2.styletag                                   as styletag,
+      V2.fontnick                                   as fontnick,
+      V2.outline_json_hash                          as outline_json_hash
+    from V2
+    join main as MF on ( V2.first_cid = MF.cid )
+    join main as ML on ( V2.last_cid  = ML.cid )
+    ;
 
 
--- -- ---------------------------------------------------------------------------------------------------------
--- query _main_with_deltas():    select * from _main_with_deltas;
--- query fontnick_boundaries():  select * from fontnick_boundaries;
-
--- -- ---------------------------------------------------------------------------------------------------------
--- query all_ranges_in_previous_stages( stagenr ):
---   select
---       r1.first_cid                            as first_cid,
---       r1.last_cid                             as last_cid,
---       r1.first_iclabel                        as first_iclabel,
---       r1.last_iclabel                         as last_iclabel,
---     from stages as r1
---     where true
---       and ( stagenr < $stagenr );
-
-
-
-
-
-
--- def _count_fontnicks_by_rsg():
---   query = """
---     with v1 as ( select distinct
---         rsg                     as rsg,
---         fontnick                as fontnick,
---         count(*) over w         as fontnick_count
---       from main
---       window w as ( partition by rsg, fontnick
---         /* range between unbounded preceding and unbounded following */ )
---       order by rsg, fontnick_count desc )
---     select
---       rsg                       as rsg,
---       fontnick                  as fontnick,
---       fontnick_count            as fontnick_count,
---       count(*) over w           as format_count
---     from v1
---       window w as ( partition by rsg )
---       order by format_count, rsg, fontnick_count desc
---       ;"""
