@@ -268,7 +268,7 @@ SVG.slug_from_pathdatamap = ( fontnick, glyphs, pathdatamap ) ->
   R          += "<svg xmlns='http://www.w3.org/2000/svg' viewBox='#{x0} -800 #{width} 4996'>"
   R          += "<style>"
   R          += ".olnr {"
-  R          += " fill: red;"
+  R          += " fill: #800;"
   R          += " font-family: helvetica;"
   R          += " font-size: 1500px; }"
   R          += "</style>"
