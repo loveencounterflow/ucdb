@@ -133,7 +133,7 @@ $echo = -> ( ctx, next ) =>
 #-----------------------------------------------------------------------------------------------------------
 @$dump = => ( ctx ) =>
   # ctx.type = 'html'
-  rows = [ O.ucdb.db.read_lines()..., ]
+  rows = [ O.ucdb.db.read_codepoint_records()..., ]
   rows = ( row.glyph for row in rows when row.cid > 0x20 ).join ''
     # debug '^4443^', row
   ctx.body = rows

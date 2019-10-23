@@ -528,7 +528,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   help "^ucdb@1014^ wrote #{ucdb.line_count} records in #{dts} s (#{f} Hz)"
   return null
   # count = 0
-  # for row from ucdb.db.read_lines()
+  # for row from ucdb.db.read_codepoint_records()
   #   count++
   #   break if count > 5
   #   info 'µ33211', jr row
