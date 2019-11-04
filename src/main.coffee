@@ -513,12 +513,13 @@ runmode                   = 'debug_cross_cjk'
 #-----------------------------------------------------------------------------------------------------------
 @create = ( settings = null ) -> new Promise ( resolve, reject ) =>
   me = @new_ucdb settings
-  urge 'ucdb/create@1/4'; await @read_configuration       me
-  urge 'ucdb/create@2/4'; await @populate_table_fontnicks me
-  urge 'ucdb/create@3/4'; await @populate_table_main      me
-  urge 'ucdb/create@4/4'; await @compile_configurations   me
-  urge 'ucdb/create@5/4'; await @populate_table_outlines  me
-  urge 'ucdb/create@6/4'; # me.db.create_view_main_with_deltas_etc()
+  urge 'ucdb/create@1/6'; await @read_configuration               me
+  urge 'ucdb/create@2/6'; await @compile_glyphsets_configuration  me
+  urge 'ucdb/create@3/6'; await @populate_table_fontnicks         me
+  urge 'ucdb/create@4/6'; await @populate_table_main              me
+  urge 'ucdb/create@5/6'; await @compile_configurations           me
+  urge 'ucdb/create@6/6'; await @populate_table_outlines          me
+  # urge 'ucdb/create@6/6'; # me.db.create_view_main_with_deltas_etc()
   resolve me
 
 #-----------------------------------------------------------------------------------------------------------

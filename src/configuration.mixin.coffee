@@ -171,6 +171,40 @@ MIRAGE                    = require 'sqlite-file-mirror'
   return { first_cid, last_cid, }
 
 #-----------------------------------------------------------------------------------------------------------
+@compile_glyphsets_configuration = ( me ) ->
+  info '^ucdb/cfg@8873^', "compiling glyphsets configuration table"
+  #.........................................................................................................
+  try
+    #.......................................................................................................
+    cid_pattern       = /// \[  0x (?<cid>       [ 0-9 a-f ]+ )                                      \] ///gu
+    cid_range_pattern = /// \[  0x (?<first_cid> [ 0-9 a-f ]+ ) \.\. 0x (?<last_cid>  [ 0-9 a-f ]+ ) \] ///gu
+    for row from me.db.read_cfg_glyphsets()
+      { linenr
+        setname
+        glyphs } = row
+      glyphs_prv  = glyphs
+      glyphs      = glyphs.replace /\x20/g, ''
+      #.....................................................................................................
+      glyphs = glyphs.replace cid_pattern, ( _..., groups ) ->
+        cid = parseInt groups.cid, 16
+        return String.fromCodePoint cid
+      #.....................................................................................................
+      glyphs = glyphs.replace cid_range_pattern, ( _..., groups ) ->
+        first_cid = parseInt groups.first_cid, 16
+        last_cid  = parseInt groups.last_cid,  16
+        return ( String.fromCodePoint cid for cid in [ first_cid .. last_cid ] ).join ''
+      #.....................................................................................................
+      if glyphs_prv != glyphs
+        me.dbw.update_cfg_glyphsets { linenr, setname, glyphs, }
+  #.........................................................................................................
+  catch error
+    throw new Error """^ucdb/cfg@7631^ when trying to compile row
+      #{jr row}
+      from configuration, an error occurred: #{error.message}"""
+  #.........................................................................................................
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
 @compile_configurations = ( me ) ->
   info '^ucdb/cfg@8873^', "compiling configuration tables"
   me.db.prepare_cfg_tables()

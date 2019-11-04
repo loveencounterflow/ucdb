@@ -1,11 +1,16 @@
 
 # Named subsets of glyphs and fonts used during development and testing
+# US ASCII blanks (U+0020) will be ignored unless inserted symbolically
+# To insert symbolically, use notations like `[0x9fff]` for single code
+# points and `[0x7f..0x8000]` for ranges of code points.
 
 # couldhavefallback
-unassigned 鿿
-noncharacters ﷐﷑﷒�￾￿
+smallfish 			[0x1..0xff]
+# smallfish 			[0xff][0x1..0x1f] [0x7f..0x80]
+unassigned 			[0x9fff][0x30000][0x10fffe][0x10ffff][0x243f][0x245f]
+noncharacters 	[0xfdd0][0xfdd1][0xfdd2][0xfffd][0xfffe][0xffff]
 yijing ䷰䷱䷲
-firstfew 一丁丂七丄丅
+firstfew 一丁丂七丄丅万
 # first256 一丁丂七丄丅丆万丈三上下丌不与丏丐丑丒专且丕世丗丘丙业丛东丝丞丟丠両丢丣两严並丧丨丩个丫丬中丮丯丰丱串丳临丵丶丷丸丹为主丼丽举丿乀乁乂乃乄久乆乇么义乊之乌乍乎乏乐乑乒乓乔乕乖乗乘乙乚乛乜九乞也习乡乢乣乤乥书乧乨乩乪乫乬乭乮乯买乱乲乳乴乵乶乷乸乹乺乻乼乽乾乿亀亁亂亃亄亅了亇予争亊事二亍于亏亐云互亓五井亖亗亘亙亚些亜亝亞亟亠亡亢亣交亥亦产亨亩亪享京亭亮亯亰亱亲亳亴亵亶亷亸亹人亻亼亽亾亿什仁仂仃仄仅仆仇仈仉今介仌仍从仏仐仑仒仓仔仕他仗付仙仚仛仜仝仞仟仠仡仢代令以仦仧仨仩仪仫们仭仮仯仰仱仲仳仴仵件价仸仹仺任仼份仾仿
 # small   一丁丂七丄丅丆万㐀㐁㐂
 # leftpianpang  扌亻釒钅冫牜飠
