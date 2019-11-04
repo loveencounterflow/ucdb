@@ -5,6 +5,7 @@ cd "$home"
 
 # npm link ~/jzr/steampipes
 npm link ~/jzr/svgttf
+npm link ~/jzr/fontmirror
 # npm link ~/io/mingkwai-rack/mingkwai-typesetter
 
 
