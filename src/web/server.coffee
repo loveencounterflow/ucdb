@@ -235,10 +235,13 @@ pathdatamap_from_glyphs = ( fontnick, glyphs ) ->
   ### TAINT make this transformation a method ###
   R               = {}
   for row from O.ucdb.db.$.query sql
-    { outline_nr,
+    { iclabel
+      cid
+      outline_nr
       shared_outline_count  } = row
     pathdata                  = _pathdata_from_outline_row row
-    R[ row.glyph ]  = { pathdata, outline_nr, shared_outline_count, }
+    cid_hex                   = cid.toString 16
+    R[ row.glyph ]            = { iclabel, cid, cid_hex, pathdata, outline_nr, shared_outline_count, }
   return R
 
 
@@ -271,6 +274,10 @@ SVG.slug_from_pathdatamap = ( fontnick, glyphs, pathdatamap ) ->
   R          += " fill: #800;"
   R          += " font-family: helvetica;"
   R          += " font-size: 1500px; }"
+  R          += ".cidx {"
+  R          += " fill: #30f;"
+  R          += " font-family: monospace;"
+  R          += " font-size: 800px; }"
   R          += "</style>"
   ### insert blank pathdata for missing glyphs ###
   # blank                           = 'M 0 0 L 4000 4000 L 4096 4000 96 0 Z'
@@ -282,7 +289,10 @@ SVG.slug_from_pathdatamap = ( fontnick, glyphs, pathdatamap ) ->
     entry = pathdatamap[ glyph ]
     #.......................................................................................................
     if entry?
-      { pathdata
+      { iclabel
+        cid
+        cid_hex
+        pathdata
         outline_nr
         shared_outline_count } = entry
       R += "<path transform='scale( 1 -1 ) translate( #{x} -3296 )' d='#{pathdata}'/>"
@@ -290,6 +300,8 @@ SVG.slug_from_pathdatamap = ( fontnick, glyphs, pathdatamap ) ->
         # urge '^ucdb/server@8931^', fontnick, glyph, shared_outline_count
         push  = Math.floor x + advance_x * 0.9 + 0.5
         R    += "<text class='olnr' x='#{push}' y='4296'>#{outline_nr}</text>"
+      push  = Math.floor x + 500
+      R    += "<text class='cidx' x='#{push}' y='4296'>#{cid_hex}</text>"
     #.......................................................................................................
     else
       ### add fallback glyph ###

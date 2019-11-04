@@ -195,6 +195,8 @@ query outline_json_from_glyph( fontnick, glyph ):
 -- replaced by sth like `$tuple:glyphs` as soon as ICQL has been updated
 fragment outline_json_from_glyphs( fontnick, glyphs, n ):
   select
+      MN.iclabel              as iclabel,
+      MN.cid                  as cid,
       MN.glyph                as glyph,
       OL.outline_json         as outline_json,
       OL.outline_nr           as outline_nr,
