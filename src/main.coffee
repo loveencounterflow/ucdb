@@ -252,6 +252,7 @@ runmode                   = 'debug_cross_cjk'
   preamble.push me.db.create_table_main_first()
   await @read_rsgs me
   cid_ranges        = @_XXX_get_all_glyphstrings_from_cfg_glyphsets me ### TAINT see remark in method ###
+  seen_cids         = new Set()
   #.........................................................................................................
   for cid_range in cid_ranges
     #.......................................................................................................
@@ -267,6 +268,8 @@ runmode                   = 'debug_cross_cjk'
           yield cid
     #.......................................................................................................
     for cid from cids()
+      continue if seen_cids.has cid
+      seen_cids.add cid
       whisper '^ucdb@1009^', ( CND.format_number line_count ) if ( ++line_count % 10000 ) is 0
       description = MKNCR.describe cid
       glyph       = String.fromCodePoint cid
