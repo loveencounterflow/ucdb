@@ -91,6 +91,17 @@ MIRAGE                    = require 'sqlite-file-mirror'
       ]
     format:     'wsv'
   #.........................................................................................................
+  MIRAGE.drop_source  me.mirage,  'cfg_glyphsets'
+  MIRAGE.add_source   me.mirage,
+    name:                         'cfg_glyphsets'
+    path:       project_abspath   'cfg/glyphsets.txt'
+    fields: [
+      { name: 'linenr',     type: 'integer', null:  false,                }
+      { name: 'setname',    type: 'text',    null:  false,                }
+      { name: 'glyphs',     type: 'text',    null:  false,                }
+      ]
+    format:     'wsv'
+  #.........................................................................................................
   return null
 
 #-----------------------------------------------------------------------------------------------------------
