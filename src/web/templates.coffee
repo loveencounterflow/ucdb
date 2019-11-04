@@ -139,6 +139,8 @@ Object.assign @, TEACUP
 @long_samples_overview = ->
   #.........................................................................................................
   return @render =>
+    fontnicks = ( row.fontnick for row from SERVER.O.ucdb.db.fontnicks_with_outlines() )
+    glyphs    = UCDB._XXX_get_all_glyphs_as_list_from_cfg_glyphsets SERVER.O.ucdb
     @layout()
     @TITLE 'UCDB'
     @DIV => "UCDB"
@@ -146,12 +148,11 @@ Object.assign @, TEACUP
     #.......................................................................................................
     # @DIV { style: 'overflow:scroll;' }, =>
     @TABLE { style: 'overflow:scroll;' }, =>
-      debug '^43685^', sample.fontnicks
-      for fontnick in sample.fontnicks
+      for fontnick in fontnicks
         @TR =>
           @TD =>
             @TEXT fontnick
-          for glyph in sample.glyphs
+          for glyph in glyphs
             @TD =>
               @GLYPHIMG fontnick, glyph
     #.......................................................................................................
@@ -160,16 +161,19 @@ Object.assign @, TEACUP
 
 #-----------------------------------------------------------------------------------------------------------
 @slugs = ->
-  slug = sample.glyphs.join ''
   #.........................................................................................................
   return @render =>
+    fontnicks = ( row.fontnick for row from SERVER.O.ucdb.db.fontnicks_with_outlines() )
+    ### TAINT consider to reqrite this so we call method on `SERVER`, not on `UCDB` ###
+    glyphs    = UCDB._XXX_get_all_glyphs_as_list_from_cfg_glyphsets SERVER.O.ucdb
+    slug      = glyphs.join ''
     @layout()
     @TITLE 'UCDB'
     @DIV => "UCDB"
     @H3 => "Slugs (Multiple Glyphs in single SVG)"
     #.......................................................................................................
     @TABLE =>
-      for fontnick in sample.fontnicks
+      for fontnick in fontnicks
         @TR =>
           @TD =>
             @TEXT fontnick
