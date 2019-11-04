@@ -313,37 +313,9 @@ runmode                   = 'debug_cross_cjk'
   me.db.create_table_contents()
   me.db.create_table_outlines()
   known_hashes = new Set()
-  # XXX_includes      = 'jizurafourbmp'
-  # XXX_includes      = null
-  # XXX_includes      = 'kai'
-  # XXX_includes      = """
-  #   babelstonehan
-  #   cuyuansf
-  #   dejavusansmonobold
-  #   hanaminaotf
-  #   hanaminbotf
-  #   hanaminexatwootf
-  #   ipag
-  #   jizurathreeb
-  #   kai
-  #   sourcehanserifheavytaiwan
-  #   sunexta
-  #   thtshynptwo
-  #   thtshynpzero
-  #   umingttcone
-  #   unifonttwelve
-  #   """
-  XXX_includes      = """sunexta thtshynptwo thtshynpone"""
-  # XXX_includes      = """sourcehanserifheavyjapan
-  #   sourcehanserifregularjapan
-  #   sourcehanserifheavykorea
-  #   sourcehanserifregularkorea
-  #   sourcehanserifheavymainland
-  #   sourcehanserifregularmainland
-  #   sourcehanserifheavytaiwan
-  #   sourcehanserifregulartaiwan"""
-  # XXX_includes      = 'thtshynpone'
-  # XXX_includes      = 'thtshynptwo'
+  XXX_includes      = null
+  XXX_includes      = """babelstonehan"""
+  # XXX_includes      = """sunexta thtshynptwo thtshynpone fandolheibold"""
   if XXX_includes?
     XXX_includes = XXX_includes.split /\s+/
     XXX_includes = XXX_includes.filter ( x ) -> x isnt ''
