@@ -129,7 +129,12 @@ monoiditalic                      Monoid-Italic.ttf
 monoidregular                     Monoid-Regular.ttf
 monoidretina                      Monoid-Retina.ttf
 nanumgothic                       NanumGothic.ttc
-nanummyeongjo                     NanumMyeongjo.ttc
+
+# nanummyeongjo                     NanumMyeongjo.ttc
+nanummyeongjoone     							NanumMyeongjo001.ttf
+nanummyeongjootwo    							NanumMyeongjo002.ttf
+nanummyeongjoonethree							NanumMyeongjo003.ttf
+
 notoserifjpblack                  NotoSerifJP-Black.otf
 notoserifjpbold                   NotoSerifJP-Bold.otf
 notoserifjpextralight             NotoSerifJP-ExtraLight.otf
@@ -183,6 +188,15 @@ sourcecodepromedium               SourceCodePro-Medium.otf
 sourcecodeproregular              SourceCodePro-Regular.otf
 sourcecodeprosemibold             SourceCodePro-Semibold.otf
 sourcehansansbold                 SourceHanSans-Bold.ttc
+sourcehansansboldone  						SourceHanSans-Bold001.ttf
+sourcehansansboldtwo  						SourceHanSans-Bold002.ttf
+sourcehansansboldthree						SourceHanSans-Bold003.ttf
+sourcehansansboldfour 						SourceHanSans-Bold004.ttf
+sourcehansansboldfive 						SourceHanSans-Bold005.ttf
+sourcehansansboldsix  						SourceHanSans-Bold006.ttf
+sourcehansansboldseven						SourceHanSans-Bold007.ttf
+sourcehansansboldeight						SourceHanSans-Bold008.ttf
+
 sourcehansansextralight           SourceHanSans-ExtraLight.ttc
 sourcehansansheavy                SourceHanSans-Heavy.ttc
 sourcehansanslight                SourceHanSans-Light.ttc
@@ -241,7 +255,3 @@ unifontuppertwelve                unifont_upper-12.1.03.ttf
 unifrakturcook                    UnifrakturCook.ttf
 unifrakturcooklight               UnifrakturCook-Light.ttf
 unifrakturmaguntia                UnifrakturMaguntia.ttf
-yanonekaffeesatzbold              YanoneKaffeesatz-Bold.ttf
-yanonekaffeesatzextralight        YanoneKaffeesatz-ExtraLight.ttf
-yanonekaffeesatzlight             YanoneKaffeesatz-Light.ttf
-yanonekaffeesatzregular           YanoneKaffeesatz-Regular.ttf
