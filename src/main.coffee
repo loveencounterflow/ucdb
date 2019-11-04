@@ -50,6 +50,7 @@ mkts_glyph_styles         = mkts_options.tex[ 'glyph-styles' ]
 MKNCR                     = require 'mingkwai-ncr'
 SVGTTF                    = require 'svgttf'
 MIRAGE                    = require 'sqlite-file-mirror'
+FONTMIRROR                = require 'fontmirror'
 # RCFG                      = require './read-configuration'
 Multimix                  = require 'multimix'
 #...........................................................................................................
@@ -356,10 +357,12 @@ runmode                   = 'debug_cross_cjk'
   glyphrows         = ( row           for row from me.db.$.query XXX_sql        )
   fontnicks         = ( row.fontnick  for row from me.db.walk_fontnick_table()  )
   me._outline_count = 0
+  debug "^ucdb@43847^ XXX_includes:", jr XXX_includes
   for fontnick in fontnicks
     continue if XXX_includes? and fontnick not in XXX_includes ### !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ###
     info "^ucdb@1011^ adding outlines for #{fontnick}"
     @_insert_into_table_outlines me, known_hashes, fontnick, glyphrows
+  @_XXXX_add_cached_outlines me, known_hashes, glyphrows
   me.db.finalize_outlines()
   return null
 
@@ -426,6 +429,67 @@ runmode                   = 'debug_cross_cjk'
     outlines_data.push ( me.db.insert_into_outlines_middle { iclabel, fontnick, outline_json_hash: hash, } ) + ','
     if ( outlines_data.length + content_data.length ) >= batch_size
       line_count += @_flush_outlines me, content_data, outlines_data
+  #.........................................................................................................
+  line_count += @_flush_outlines me, content_data, outlines_data
+  if duplicate_count > 0
+    urge "^ucdb@3376^ found #{duplicate_count} duplicates for font #{fontnick}"
+  return line_count
+
+#-----------------------------------------------------------------------------------------------------------
+@_XXXX_add_cached_outlines = ( me, known_hashes, glyphrows ) ->
+  ### NOTE this method will replace `_insert_into_table_outlines()` ###
+  outlines_data     = []
+  content_data      = []
+  line_count        = 0
+  duplicate_count   = 0
+  batch_size        = 5000
+  progress_count    = 100 ### output progress whenever multiple of this number reached ###
+  # fragment insert_into_outlines_first(): insert into outlines ( iclabel, fontnick, pathdata ) values
+  #.........................................................................................................
+  ### TAINT where will cache_path come from? ###
+  cache_path  = '/home/flow/jzr/benchmarks/assets/fontmirror/cache'
+  fontnick    = null
+  for d from FONTMIRROR.walk_cached_outlines null, cache_path
+    switch d.key
+      when '^first'
+        help '^2328^', jr d
+      when '^last'
+        help '^2328^', jr d
+      when '^new-font'
+        fontnick  = d.fontnick
+        relpath   = cwd_relpath d.path
+        urge '^56798^', "adding outlines for font #{fontnick} (#{relpath})"
+        ### TAINT use method to derive fontnick from filename ###
+      #.....................................................................................................
+      when '^outline'
+        ### TAINT use function call ###
+        info '^56798^', ( jr d )[ .. 80 ]
+        ### TAINT cache iclabels from DB ###
+        { cid_hex
+          glyph
+          advance
+          pathdata  } = d
+        whisper '^ucdb@1016^', me._outline_count - 1 if ( me._outline_count++ % progress_count ) is 0
+        cid_hex       = cid_hex.padStart 6, '0'
+        iclabel       = "A:uc0---:#{cid_hex}:#{glyph}"
+        content       = jr { advance, pathdata, }
+        hash          = MIRAGE.sha1sum_from_text content
+        #...................................................................................................
+        if known_hashes.has hash
+          duplicate_count++
+        else
+          known_hashes.add hash
+          row = { hash, content, }
+          content_data.push ( me.db.insert_into_contents_middle row ) + ','
+        #...................................................................................................
+        row = { iclabel, fontnick, outline_json_hash: hash, }
+        outlines_data.push ( me.db.insert_into_outlines_middle row ) + ','
+        if ( outlines_data.length + content_data.length ) >= batch_size
+          line_count += @_flush_outlines me, content_data, outlines_data
+      #.....................................................................................................
+      else
+        excerpt = ( jr d )[ .. 100 ]
+        throw new Error "^ucdb/cached_outlines@4458 unknown datom key #{rpr d.key} (#{excerpt})"
   #.........................................................................................................
   line_count += @_flush_outlines me, content_data, outlines_data
   if duplicate_count > 0
