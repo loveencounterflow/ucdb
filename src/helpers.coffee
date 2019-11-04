@@ -117,7 +117,7 @@ types                     = require './types'
 @SQL_escape_value = ( x ) ->
   ### NOTE: lifted from ICQL ###
   switch type = type_of x
-    when 'text'     then return @SQL_text_as_literal      x
+    when 'text'     then return @SQL_text_as_literal x
     # when 'list'     then return @SQL_list_as_json_literal x
     when 'number'   then return x.toString()
     when 'boolean'  then return ( if x then '1' else '0' )
