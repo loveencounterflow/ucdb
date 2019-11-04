@@ -230,7 +230,9 @@ pathdatamap_from_glyphs = ( fontnick, glyphs ) ->
   n               = glyphs.length
   glyphs_tuple    = HELPERS.SQL_generate_values_tuple glyphs
   sql_template    = O.ucdb.db.outline_json_from_glyphs { fontnick, glyphs, n, }
-  sql             = sql_template.replace /\?glyphs\?/g, glyphs_tuple
+  ### NOTE using a function with constant return value to keep JS from expanding `$`s in replacement string;
+  see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace ###
+  sql             = sql_template.replace /\?glyphs\?/g, -> glyphs_tuple
   ### TAINT should do this in DB (?) ###
   ### TAINT make this transformation a method ###
   R               = {}
