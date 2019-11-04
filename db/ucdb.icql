@@ -242,6 +242,10 @@ query read_cfg_rsgs_and_blocks():
   select * from cfg_rsgs_and_blocks order by linenr;
 
 -- ---------------------------------------------------------------------------------------------------------
+query read_cfg_glyphsets():
+  select * from cfg_glyphsets order by linenr;
+
+-- ---------------------------------------------------------------------------------------------------------
 procedure prepare_cfg_tables():
   -- ### TAINT would be better to set up all columns in table definition
   -- .......................................................................................................
@@ -276,6 +280,12 @@ procedure update_cfg_styles_codepoints_and_fontnicks( linenr, first_cid, last_ci
   update cfg_styles_codepoints_and_fontnicks
     set ( first_cid, last_cid,   glyphstyle_glyph,  glyphstyle_push,  glyphstyle_raise,  glyphstyle_scale ) =
        ( $first_cid, $last_cid, $glyphstyle_glyph, $glyphstyle_push, $glyphstyle_raise, $glyphstyle_scale )
+    where linenr = $linenr;
+
+-- ---------------------------------------------------------------------------------------------------------
+procedure update_cfg_glyphsets( linenr, setname, glyphs ):
+  update cfg_glyphsets
+    set ( setname, glyphs ) = ( $setname, $glyphs )
     where linenr = $linenr;
 
 -- ---------------------------------------------------------------------------------------------------------
