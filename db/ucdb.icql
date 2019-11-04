@@ -76,8 +76,9 @@ procedure create_main_indexes():
   create index main_rsg_index   on main ( rsg );
 
 -- ---------------------------------------------------------------------------------------------------------
-query read_codepoint_records(): select * from main;
-query read_codepoint_records( limit ): select * from main limit $limit;
+query read_codepoint_records():         select *              from main;
+query read_codepoint_records( limit ):  select *              from main limit $limit;
+query read_iclabels_and_glyphs():       select glyph, iclabel from main;
 
 
 -- =========================================================================================================

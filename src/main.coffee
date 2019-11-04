@@ -54,6 +54,9 @@ FONTMIRROR                = require 'fontmirror'
 # RCFG                      = require './read-configuration'
 Multimix                  = require 'multimix'
 #...........................................................................................................
+cache =
+  iclabels_by_glyphs: null
+#...........................................................................................................
 runmode                   = 'production'
 runmode                   = 'debug'
 runmode                   = 'debug_small'
@@ -408,14 +411,24 @@ runmode                   = 'debug_cross_cjk'
   return line_count
 
 #-----------------------------------------------------------------------------------------------------------
+@_get_iclabels_by_glyphs = ( me ) ->
+  return R if ( R = cache.iclabels_by_glyphs )?
+  R = {}
+  for row from me.db.read_iclabels_and_glyphs()
+    R[ row.glyph ] = row.iclabel
+  cache.iclabels_by_glyphs = R
+  return R
+
+#-----------------------------------------------------------------------------------------------------------
 @_XXXX_add_cached_outlines = ( me, known_hashes, glyphrows ) ->
   ### NOTE this method will replace `_insert_into_table_outlines()` ###
-  outlines_data     = []
-  content_data      = []
-  line_count        = 0
-  duplicate_count   = 0
-  batch_size        = 5000
-  progress_count    = 100 ### output progress whenever multiple of this number reached ###
+  iclabels_by_glyphs  = @_get_iclabels_by_glyphs me
+  outlines_data       = []
+  content_data        = []
+  line_count          = 0
+  duplicate_count     = 0
+  batch_size          = 5000
+  progress_count      = 100 ### output progress whenever multiple of this number reached ###
   # fragment insert_into_outlines_first(): insert into outlines ( iclabel, fontnick, pathdata ) values
   #.........................................................................................................
   ### TAINT where will cache_path come from? ###
@@ -443,9 +456,11 @@ runmode                   = 'debug_cross_cjk'
           pathdata  } = d
         whisper '^ucdb@1016^', me._outline_count - 1 if ( me._outline_count++ % progress_count ) is 0
         cid_hex       = cid_hex.padStart 6, '0'
-        iclabel       = "A:uc0---:#{cid_hex}:#{glyph}"
         content       = jr { advance, pathdata, }
         hash          = MIRAGE.sha1sum_from_text content
+        #...................................................................................................
+        unless ( iclabel = iclabels_by_glyphs[ glyph ] )?
+          throw new Error "^ucdb/add_cached_outlines@4474^ no IcLabel for glyph #{rpr glyph}"
         #...................................................................................................
         if known_hashes.has hash
           duplicate_count++
