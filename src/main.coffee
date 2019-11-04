@@ -58,38 +58,6 @@ runmode                   = 'debug'
 runmode                   = 'debug_small'
 runmode                   = 'debug_cross_cjk'
 
-#-----------------------------------------------------------------------------------------------------------
-cid_ranges_by_runmode  =
-  debug: [
-    [ 0x00001, 0x000ff, ]
-    [ 0x03002, 0x03002, ]
-    [ 0x021bb, 0x021bb, ]
-    [ 0x03010, 0x03010, ]
-    [ 0x04df0, 0x09fff, ]
-    # [ 0x09fba, 0x09fba, ] # babelstonehan
-    [ 0x0e100, 0x0e10d, ]
-    [ 0x0e10f, 0x0e111, ]
-    [ 0x20000, 0x20006, ]
-    ]
-  debug_cross_cjk: [
-    '𗐑𥳑字好松一丁丂七丄丅丆万㐀㐁㐂龰龱龲龳龴龵龶龷龸龹𡗗龺龻⺶龼龽龾龿鿀鿁鿂鿃鿄鿅鿆鿇鿈鿉鿊鿋鿌鿍鿎鿏鿐鿑鿒鿓鿔鿕鿖鿗鿘鿙鿚鿛鿜鿝鿞鿟鿠鿡鿢鿣鿤鿥鿦鿧鿨鿩鿪鿫鿬鿭鿮鿯𠀀𠀁𠀂𪜀𪜁𪜂𫝀𫝁𫝂𫠠𫠡𫠢𬺰𬺱𬺲〡〢〣〤〥〦〧〨〩〸〹〺〻〼〽🉠🉡🉢🉣🉤🉥'
-    # '𗐑𥳑字好松一丁丂七丄丅丆万㐀㐁㐂龹龺龻龼鿋鿛鿮鿯𠀀𠀁𠀂𪜀𪜁𪜂𫝀𫝁𫝂𫠠𫠡𫠢𬺰𬺱𬺲〡〢〣〤〥〦〧〨〩〸〹〺〻〼〽🉠🉡🉢🉣🉤🉥'
-    ]
-  debug_small: [
-    # [ 0x00001, 0x000ff, ]
-    # [ 0x04dff, 0x04eff, ]
-    [ 0x04e00, 0x06fff, ]
-    # '扌亻釒钅冫牜飠'
-    'ab'
-    ]
-  production: [
-    [ 0x00001, 0x000ff, ]
-    [ 0x00100, 0x0ffff, ]
-    [ 0x1d400, 0x1d7ff, ] # Mathematical Alphanumeric Symbols
-    [ 0x20000, 0x2ebef, ] # CJK Ext. B thru F
-    ]
-unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
-  throw new Error "^ucdb@1000^ unknown runmode #{rpr runmode}"
 
 #-----------------------------------------------------------------------------------------------------------
 @read_rsgs = ( me ) -> return new Promise ( resolve ) ->
@@ -263,6 +231,15 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
 #===========================================================================================================
 # MAIN TABLE
 #-----------------------------------------------------------------------------------------------------------
+@_XXX_get_all_glyphs_as_list_from_cfg_glyphsets = ( me ) ->
+  ### TAINT to be replaced by a configuration that maps from runmodes to sets of glyphs and fonts ###
+  return Array.from ( @_XXX_get_all_glyphstrings_from_cfg_glyphsets me ).join ''
+
+@_XXX_get_all_glyphstrings_from_cfg_glyphsets = ( me ) ->
+  ### TAINT to be replaced by a configuration that maps from runmodes to sets of glyphs and fonts ###
+  return ( row.glyphs for row from me.db.$.query "select setname, glyphs from cfg_glyphsets;"  )
+
+#-----------------------------------------------------------------------------------------------------------
 @populate_table_main = ( me ) -> new Promise ( resolve, reject ) =>
   preamble          = []
   data              = []
@@ -270,6 +247,7 @@ unless ( cid_ranges = cid_ranges_by_runmode[ runmode ] )?
   me._seen_unknown  = new Set()
   preamble.push me.db.create_table_main_first()
   await @read_rsgs me
+  cid_ranges        = @_XXX_get_all_glyphstrings_from_cfg_glyphsets me ### TAINT see remark in method ###
   #.........................................................................................................
   for cid_range in cid_ranges
     #.......................................................................................................
