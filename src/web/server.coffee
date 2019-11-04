@@ -307,6 +307,9 @@ SVG.slug_from_pathdatamap = ( fontnick, glyphs, pathdatamap ) ->
     else
       ### add fallback glyph ###
       R += "<path transform='scale( 1 -1 ) translate( #{x} -3296 )' d='M 600 -550 L 3446 -550 3446 3546 600 3546 Z' fill='rgba(100,100,0,0.2)'/>"
+      cid_hex = ( glyph.codePointAt 0 ).toString 16
+      push    = Math.floor x + 500
+      R      += "<text class='cidx' x='#{push}' y='4296'>#{cid_hex}</text>"
     #.......................................................................................................
     x += advance_x
   #.........................................................................................................
