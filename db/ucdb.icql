@@ -203,8 +203,7 @@ fragment outline_json_from_glyphs( fontnick, glyphs, n ):
       OL.outline_nr           as outline_nr,
       OL.shared_outline_count as shared_outline_count
     from all_outlines as OL
-    -- join contents as CO on ( OL.outline_json_hash = CO.hash )
-    join main    as MN using ( iclabel       )
+    join main         as MN using ( iclabel )
     where true
       and MN.glyph    in ?glyphs?
       and OL.fontnick = $fontnick

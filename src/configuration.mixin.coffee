@@ -4,7 +4,7 @@
 ############################################################################################################
 CND                       = require 'cnd'
 rpr                       = CND.rpr
-badge                     = 'UCDB-DEV'
+badge                     = 'UCDB/CONFIGURATION'
 log                       = CND.get_logger 'plain',     badge
 info                      = CND.get_logger 'info',      badge
 whisper                   = CND.get_logger 'whisper',   badge
@@ -229,6 +229,7 @@ MIRAGE                    = require 'sqlite-file-mirror'
           glyphstyle_glyph, glyphstyle_push, glyphstyle_raise, glyphstyle_scale, }
       else
         me.dbw.update_cfg_styles_codepoints_and_fontnicks { linenr, first_cid, last_cid, }
+  #.........................................................................................................
   catch error
     throw new Error """^ucdb/cfg@7632^ when trying to compile row
       #{jr row}

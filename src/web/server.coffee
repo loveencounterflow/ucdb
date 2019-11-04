@@ -217,7 +217,6 @@ sample_glyphs = Array.from ( """
 pathdata_from_glyph = ( fontnick, glyph ) ->
   validate.ucdb_glyph glyph
   rows = [ ( O.ucdb.db.outline_json_from_glyph { fontnick, glyph, } )..., ]
-  debug '^337467^', rows
   return null unless rows.length is 1
   return _pathdata_from_outline_row rows[ 0 ]
 
