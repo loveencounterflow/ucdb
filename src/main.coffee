@@ -430,7 +430,7 @@ runmode                   = 'debug_cross_cjk'
   line_count          = 0
   duplicate_count     = 0
   batch_size          = 5000
-  progress_count      = 100 ### output progress whenever multiple of this number reached ###
+  progress_count      = 10000 ### output progress whenever multiple of this number reached ###
   # fragment insert_into_outlines_first(): insert into outlines ( iclabel, fontnick, pathdata ) values
   #.........................................................................................................
   ### TAINT where will cache_path come from? ###
@@ -450,20 +450,23 @@ runmode                   = 'debug_cross_cjk'
       #.....................................................................................................
       when '^outline'
         ### TAINT use function call ###
-        info '^56798^', ( jr d )[ .. 80 ]
+        # info '^56798^', ( jr d )[ .. 80 ]
         ### TAINT cache iclabels from DB ###
         { cid_hex
           glyph
           advance
           pathdata  } = d
-        whisper '^ucdb@1016^', me._outline_count - 1 if ( me._outline_count++ % progress_count ) is 0
         cid_hex       = cid_hex.padStart 6, '0'
         content       = jr { advance, pathdata, }
         hash          = MIRAGE.sha1sum_from_text content
         #...................................................................................................
         unless ( iclabel = iclabels_by_glyphs[ glyph ] )?
-          throw new Error "^ucdb/add_cached_outlines@4474^ no IcLabel for glyph #{rpr glyph}"
+          message = "^ucdb/add_cached_outlines@4474^ no IcLabel for glyph #{rpr glyph}"
+          # throw new Error message
+          # warn message
+          continue
         #...................................................................................................
+        whisper '^ucdb@1016^', me._outline_count - 1 if ( me._outline_count++ % progress_count ) is 0
         if known_hashes.has hash
           duplicate_count++
         else
