@@ -38,7 +38,6 @@ PATH                      = require 'path'
 #...........................................................................................................
 _glob                     = require 'glob'
 glob                      = ( require 'util' ).promisify _glob
-require                   '../exception-handler'
 PD                        = require 'pipedreams'
 { $
   $async

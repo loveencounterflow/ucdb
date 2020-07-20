@@ -36,7 +36,6 @@ types                     = require './types'
   last_of
   type_of }               = types
 #...........................................................................................................
-require                   './exception-handler'
 @_styles_ivtree           = null
 @_styles_cache            = {}
 CS                        = require 'coffeescript'

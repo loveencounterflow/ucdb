@@ -32,7 +32,6 @@ types                     = require './types'
   type_of }               = types
 #...........................................................................................................
 glob                      = require 'glob'
-require                   './exception-handler'
 MIRAGE                    = require 'sqlite-file-mirror'
 
 
