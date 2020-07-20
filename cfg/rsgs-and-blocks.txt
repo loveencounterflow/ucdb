@@ -1,6 +1,34 @@
 
 # IC Group  Range Sigil (RSG)     Kanji  CID-Range                Unicode Block Name
 
+
+#
+# NOTE Might always want to exclude the below non-characters from processing (see
+# https://en.wikipedia.org/wiki/Universal_Character_Set_characters#Special_code_points):
+#
+# u+0000            	    [   0x0000,   0x0000, ]
+# u+d800..u+dfff    	    [   0xd800,   0xdfff, ] # surrogates
+# u+fdd0..u+fdef    	    [   0xfdd0,   0xfdef, ]
+# u+fffe..u+ffff    	    [   0xfffe,   0xffff, ]
+# u+1fffe..u+1ffff  	    [  0x1fffe,  0x1ffff, ]
+# u+2fffe..u+2ffff  	    [  0x2fffe,  0x2ffff, ]
+# u+3fffe..u+3ffff  	    [  0x3fffe,  0x3ffff, ]
+# u+4fffe..u+4ffff  	    [  0x4fffe,  0x4ffff, ]
+# u+5fffe..u+5ffff  	    [  0x5fffe,  0x5ffff, ]
+# u+6fffe..u+6ffff  	    [  0x6fffe,  0x6ffff, ]
+# u+7fffe..u+7ffff  	    [  0x7fffe,  0x7ffff, ]
+# u+8fffe..u+8ffff  	    [  0x8fffe,  0x8ffff, ]
+# u+9fffe..u+9ffff  	    [  0x9fffe,  0x9ffff, ]
+# u+afffe..u+affff  	    [  0xafffe,  0xaffff, ]
+# u+bfffe..u+bffff  	    [  0xbfffe,  0xbffff, ]
+# u+cfffe..u+cffff  	    [  0xcfffe,  0xcffff, ]
+# u+dfffe..u+dffff  	    [  0xdfffe,  0xdffff, ]
+# u+efffe..u+effff  	    [  0xefffe,  0xeffff, ]
+# u+ffffe..u+fffff  	    [  0xffffe,  0xfffff, ]
+# u+10fffe..u+10ffff	    [ 0x10fffe, 0x10ffff, ] ]
+#
+
+
 # Sec. I Chinese Characters proper
 jzr---      jzr                   true   0x0e000..0x0f8ff         Jizura
 ux0e00      u-pua                 true   0x0e000..0x0f8ff         Private Use Area
