@@ -136,8 +136,8 @@ procedure create_table_outlines():
   create table _outlines_of_sourcefonts (
     /*  NOTE: we use `iclabel`, not `glyph` or `cid` as primary key because in theory neither of the latter
         two is capable of expressing codepoints outside of Unicode. */
-    iclabel           text    not null  references main       ( iclabel  ),
-    fontnick          text    not null  references fontnicks  ( fontnick ),
+    iclabel           text    not null  , --- references main       ( iclabel  ),
+    fontnick          text    not null  , -- !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! references fontnicks  ( fontnick ),
     outline_json_hash text    not null  references contents   ( hash     ),
     primary key ( iclabel, fontnick ) );
 
