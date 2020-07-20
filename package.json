@@ -20,7 +20,7 @@
     "node-notifier": "^6.0.0",
     "pipedreams": "^12.1.0",
     "respawn": "^2.6.0",
-    "sqlite-file-mirror": "file:../../../../../../../home/flow/jzr/sqlite-file-mirror",
+    "sqlite-file-mirror": "file:../sqlite-file-mirror",
     "svgttf": "0.0.17",
     "yargs": "^14.2.0"
   },
