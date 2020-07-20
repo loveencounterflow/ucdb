@@ -63,11 +63,23 @@ COMMON                    = require './common'
 HELPERS                   = require '../helpers'
 
 #-----------------------------------------------------------------------------------------------------------
+@_show_available_addresses = ->
+  network_interfaces = ( require 'os' ).networkInterfaces()
+  help "serving on addresses:"
+  for device, ifcs of network_interfaces
+    for ifc in ifcs
+      if ifc.family is 'IPv6'
+        info CND.blue   "* http://[#{ifc.address}]:#{O.port}/"
+      else
+        info CND.yellow "* http://#{ifc.address}:#{O.port}"
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
 @serve = ->
   app     = new Koa()
   server  = HTTP.createServer app.callback()
   server.listen O.port
-  info "Server listening to http://localhost:#{O.port}"
+  @_show_available_addresses()
   #.........................................................................................................
   root_router.get 'root',                   '/',                            @$new_page 'inventory'
   root_router.get 'long_samples_overview',  '/long-samples-overview',       @$new_page 'long_samples_overview'
