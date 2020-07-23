@@ -26,7 +26,7 @@ PATH                      = require 'path'
   here_abspath
   _drop_extension
   project_abspath }       = require '../helpers'
-@types                    = require '../types'
+types                     = require '../types'
 #...........................................................................................................
 { isa
   validate
@@ -34,7 +34,7 @@ PATH                      = require 'path'
   cast
   size_of
   last_of
-  type_of }               = @types
+  type_of }               = types
 #...........................................................................................................
 _glob                     = require 'glob'
 glob                      = ( require 'util' ).promisify _glob
@@ -86,6 +86,7 @@ HELPERS                   = require '../helpers'
   root_router.get 'slugs',                  '/slugs',                       @$new_page 'slugs'
   root_router.get 'grid',                   '/grid',                        @$new_page 'grid'
   root_router.get 'dump',                   '/dump',                        @$dump()
+  root_router.get 'harfbuzz',               '/harfbuzz',                    @$new_page 'harfbuzz'
   root_router.get 'v2_glyphimg',            '/v2/glyphimg',                 @$v2_glyphimg()
   root_router.get 'v2_slug',                '/v2/slug',                     @$v2_slug()
   root_router.get 'v2_fontnicks',           '/v2/fontnicks',                @$v2_fontnicks()

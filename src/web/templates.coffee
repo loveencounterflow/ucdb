@@ -131,6 +131,8 @@ Object.assign @, TEACUP
         @LI => @A { href: '/long-samples-overview', },  "long samples overview"
         @LI => @A { href: '/slugs',       },  "slugs"
         @LI => @A { href: '/grid',        },  "grid"
+        @LI => @A { href: '/dump',        },  "dump"
+        @LI => @A { href: '/harfbuzz',    },  "harfbuzz"
 
 
 #===========================================================================================================
@@ -264,6 +266,24 @@ Object.assign @, TEACUP
     null
     #.......................................................................................................
 
+#-----------------------------------------------------------------------------------------------------------
+@harfbuzz = ( ctx ) ->
+  debug '^33442^', ctx.query
+  # url       = COMMON.get_url '/v2/slug', { fontnick, text, }
+  url       = '/v2/harfbuzz-sample.svg'
+  # width     = ( Array.from text ).length * ( 685 / 86 ) ### TAINT magic number, should be in styles ###
+  text      = "sample text"
+  width     = 100
+  width     = "#{width}mm"
+  height    = '10mm' ### TAINT magic number, should be in styles ###
+  style     = "width:#{width};height:#{height};"
+  #.........................................................................................................
+  return @render =>
+    @layout()
+    @TITLE 'SVG Typesetting with Harfbuzz and OpentypeJS'
+    @DIV => "UCDB"
+    @DIV => "sample text"
+    @IMG { class: 'slug', alt: text, src: url, style, }
 
 
 # #-----------------------------------------------------------------------------------------------------------
