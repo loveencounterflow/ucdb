@@ -26,15 +26,15 @@ PATH                      = require 'path'
   here_abspath
   _drop_extension
   project_abspath }       = require '../helpers'
-types                     = require '../types'
 #...........................................................................................................
+@types                    = require '../types'
 { isa
   validate
   declare
   cast
   size_of
   last_of
-  type_of }               = types
+  type_of }               = @types
 #...........................................................................................................
 _glob                     = require 'glob'
 glob                      = ( require 'util' ).promisify _glob
