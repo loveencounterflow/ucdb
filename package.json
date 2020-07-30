@@ -17,7 +17,7 @@
     "koa-static": "^5.0.0",
     "mingkwai-ncr": "^0.4.2",
     "multimix": "^4.1.0",
-    "node-notifier": "^7.0.1",
+    "node-notifier": "^7.0.2",
     "pipedreams": "^12.1.1",
     "respawn": "^2.6.0",
     "sqlite-file-mirror": "file:../sqlite-file-mirror",
