@@ -1,0 +1,30 @@
+<!doctype html>
+
+<title>SVG with glyph outlines</title>
+
+<style>
+  body {
+    background-color:  #cf68;
+  }
+</style>
+
+<h1>SVG</h1>
+
+<p>SVG with glyph outlines provided by opentype.js, typesetting metrics by harfbuzz. Outlines are
+implemented as SVG symbols accessible via external resources, which is why we must <ul>
+
+  <li>use HTML <tt>&lt;object&gt;</tt> tags instead of <tt>&lt;img&gt;</tt> tags (images are not allowed to
+  reference external resources);</li>
+
+  <li>use a web server and not open the current file directly in the browser, as it would then not resolve
+  the references in the loaded SVG.</li>
+
+</ul></p>
+
+<hr><div><tt>./sample-glyph.svg   </tt><br><object type='image/svg+xml' data='./sample-glyph.svg'   style='width:250mm'>(Fallback for SVG here)</object></div>
+<!-- <hr><div><tt>./sample-symbols.svg </tt><br><object type='image/svg+xml' data='./sample-symbols.svg' style='width:250mm'>(Fallback for SVG here)</object></div> -->
+<hr><div><tt>./sample-font.svg    </tt><br><object type='image/svg+xml' data='./sample-font.svg'    style='width:250mm'>(Fallback for SVG here)</object></div>
+
+<p>thx to https://vecta.io/blog/best-way-to-embed-svg for pointing out that in order to reference SVG
+symbols from an external SVG file, you need to use <tt>&lt;object&gt;</tt> tags instead of &lt;img&gt;
+tags.</p>
