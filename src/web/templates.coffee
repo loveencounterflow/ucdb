@@ -268,9 +268,9 @@ Object.assign @, TEACUP
 
 #-----------------------------------------------------------------------------------------------------------
 @harfbuzz = ( ctx ) ->
-  debug '^33442^', ctx.query
+  # debug '^33442^', ctx.query
   # url       = COMMON.get_url '/v2/slug', { fontnick, text, }
-  url       = '/v2/harfbuzz-sample.svg'
+  # url       = '/v2/harfbuzz-sample.svg'
   # width     = ( Array.from text ).length * ( 685 / 86 ) ### TAINT magic number, should be in styles ###
   text      = "sample text"
   width     = 100
@@ -280,10 +280,29 @@ Object.assign @, TEACUP
   #.........................................................................................................
   return @render =>
     @layout()
-    @TITLE 'SVG Typesetting with Harfbuzz and OpentypeJS'
-    @DIV => "UCDB"
-    @DIV => "sample text"
-    @IMG { class: 'slug', alt: text, src: url, style, }
+    @TITLE "SVG Typesetting with Harfbuzz and OpentypeJS"
+    @STYLE "body { background-color: #cf68; padding: 10mm; }"
+    @H1 => "SVG Typesetting with Harfbuzz and OpentypeJS"
+    @P =>
+      @TEXT """SVG with glyph outlines provided by opentype.js, typesetting metrics by harfbuzz. Outlines
+        are implemented as SVG symbols accessible via external resources, which is why we must"""
+      @UL =>
+        @LI =>
+          @TEXT "use HTML "; @CODE => "<object>"; @TEXT " tags instead of "
+          @CODE "<img>"
+          @TEXT " tags (images are not allowed to reference external resources);"
+        @LI =>
+          @TEXT """use a web server and not open the current file directly in the browser, as it would then
+            not resolve the references in the loaded SVG."""
+    @HR()
+    @DIV =>
+      @CODE "./sample-glyph.svg"; @BR()
+      @OBJECT { type: 'image/svg+xml', data: '/v2/harfbuzz-opentypejs-slug?text=AEIÖU',  style: 'outline:1px dotted red;width:250mm', }, =>
+        @DIV { style: 'outline:1px dotted blue;width:250mm', }, "(Fallback for SVG here)"
+      # @OBJECT { type: 'image/svg+xml', data: 'opentypejs-harfbuzz-svg/sample-glyph.svg', style: 'outline:1px dotted red;width:250mm', }, =>
+      #   @TEXT "(Fallback for SVG here)"
+    @DIV { style: "width:10mm;height:10mm;background-color:red;", }
+    # @IMG { class: 'slug', alt: text, src: 'opentypejs-harfbuzz-svg/sample-svg.html', style, }
 
 
 # #-----------------------------------------------------------------------------------------------------------

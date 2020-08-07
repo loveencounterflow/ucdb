@@ -81,16 +81,17 @@ HELPERS                   = require '../helpers'
   server.listen O.port
   @_show_available_addresses()
   #.........................................................................................................
-  root_router.get 'root',                   '/',                            @$new_page 'inventory'
-  root_router.get 'long_samples_overview',  '/long-samples-overview',       @$new_page 'long_samples_overview'
-  root_router.get 'slugs',                  '/slugs',                       @$new_page 'slugs'
-  root_router.get 'grid',                   '/grid',                        @$new_page 'grid'
-  root_router.get 'dump',                   '/dump',                        @$dump()
-  root_router.get 'harfbuzz',               '/harfbuzz',                    @$new_page 'harfbuzz'
-  root_router.get 'v2_glyphimg',            '/v2/glyphimg',                 @$v2_glyphimg()
-  root_router.get 'v2_slug',                '/v2/slug',                     @$v2_slug()
-  root_router.get 'v2_fontnicks',           '/v2/fontnicks',                @$v2_fontnicks()
-  root_router.get 'v2_glyphsamples',        '/v2/glyphsamples/:fontnick',   @$v2_glyphsamples()
+  root_router.get 'root',                         '/',                            @$new_page 'inventory'
+  root_router.get 'long_samples_overview',        '/long-samples-overview',       @$new_page 'long_samples_overview'
+  root_router.get 'slugs',                        '/slugs',                       @$new_page 'slugs'
+  root_router.get 'grid',                         '/grid',                        @$new_page 'grid'
+  root_router.get 'dump',                         '/dump',                        @$dump()
+  root_router.get 'harfbuzz',                     '/harfbuzz',                    @$new_page 'harfbuzz'
+  root_router.get 'v2_glyphimg',                  '/v2/glyphimg',                 @$v2_glyphimg()
+  root_router.get 'v2_slug',                      '/v2/slug',                     @$v2_slug()
+  root_router.get 'v2_fontnicks',                 '/v2/fontnicks',                @$v2_fontnicks()
+  root_router.get 'v2_glyphsamples',              '/v2/glyphsamples/:fontnick',   @$v2_glyphsamples()
+  root_router.get 'v2_harfbuzz_opentypejs_slug',  '/v2/harfbuzz-opentypejs-slug', @$v2_harfbuzz_opentypejs_slug()
   app
     # .use $time_request()
     .use $echo()
@@ -226,6 +227,26 @@ sample_glyphs = Array.from ( """
   return null
 
 #-----------------------------------------------------------------------------------------------------------
+@$v2_harfbuzz_opentypejs_slug = => ( ctx ) =>
+  ### TAINT code duplication ###
+  ### TAINT use wrappers or similar to abstract away error handling ###
+  # debug '^676734^ query:', ctx.query
+  # debug '^676734^ parameters:', jr ctx.params
+  #.........................................................................................................
+  text          = ctx.query.text      ? '無此列文 no such text'
+  glyphs        = Array.from new Set text
+  fontnick      = ctx.query.fontnick  ? 'sunexta'
+  pathdatamap   = pathdatamap_from_glyphs fontnick, glyphs
+  svg           = SVG.slug_from_pathdatamap fontnick, glyphs, pathdatamap
+  DB            = require '../../intershop/intershop_modules/db'
+  # debug ( k for k of DB )
+  ########################################################
+  # ctx.set 'Cache-Control', O.cache_control ### TAINT use middleware to set cache control? ###
+  ctx.set 'content-type', 'image/svg+xml'
+  ctx.body = svg
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
 pathdata_from_glyph = ( fontnick, glyph ) ->
   validate.ucdb_glyph glyph
   rows = [ ( O.ucdb.db.outline_json_from_glyph { fontnick, glyph, } )..., ]
@@ -332,6 +353,8 @@ SVG.slug_from_pathdatamap = ( fontnick, glyphs, pathdatamap ) ->
 ############################################################################################################
 if module is require.main then do =>
   @serve()
-
+  # DB            = require '../../intershop/intershop_modules/db'
+  # for row in await DB.query "select * from CATALOG.catalog;"
+  #   debug '^3337^', row
 
 
