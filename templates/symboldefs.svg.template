@@ -1,0 +1,4 @@
+<!-- this template is used to serve SVG symbol font files -->
+<?xml version='1.0' standalone='no'?><svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10000 10000'>
+${symboldefs}
+</svg>
