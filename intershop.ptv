@@ -1,0 +1,31 @@
+
+
+
+
+#-----------------------------------------------------------------------------------------------------------
+intershop/host/name                   ::text=            ucdb
+
+#-----------------------------------------------------------------------------------------------------------
+# intershop/db/host                     ::text=            localhost
+intershop/db/port                     ::integer=         5432
+intershop/db/name                     ::text=            ${intershop/host/name}
+intershop/db/user                     ::text=            ${intershop/db/name}
+
+#-----------------------------------------------------------------------------------------------------------
+intershop/invariants/autovalidate     ::boolean=         true
+
+#-----------------------------------------------------------------------------------------------------------
+ucdb/path                                   ::text/path/folder=   ${intershop/host/path}
+intershop/mirage/parallel-limit             ::U.natural_number=   2
+# intershop/mirage/dsk/configuration          ::url=                ptv:${intershop/host/configuration/path}
+intershop/mirage/dsk/pkgjson                ::url=                plain:${ucdb/path}/package.json
+intershop/mirage/dsk/readme                 ::url=                plain:${ucdb/path}/README.md
+intershop/mirage/dsk/symboldefs             ::url=                plain:${ucdb/path}/templates/symboldefs.svg.template
+# intershop/mirage/dsk/interplot/svg-to-png   ::url=                plain:apps/interplot/svg-to-png
+
+
+intershop/rpc/host                  ::text=         127.0.0.1
+intershop/rpc/port                  ::integer=      23001
+# intershop/plpython3u/syspathprefix ::text/unixdirpath= /home/${os/env/USER}/.local/lib/python3.6/site-packages
+
+
