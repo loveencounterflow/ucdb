@@ -1,1 +1,13 @@
-undefined
+{
+  "version": 3,
+  "file": "common.js",
+  "sourceRoot": "../..",
+  "sources": [
+    "src/web/common.coffee"
+  ],
+  "names": [],
+  "mappings": ";AACA;EAAA;AAAA,MAAA,OAAA,EAAA,OAAA;;;;EAKA,OAAA,GAAU,QAAA,CAAE,IAAF,EAAA,GAAQ,MAAR,CAAA,EAAA;;AACV,QAAA;IACE,CAAA,GAAM,MAAM,CAAC,MAAP,CAAc,CAAA,CAAd,EAAkB,GAAA,MAAlB;IACN,IAAe,CAAE,MAAM,CAAC,IAAP,CAAY,CAAZ,CAAF,CAAiB,CAAC,MAAlB,KAA4B,CAA3C;AAAA,aAAO,KAAP;;IACA,CAAA,GAAM,IAAI,eAAJ,CAAoB,CAApB;AACN,WAAO,IAAA,GAAO,GAAP,GAAa;EALZ,EALV;;;EAcA,OAAA,GAAU,CAAE,OAAF;;EACV,IAAG,gDAAH;IACC,MAAM,CAAC,OAAP,GAAiB,QADlB;GAAA,MAAA;IAGC,MAAM,CAAC,MAAP,GAAgB,QAHjB;;AAfA",
+  "sourcesContent": [
+    "\n'use strict'\n\n### This module is shared by server and client ###\n\n#-----------------------------------------------------------------------------------------------------------\nget_url = ( path, facets... ) ->\n  ### TAINT lists are silently converted with `toString()` ###\n  p   = Object.assign {}, facets...\n  return path if ( Object.keys p ).length is 0\n  p   = new URLSearchParams p\n  return path + '?' + p\n\n\n############################################################################################################\nexports = { get_url, }\nif module?\n\tmodule.exports = exports\nelse\n\twindow.COMMON = exports\n\n"
+  ]
+}
