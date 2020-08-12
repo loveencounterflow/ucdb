@@ -15,28 +15,52 @@ urge                      = CND.get_logger 'urge',      badge
 info                      = CND.get_logger 'info',      badge
 echo                      = CND.echo.bind CND
 #...........................................................................................................
-INotifyWait               = require 'inotifywait'
+PATH                      = require 'path'
+INotifyWait               = require 'inotifywait-spawn'
 NOTIFIER                  = require 'node-notifier'
 respawn                   = require 'respawn'
 { project_abspath, }      = require '../helpers'
 sleep                     = ( dts ) -> new Promise ( done ) => setTimeout done, dts * 1000
-
-
+#-----------------------------------------------------------------------------------------------------------
+INotifyWait               = require 'inotifywait-spawn'
+{ IN_ACCESS         # on file access
+  IN_MODIFY         # on changes
+  IN_CLOSE_WRITE    # on end writing
+  IN_CLOSE_NOWRITE  # on end reading
+  IN_OPEN           # on file opened
+  IN_MOVED_FROM     # on files moved from
+  IN_MOVED_TO       # on files move to
+  IN_CREATE         # on files creation (folder)
+  IN_DELETE         # on deletion (folder)
+  IN_DELETE_SELF    # on deletion of the watched path
+  IN_MOVE_SELF      # when watched path is moved
+  IN_UNMOUNT        # on patsh unmounted
+  IN_CLOSE          # on either IN_CLOSE_WRITE or IN_CLOSE_NOWRITE
+  IN_MOVE           # on either IN_MOVED_FROM or IN_MOVED_TO
+  }                       = INotifyWait;
+ALL = IN_ACCESS | IN_MODIFY | IN_CLOSE_WRITE | IN_CLOSE_NOWRITE | IN_OPEN | IN_MOVED_FROM | IN_MOVED_TO | \
+  IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_MOVE_SELF | IN_UNMOUNT | IN_CLOSE | IN_MOVE
 #-----------------------------------------------------------------------------------------------------------
 settings =
-  command:            [ 'lib/web/server.js', ],
-  name:               'ucdb'              # set monitor name
-  env:                { name: 'value', }  # set env vars
-  cwd:                '.'                 # set cwd
-  maxRestarts:        -1                  # how many restarts are allowed within 60s or -1 for infinite restarts
-  sleep:              100                 # time to sleep between restarts,
-  kill:               30000               # wait 30s before force killing after stopping
-  # stdio:              [...]               # forward stdio options
-  fork:               true                # fork instead of spawn
+  respawn:
+    command:            [ 'lib/web/server.js', ],
+    name:               'ucdb'              # set monitor name
+    env:                { name: 'value', }  # set env vars
+    cwd:                '.'                 # set cwd
+    maxRestarts:        -1                  # how many restarts are allowed within 60s or -1 for infinite restarts
+    sleep:              100                 # time to sleep between restarts,
+    kill:               30000               # wait 30s before force killing after stopping
+    # stdio:              [...]               # forward stdio options
+    fork:               true                # fork instead of spawn
+  inotifywait:
+    recursive:  true
+    events:     IN_MODIFY || IN_CREATE || IN_DELETE
+    # events:     ALL
+
 
 
 ############################################################################################################
-monitor = respawn settings
+monitor = respawn settings.respawn
 
 
 monitor.on 'crash',  ( data ) -> urge 'crash',  "The monitor has crashed (too many restarts or spawn error)."
@@ -57,7 +81,17 @@ monitor.on 'stop',   ( data ) -> whisper 'stop',   "The monitor has fully stoppe
 monitor.on 'warn',   ( data ) -> whisper 'warn',   "child process has emitted an error"; warn error
 
 #.........................................................................................................
-on_change = ( path ) =>
+exit_handler = => new Promise ( resolve ) =>
+  urge '^233376^', "process about to exit"
+  monitor.stop -> resolve()
+process.on 'beforeExit', exit_handler
+process.on 'unhandledException', exit_handler
+process.on 'uncaughtException', exit_handler
+
+#.........................................................................................................
+on_change = ( cause, d ) =>
+  path = PATH.join d.path, d.entry
+  whisper '^3332^', cause, path
   return null unless path.endsWith '.js'
   info '^272^', "changed: #{path}"
   monitor.stop()
@@ -66,13 +100,15 @@ on_change = ( path ) =>
 
 #-----------------------------------------------------------------------------------------------------------
 monitor_source_changes = ->
+  # src_path  = [ ( project_abspath 'lib' ), ( project_abspath 'src' ), ]
   src_path  = project_abspath 'lib'
-  settings  = recursive: true
-  w         = new INotifyWait src_path, settings
+  w         = new INotifyWait src_path, settings.inotifywait
+  help "monitoring changes in #{src_path}"
+  w.on 'error', ( error ) => warn CND.reverse error
+  w.on IN_MODIFY, ( d ) => on_change 'IN_MODIFY', d
+  w.on IN_CREATE, ( d ) => on_change 'IN_CREATE', d
+  w.on IN_DELETE, ( d ) => on_change 'IN_DELETE', d
   #.........................................................................................................
-  w.on 'change',  ( path ) => on_change path
-  w.on 'add',     ( path ) => on_change path
-  w.on 'unlink',  ( path ) => on_change path
   return null
 
 
