@@ -61,6 +61,7 @@ TIMER                     = require '../timer'
 TEMPLATES                 = require './templates'
 COMMON                    = require './common'
 HELPERS                   = require '../helpers'
+LRRR                      = require 'omicron-persei-8'
 
 #-----------------------------------------------------------------------------------------------------------
 @_show_available_addresses = ->
@@ -87,6 +88,7 @@ HELPERS                   = require '../helpers'
   root_router.get 'grid',                         '/grid',                        @$new_page 'grid'
   root_router.get 'dump',                         '/dump',                        @$dump()
   root_router.get 'harfbuzz',                     '/harfbuzz',                    @$new_page 'harfbuzz'
+  root_router.get 'demo_stream',                  '/demo_stream',                 @$demo_stream()
   root_router.get 'v2_glyphimg',                  '/v2/glyphimg',                 @$v2_glyphimg()
   root_router.get 'v2_slug',                      '/v2/slug',                     @$v2_slug()
   root_router.get 'v2_fontnicks',                 '/v2/fontnicks',                @$v2_fontnicks()
@@ -244,6 +246,23 @@ sample_glyphs = Array.from ( """
   # ctx.set 'Cache-Control', O.cache_control ### TAINT use middleware to set cache control? ###
   ctx.set 'content-type', 'image/svg+xml'
   ctx.body = svg
+  return null
+
+
+#-----------------------------------------------------------------------------------------------------------
+@$demo_stream = => ( ctx ) =>
+  ### TAINT code duplication ###
+  ### TAINT use wrappers or similar to abstract away error handling ###
+  # debug '^676734^ query:', ctx.query
+  # debug '^676734^ parameters:', jr ctx.params
+  #.........................................................................................................
+  DB            = require '../../intershop/intershop_modules/db'
+  ########################################################
+  # ctx.set 'Cache-Control', O.cache_control ### TAINT use middleware to set cache control? ###
+  query         = [ "select line from HARFBUZZ_X.get_svg_font_lines( $1 ) as x ( line );", 'f123', ]
+  ctx.set 'content-type', 'image/svg+xml'
+  readstream    = await DB.query_as_readstream query
+  ctx.body      = readstream.pipe LRRR.remit ( d, send ) -> send "#{d.line}\n"
   return null
 
 #-----------------------------------------------------------------------------------------------------------
