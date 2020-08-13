@@ -21,6 +21,9 @@ NOTIFIER                  = require 'node-notifier'
 respawn                   = require 'respawn'
 { project_abspath, }      = require '../helpers'
 sleep                     = ( dts ) -> new Promise ( done ) => setTimeout done, dts * 1000
+process_supervisor        = null
+file_watcher              = null
+defer                     = setImmediate
 #-----------------------------------------------------------------------------------------------------------
 INotifyWait               = require 'inotifywait-spawn'
 { IN_ACCESS         # on file access
@@ -60,30 +63,32 @@ settings =
 
 
 ############################################################################################################
-monitor = respawn settings.respawn
+process_supervisor = respawn settings.respawn
 
 
-monitor.on 'crash',  ( data ) -> urge 'crash',  "The monitor has crashed (too many restarts or spawn error)."
-monitor.on 'exit',   ( code, signal) ->
-  urge 'exit',   "( code: #{rpr code}, signal: #{rpr signal} ) child process has exited"
+process_supervisor.on 'crash',  ( data ) -> urge "^process_supervisor@crash^ The process_supervisor has crashed (too many restarts or spawn error)."
+process_supervisor.on 'exit',   ( code, signal) ->
+  urge "^process_supervisor@exit^ ( code: #{rpr code}, signal: #{rpr signal} ) child process has exited"
   # process.exit 1
   if code > 100
     debug '34474', 'aborting'
-    monitor.stop()
+    process_supervisor.stop()
     process.exit code
   return null
-monitor.on 'sleep',  ( data ) -> whisper 'sleep',  "monitor is sleeping"
-monitor.on 'spawn',  ( data ) -> whisper 'spawn',  "New child process has been spawned"
-monitor.on 'start',  ( data ) -> whisper 'start',  "The monitor has started"
-monitor.on 'stderr', ( data ) -> whisper 'stderr', "child process stderr has emitted data"; whisper data
-monitor.on 'stdout', ( data ) -> whisper 'stdout', "child process stdout has emitted data"; whisper data
-monitor.on 'stop',   ( data ) -> whisper 'stop',   "The monitor has fully stopped and the process is killed"
-monitor.on 'warn',   ( data ) -> whisper 'warn',   "child process has emitted an error"; warn error
+process_supervisor.on 'sleep',  ( data ) -> whisper "^process_supervisor@sleep^   process_supervisor is sleeping"
+process_supervisor.on 'spawn',  ( data ) -> whisper "^process_supervisor@spawn^   New child process has been spawned"
+process_supervisor.on 'start',  ( data ) -> whisper "^process_supervisor@start^   The process_supervisor has started"
+process_supervisor.on 'stderr', ( data ) -> whisper "^process_supervisor@stderr^  child process stderr has emitted data"; whisper data
+process_supervisor.on 'stdout', ( data ) -> whisper "^process_supervisor@stdout^  child process stdout has emitted data"; whisper data
+process_supervisor.on 'stop',   ( data ) -> whisper "^process_supervisor@stop^    The process_supervisor has fully stopped and the process is killed"
+process_supervisor.on 'warn',   ( data ) -> whisper "^process_supervisor@warn^    child process has emitted an error"; warn error
 
 #.........................................................................................................
 exit_handler = => new Promise ( resolve ) =>
   urge '^233376^', "process about to exit"
-  monitor.stop -> resolve()
+  resolved = false
+  file_watcher.stop()
+  process_supervisor.stop -> resolve()
 process.on 'beforeExit', exit_handler
 process.on 'unhandledException', exit_handler
 process.on 'uncaughtException', exit_handler
@@ -94,28 +99,37 @@ on_change = ( cause, d ) =>
   whisper '^3332^', cause, path
   return null unless path.endsWith '.js'
   info '^272^', "changed: #{path}"
-  monitor.stop()
-  await sleep 0.5
-  monitor.start()
+  process_supervisor.stop ->
+    await sleep 0.5
+    process_supervisor.start()
+    return null
+  return null
 
 #-----------------------------------------------------------------------------------------------------------
-monitor_source_changes = ->
+watch_source_changes = ->
   # src_path  = [ ( project_abspath 'lib' ), ( project_abspath 'src' ), ]
-  src_path  = project_abspath 'lib'
-  w         = new INotifyWait src_path, settings.inotifywait
+  src_path      = project_abspath 'lib'
+  file_watcher  = new INotifyWait src_path, settings.inotifywait
   help "monitoring changes in #{src_path}"
-  w.on 'error', ( error ) => warn CND.reverse error
-  w.on IN_MODIFY, ( d ) => on_change 'IN_MODIFY', d
-  w.on IN_CREATE, ( d ) => on_change 'IN_CREATE', d
-  w.on IN_DELETE, ( d ) => on_change 'IN_DELETE', d
+  file_watcher.on 'error', ( error ) =>
+    warn CND.reverse error
+    if process_supervisor?
+      return process_supervisor.stop -> process.exit 65
+    else
+      defer -> process.exit 67
+    return null
+  return null
+  file_watcher.on IN_MODIFY, ( d ) => on_change 'IN_MODIFY', d
+  file_watcher.on IN_CREATE, ( d ) => on_change 'IN_CREATE', d
+  file_watcher.on IN_DELETE, ( d ) => on_change 'IN_DELETE', d
   #.........................................................................................................
   return null
 
 
 ############################################################################################################
 if module is require.main then do =>
-  monitor.start()
-  monitor_source_changes()
+  process_supervisor.start()
+  watch_source_changes()
 
 
 
