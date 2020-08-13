@@ -46,7 +46,7 @@ PD                        = require 'pipedreams'
 #...........................................................................................................
 mkts_options              = require './_TEMPORARY_options'
 mkts_glyph_styles         = mkts_options.tex[ 'glyph-styles' ]
-MKNCR                     = require 'mingkwai-ncr'
+MKNCR                     = null
 SVGTTF                    = require 'svgttf'
 MIRAGE                    = require 'sqlite-file-mirror'
 FONTMIRROR                = require 'fontmirror'
@@ -244,6 +244,7 @@ runmode                   = 'debug_cross_cjk'
 
 #-----------------------------------------------------------------------------------------------------------
 @populate_table_main = ( me ) -> new Promise ( resolve, reject ) =>
+  MKNCR            ?= require 'mingkwai-ncr'
   preamble          = []
   data              = []
   line_count        = 0
