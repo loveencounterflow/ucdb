@@ -59,6 +59,12 @@ intertype                 = new ( require 'intertype' ).Intertype module.exports
     "x contains single codepoint":            ( x ) -> ( x.match ///^.$///u )?
 
 #-----------------------------------------------------------------------------------------------------------
+@declare 'ucdb_font_id',
+  tests:
+    "x is a text":                            ( x ) -> @isa.text x
+    "x starts with f followed by digits":     ( x ) -> ( x.match ///^f[0-9]+$///u )?
+
+#-----------------------------------------------------------------------------------------------------------
 @declare 'nonnegative_integer',             ( x ) => ( Number.isInteger x ) and x >= 0
 
 #-----------------------------------------------------------------------------------------------------------
