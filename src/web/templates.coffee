@@ -296,12 +296,15 @@ Object.assign @, TEACUP
             not resolve the references in the loaded SVG."""
     @HR()
     @DIV =>
+      #.....................................................................................................
+      @DIV => @CODE '', "/v2/slug?fid=f123&text=AEIÖU"
+      @OBJECT { type: 'image/svg+xml', data: '/v2/slug?fid=f123&text=AEIÖU',  style: 'outline:1px dotted red;width:250mm', }, =>
+        @DIV { style: 'outline:1px dotted blue;width:250mm', }, "(Fallback for SVG here)"
+      #.....................................................................................................
       @DIV => @CODE '', "/v2/font?fid=f123"
       @OBJECT { type: 'image/svg+xml', data: '/v2/font?fid=f123',  style: 'outline:1px dotted red;width:250mm', }, =>
         @DIV { style: 'outline:1px dotted blue;width:250mm', }, "(Fallback for SVG here)"
-      @DIV => @CODE '', "/v2/harfbuzz-opentypejs-slug?fid=f123&text=AEIÖU"
-      @OBJECT { type: 'image/svg+xml', data: '/v2/harfbuzz-opentypejs-slug?fid=f123&text=AEIÖU',  style: 'outline:1px dotted red;width:250mm', }, =>
-        @DIV { style: 'outline:1px dotted blue;width:250mm', }, "(Fallback for SVG here)"
+      #.....................................................................................................
       # @OBJECT { type: 'image/svg+xml', data: 'opentypejs-harfbuzz-svg/sample-glyph.svg', style: 'outline:1px dotted red;width:250mm', }, =>
       #   @TEXT "(Fallback for SVG here)"
     @DIV { style: "width:10mm;height:10mm;background-color:red;", }
