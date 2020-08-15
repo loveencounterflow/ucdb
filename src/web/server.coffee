@@ -62,6 +62,9 @@ TEMPLATES                 = require './templates'
 COMMON                    = require './common'
 HELPERS                   = require '../helpers'
 LRRR                      = require 'omicron-persei-8'
+DB                        = require '../../intershop/intershop_modules/db'
+
+
 
 #-----------------------------------------------------------------------------------------------------------
 @_show_available_addresses = ->
@@ -93,7 +96,6 @@ LRRR                      = require 'omicron-persei-8'
   root_router.get 'v2_slug',                      '/v2/slug',                     @$v2_slug()
   root_router.get 'v2_fontnicks',                 '/v2/fontnicks',                @$v2_fontnicks()
   root_router.get 'v2_glyphsamples',              '/v2/glyphsamples/:fontnick',   @$v2_glyphsamples()
-  root_router.get 'v2_harfbuzz_opentypejs_slug',  '/v2/harfbuzz-opentypejs-slug', @$v2_harfbuzz_opentypejs_slug()
   app
     # .use $time_request()
     .use $echo()
@@ -211,46 +213,7 @@ sample_glyphs = Array.from ( """
   return null
 
 #-----------------------------------------------------------------------------------------------------------
-@$v2_slug = => ( ctx ) =>
-  ### TAINT code duplication ###
-  ### TAINT use wrappers or similar to abstract away error handling ###
-  # debug '^676734^ query:', jr ctx.query
-  # debug '^676734^ parameters:', jr ctx.params
-  #.........................................................................................................
-  text          = ctx.query.text      ? '無此列文'
-  glyphs        = Array.from new Set text
-  fontnick      = ctx.query.fontnick  ? 'sunexta'
-  pathdatamap   = pathdatamap_from_glyphs fontnick, glyphs
-  svg           = SVG.slug_from_pathdatamap fontnick, glyphs, pathdatamap
-  ########################################################
-  # ctx.set 'Cache-Control', O.cache_control ### TAINT use middleware to set cache control? ###
-  ctx.set 'content-type', 'image/svg+xml'
-  ctx.body = svg
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
-@$v2_harfbuzz_opentypejs_slug = => ( ctx ) =>
-  ### TAINT code duplication ###
-  ### TAINT use wrappers or similar to abstract away error handling ###
-  # debug '^676734^ query:', ctx.query
-  # debug '^676734^ parameters:', jr ctx.params
-  #.........................................................................................................
-  text          = ctx.query.text      ? '無此列文 no such text'
-  glyphs        = Array.from new Set text
-  fontnick      = ctx.query.fontnick  ? 'sunexta'
-  pathdatamap   = pathdatamap_from_glyphs fontnick, glyphs
-  svg           = SVG.slug_from_pathdatamap fontnick, glyphs, pathdatamap
-  DB            = require '../../intershop/intershop_modules/db'
-  # debug ( k for k of DB )
-  ########################################################
-  # ctx.set 'Cache-Control', O.cache_control ### TAINT use middleware to set cache control? ###
-  ctx.set 'content-type', 'image/svg+xml'
-  ctx.body = svg
-  return null
-
-#-----------------------------------------------------------------------------------------------------------
 @$v2_font = => ( ctx ) =>
-  DB            = require '../../intershop/intershop_modules/db'
   # ctx.set 'Cache-Control', O.cache_control ### TAINT use middleware to set cache control? ###
   fid           = ctx.query?.fid
   #.........................................................................................................
@@ -264,7 +227,25 @@ sample_glyphs = Array.from ( """
   query         = [ "select line from HARFBUZZ_X.get_svg_font_lines( $1 ) as x ( line );", fid, ]
   ctx.set 'content-type', 'image/svg+xml'
   readstream    = await DB.query_as_readstream query
-  ctx.body      = readstream.pipe LRRR.remit ( d, send ) -> send "#{d.line}\n"
+  ctx.body      = readstream.pipe LRRR.remit ( d, send ) -> send d.line + '\n'
+  return null
+
+#-----------------------------------------------------------------------------------------------------------
+@$v2_slug = => ( ctx ) =>
+  ### TAINT add error handling ###
+  text          = ctx.query.text      ? '無此列文'
+  glyphs        = Array.from new Set text
+  fid           = 'f123'
+  # fontnick      = ctx.query.fontnick  ? 'sunexta'
+  # pathdatamap   = pathdatamap_from_glyphs fontnick, glyphs
+  # svg           = SVG.slug_from_pathdatamap fontnick, glyphs, pathdatamap
+  ########################################################
+  # ctx.set 'Cache-Control', O.cache_control ### TAINT use middleware to set cache control? ###
+  #.........................................................................................................
+  query         = [ "select line from HARFBUZZ_X.linotype_preview( $1, $2 ) as x ( line );", fid, text, ]
+  ctx.set 'content-type', 'image/svg+xml'
+  readstream    = await DB.query_as_readstream query
+  ctx.body      = readstream.pipe LRRR.remit ( d, send ) -> send d.line + '\n'
   return null
 
 #-----------------------------------------------------------------------------------------------------------
