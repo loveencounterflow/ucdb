@@ -3,10 +3,8 @@ set -euo pipefail
 home="$(realpath "$(realpath "${BASH_SOURCE[0]}" | xargs dirname)"/.)"
 cd "$home"
 
-# npm link ~/jzr/steampipes
+npm link ~/jzr/intershop-intertext
 npm link ~/jzr/svgttf
 npm link ~/jzr/fontmirror
-npm link ~/jzr/intershop-intertext
-# npm link ~/io/mingkwai-rack/mingkwai-typesetter
 
 
