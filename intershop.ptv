@@ -12,7 +12,7 @@ intershop/db/name                     ::text=            ${intershop/host/name}
 intershop/db/user                     ::text=            ${intershop/db/name}
 
 #-----------------------------------------------------------------------------------------------------------
-intershop/invariants/autovalidate     ::boolean=         true
+intershop/invariants/autovalidate     ::boolean=         false
 
 #-----------------------------------------------------------------------------------------------------------
 ucdb/path                                   ::text/path/folder=   ${intershop/host/path}
