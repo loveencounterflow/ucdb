@@ -4,7 +4,17 @@
 
 <style>
   body {
-    background-color:  #cf68;
+    background-color:       #cf68;
+  }
+  object {
+    border:                 1px dotted red;
+  }
+  gauge {
+    display:                block;
+    width:                  100mm;
+    height:                 10mm;
+    background-color:       yellow;
+    mix-blend-mode:         multiply;
   }
 </style>
 
@@ -23,7 +33,10 @@ implemented as SVG symbols accessible via external resources, which is why we mu
 
 <hr><div><tt>./sample-glyph.svg   </tt><br><object type='image/svg+xml' data='./sample-glyph.svg'   style='width:250mm'>(Fallback for SVG here)</object></div>
 <!-- <hr><div><tt>./sample-symbols.svg </tt><br><object type='image/svg+xml' data='./sample-symbols.svg' style='width:250mm'>(Fallback for SVG here)</object></div> -->
-<hr><div><tt>./sample-font.svg    </tt><br><object type='image/svg+xml' data='./sample-font.svg'    style='width:250mm'>(Fallback for SVG here)</object></div>
+
+<gauge>gauge</gauge>
+
+<hr><div><tt>./sample-font.svg    </tt><br><object type='image/svg+xml' data='./sample-font.svg'    style='width:210mm;height:297mm;'>(Fallback for SVG here)</object></div>
 
 <p>thx to https://vecta.io/blog/best-way-to-embed-svg for pointing out that in order to reference SVG
 symbols from an external SVG file, you need to use <tt>&lt;object&gt;</tt> tags instead of &lt;img&gt;
